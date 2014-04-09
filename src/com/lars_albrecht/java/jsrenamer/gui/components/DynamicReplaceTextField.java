@@ -5,15 +5,19 @@ package com.lars_albrecht.java.jsrenamer.gui.components;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicReplaceTupel;
 
@@ -21,7 +25,7 @@ import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicReplaceTupel
  * @author lalbrecht
  * 
  */
-public class DynamicReplaceTextField extends JPanel implements ActionListener, Enumeration<DynamicReplaceTupel> {
+public class DynamicReplaceTextField extends JPanel implements ActionListener, Iterable<DynamicReplaceTupel> {
 
 	/**
 	 * 
@@ -34,14 +38,15 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, E
 
 	private String							addButtonText		= null;
 
-	private int								enumIndex			= 0;
-
 	private ArrayList<DynamicReplaceTupel>	fieldList			= null;
 
-	public DynamicReplaceTextField(final String addButtonText, final int createItemsAtInit) {
+	private DocumentListener				documentListener	= null;
+
+	public DynamicReplaceTextField(final String addButtonText, final int createItemsAtInit, final DocumentListener documentListener) {
 		super();
 		this.fieldList = new ArrayList<DynamicReplaceTupel>();
 		this.addButtonText = addButtonText;
+		this.documentListener = documentListener;
 
 		final GridBagLayout gbl = new GridBagLayout();
 		this.setLayout(gbl);
@@ -62,6 +67,9 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, E
 		}
 	}
 
+	/**
+	 * Adds a layer (panel) to this panel.
+	 */
 	public void addLayer() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -78,47 +86,83 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, E
 		this.elemIndex++;
 	}
 
+	/**
+	 * Create a new layer with elements
+	 * 
+	 * @param index
+	 * @return JPanel to add
+	 */
 	private JPanel createNewLayer(final int index) {
-		final GridBagLayout gbl = new GridBagLayout();
-		final JPanel p = new JPanel(gbl, true);
+		final GridLayout glButtonPanel = new GridLayout();
+		glButtonPanel.setColumns(2);
+		glButtonPanel.setHgap(10);
 
-		final GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = .5;
-		gbc.weighty = .9;
-		gbc.gridwidth = 2;
-		gbc.insets = new Insets(0, 0, 0, 10);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.CENTER;
+		final GridBagLayout gblPanel = new GridBagLayout();
+		final JPanel p = new JPanel(gblPanel, true);
+		final JPanel buttonPanel = new JPanel(glButtonPanel, true);
 
-		final JTextField tempPatternField = new JTextField();
-		final JTextField tempReplaceField = new JTextField();
-		this.fieldList.add(new DynamicReplaceTupel(tempPatternField, tempReplaceField));
-		p.add(this.fieldList.get(this.fieldList.size() - 1).getPatternField(), gbc);
+		final GridBagConstraints gbcPanel = new GridBagConstraints();
+		gbcPanel.gridx = 0;
+		gbcPanel.gridwidth = 2;
+		gbcPanel.gridy = index;
+		gbcPanel.weightx = 1;
+		gbcPanel.fill = GridBagConstraints.HORIZONTAL;
 
-		gbc.gridx = 2;
-		gbc.gridy = 0;
-		gbc.weightx = .5;
-		gbc.weighty = .9;
-		gbc.gridwidth = 2;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.CENTER;
+		final GridBagConstraints gbcCheck = new GridBagConstraints();
+		gbcCheck.gridx = 3;
+		gbcCheck.gridwidth = 1;
+		gbcCheck.gridy = index;
 
-		p.add(this.fieldList.get(this.fieldList.size() - 1).getReplaceField(), gbc);
+		final JTextField tempFieldA = new JTextField();
+		final JTextField tempFieldB = new JTextField();
+		final JCheckBox tempCheckField = new JCheckBox();
+
+		tempFieldA.getDocument().addDocumentListener(this.documentListener);
+		tempFieldB.getDocument().addDocumentListener(this.documentListener);
+
+		this.fieldList.add(new DynamicReplaceTupel(tempFieldA, tempFieldB, tempCheckField));
+
+		buttonPanel.add(this.fieldList.get(this.fieldList.size() - 1).getFieldA());
+		buttonPanel.add(this.fieldList.get(this.fieldList.size() - 1).getFieldB());
+		p.add(buttonPanel, gbcPanel);
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getCheckField(), gbcCheck);
 
 		return p;
 	}
 
-	@Override
-	public boolean hasMoreElements() {
-		if (this.enumIndex <= (this.fieldList.size() - 1)) {
-			return true;
+	/**
+	 * Returns the tupel where the doc exists if available.
+	 * 
+	 * @param doc
+	 * @return DynamicReplaceTupel
+	 */
+	public DynamicReplaceTupel getTupelForDocument(final Document doc) {
+		for (final DynamicReplaceTupel tupel : this.fieldList) {
+			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)) {
+				return tupel;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns true if the document exists, otherwise false.
+	 * 
+	 * @param doc
+	 * @return hasDocument in list
+	 */
+	public boolean hasDocument(final Document doc) {
+		for (final DynamicReplaceTupel tupel : this.fieldList) {
+			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)) {
+				return true;
+			}
 		}
 		return false;
 	}
 
+	/**
+	 * Adds the add button to add an additional line.
+	 */
 	private void initAddButton() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -137,9 +181,8 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, E
 	}
 
 	@Override
-	public DynamicReplaceTupel nextElement() {
-		this.enumIndex++;
-		return this.fieldList.get(this.enumIndex - 1);
+	public Iterator<DynamicReplaceTupel> iterator() {
+		return this.fieldList.iterator();
 	}
 
 }

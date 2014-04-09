@@ -31,6 +31,36 @@ public class FileTransferHandler extends TransferHandler {
 		this.list = list;
 	}
 
+	/**
+	 * 
+	 * @param f
+	 * @return count of added data
+	 */
+	private int addDataToList(final File f) {
+		int count = 0;
+		if (f.exists() && f.canRead() && f.canWrite()) {
+			if (f.isFile()) {
+				final ListItem tempItem = this.createListItem(f);
+				if ((tempItem != null) && !this.list.contains(tempItem)) {
+					this.list.add(tempItem);
+					count++;
+				} else {
+					if (tempItem == null) {
+						System.out.println("Item is null");
+					} else {
+						System.out.println(tempItem + " already in list");
+					}
+				}
+			} else if (f.isDirectory() && f.canExecute()) {
+				final File[] files = f.listFiles();
+				for (final File file : files) {
+					count += this.addDataToList(file);
+				}
+			}
+		}
+		return count;
+	}
+
 	@Override
 	public boolean canImport(final TransferSupport support) {
 		return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
@@ -47,7 +77,7 @@ public class FileTransferHandler extends TransferHandler {
 
 	@Override
 	public int getSourceActions(final JComponent c) {
-		return TransferHandler.COPY_OR_MOVE;
+		return TransferHandler.LINK;
 	}
 
 	@Override
@@ -55,21 +85,11 @@ public class FileTransferHandler extends TransferHandler {
 		try {
 			@SuppressWarnings("unchecked")
 			final List<File> data = ((List<File>) support.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
-			ListItem tempItem = null;
-			for (final File item : data) {
-				if ((item != null) && item.canRead() && item.canWrite()) {
-					tempItem = this.createListItem(item);
-					if ((tempItem != null) && !this.list.contains(tempItem)) {
-						this.list.add(tempItem);
-					} else {
-						if (tempItem == null) {
-							System.out.println("Item is null");
-						} else {
-							System.out.println(tempItem + " already in list");
-						}
-					}
-				}
+			int count = 0;
+			for (final File file : data) {
+				count += this.addDataToList(file);
 			}
+			System.out.println("Added " + count + " item(s)");
 		} catch (final UnsupportedFlavorException e) {
 			e.printStackTrace();
 		} catch (final IOException e) {
@@ -77,4 +97,5 @@ public class FileTransferHandler extends TransferHandler {
 		}
 		return super.importData(support);
 	}
+
 }
