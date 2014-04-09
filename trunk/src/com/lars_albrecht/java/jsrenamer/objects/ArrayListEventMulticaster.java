@@ -20,6 +20,13 @@ public class ArrayListEventMulticaster implements IArrayListEventListener {
 	}
 
 	@Override
+	public void arrayListAddAll(final ArrayListEvent e) {
+		for (int i = 0; i < this.listener.size(); i++) {
+			(this.listener.elementAt(i)).arrayListAddAll(e);
+		}
+	}
+
+	@Override
 	public void arrayListChanged(final ArrayListEvent e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListChanged(e);

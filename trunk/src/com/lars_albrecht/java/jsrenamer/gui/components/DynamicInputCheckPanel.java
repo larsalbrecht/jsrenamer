@@ -19,34 +19,37 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
-import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicReplaceTupel;
+import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 
 /**
  * @author lalbrecht
  * 
  */
-public class DynamicReplaceTextField extends JPanel implements ActionListener, Iterable<DynamicReplaceTupel> {
+public class DynamicInputCheckPanel extends JPanel implements ActionListener, Iterable<DynamicInputCheckTupel> {
 
 	/**
 	 * 
 	 */
-	private static final long				serialVersionUID	= 2000655932132606479L;
+	private static final long					serialVersionUID	= 2000655932132606479L;
 
-	private int								elemIndex			= 0;
+	private int									elemIndex			= 0;
 
-	private JButton							addButton			= null;
+	private JButton								addButton			= null;
 
-	private String							addButtonText		= null;
+	private String								addButtonText		= null;
 
-	private ArrayList<DynamicReplaceTupel>	fieldList			= null;
+	private ArrayList<DynamicInputCheckTupel>	fieldList			= null;
 
-	private DocumentListener				documentListener	= null;
+	private DocumentListener					documentListener	= null;
+	private ActionListener						actionListener		= null;
 
-	public DynamicReplaceTextField(final String addButtonText, final int createItemsAtInit, final DocumentListener documentListener) {
+	public DynamicInputCheckPanel(final String addButtonText, final int createItemsAtInit, final DocumentListener documentListener,
+			final ActionListener actionListener) {
 		super();
-		this.fieldList = new ArrayList<DynamicReplaceTupel>();
+		this.fieldList = new ArrayList<DynamicInputCheckTupel>();
 		this.addButtonText = addButtonText;
 		this.documentListener = documentListener;
+		this.actionListener = actionListener;
 
 		final GridBagLayout gbl = new GridBagLayout();
 		this.setLayout(gbl);
@@ -119,8 +122,9 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, I
 
 		tempFieldA.getDocument().addDocumentListener(this.documentListener);
 		tempFieldB.getDocument().addDocumentListener(this.documentListener);
+		tempCheckField.addActionListener(this.actionListener);
 
-		this.fieldList.add(new DynamicReplaceTupel(tempFieldA, tempFieldB, tempCheckField));
+		this.fieldList.add(new DynamicInputCheckTupel(tempFieldA, tempFieldB, tempCheckField));
 
 		buttonPanel.add(this.fieldList.get(this.fieldList.size() - 1).getFieldA());
 		buttonPanel.add(this.fieldList.get(this.fieldList.size() - 1).getFieldB());
@@ -136,8 +140,8 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, I
 	 * @param doc
 	 * @return DynamicReplaceTupel
 	 */
-	public DynamicReplaceTupel getTupelForDocument(final Document doc) {
-		for (final DynamicReplaceTupel tupel : this.fieldList) {
+	public DynamicInputCheckTupel getTupelForDocument(final Document doc) {
+		for (final DynamicInputCheckTupel tupel : this.fieldList) {
 			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)) {
 				return tupel;
 			}
@@ -152,7 +156,7 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, I
 	 * @return hasDocument in list
 	 */
 	public boolean hasDocument(final Document doc) {
-		for (final DynamicReplaceTupel tupel : this.fieldList) {
+		for (final DynamicInputCheckTupel tupel : this.fieldList) {
 			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)) {
 				return true;
 			}
@@ -181,7 +185,7 @@ public class DynamicReplaceTextField extends JPanel implements ActionListener, I
 	}
 
 	@Override
-	public Iterator<DynamicReplaceTupel> iterator() {
+	public Iterator<DynamicInputCheckTupel> iterator() {
 		return this.fieldList.iterator();
 	}
 
