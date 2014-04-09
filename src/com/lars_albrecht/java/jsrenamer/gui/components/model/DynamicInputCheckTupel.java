@@ -10,13 +10,13 @@ import javax.swing.JTextField;
  * @author lalbrecht
  * 
  */
-public class DynamicReplaceTupel {
+public class DynamicInputCheckTupel {
 
 	private JTextField	fieldA		= null;
 	private JTextField	fieldB		= null;
 	private JCheckBox	checkField	= null;
 
-	public DynamicReplaceTupel(final JTextField fieldA, final JTextField fieldB, final JCheckBox checkField) {
+	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldB, final JCheckBox checkField) {
 		this.fieldA = fieldA;
 		this.fieldB = fieldB;
 		this.checkField = checkField;

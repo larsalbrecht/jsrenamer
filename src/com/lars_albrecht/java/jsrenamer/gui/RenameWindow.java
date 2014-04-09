@@ -6,13 +6,17 @@ package com.lars_albrecht.java.jsrenamer.gui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.DefaultListModel;
-import javax.swing.DropMode;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -21,8 +25,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import com.lars_albrecht.java.jsrenamer.gui.components.DynamicReplaceTextField;
-import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicReplaceTupel;
+import com.lars_albrecht.java.jsrenamer.gui.components.DynamicInputCheckPanel;
+import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
+import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
 import com.lars_albrecht.java.jsrenamer.model.ListItem;
 import com.lars_albrecht.java.jsrenamer.objects.ArrayListEvent;
 import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
@@ -32,7 +37,7 @@ import com.lars_albrecht.java.jsrenamer.objects.IArrayListEventListener;
  * @author lalbrecht
  * 
  */
-public class RenameWindow extends JFrame implements IArrayListEventListener, DocumentListener {
+public class RenameWindow extends JFrame implements IArrayListEventListener, DocumentListener, ActionListener {
 
 	/**
 	 * 
@@ -49,7 +54,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 	private JTextField					fileNameInput			= null;
 
-	private DynamicReplaceTextField		dynamicReplaceFields	= null;
+	private DynamicInputCheckPanel		dynamicReplaceFields	= null;
+
+	private JButton						renameButton			= null;
 
 	public RenameWindow() {
 		super("JSRenamer");
@@ -73,8 +80,48 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.initInput();
 		this.initDynamicInput();
 		this.initLists();
+		this.initBottomBar();
 
 		this.setTransferHandler(new FileTransferHandler(this.allList));
+	}
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		if (e.getSource() == this.renameButton) {
+			final Enumeration<ListItem> items = this.previewListModel.elements();
+			ListItem tempItem = null;
+			final EventArrayList<ListItem> tempList = new EventArrayList<ListItem>();
+			File tempFile = null;
+			while (items.hasMoreElements()) {
+				tempItem = items.nextElement();
+				tempFile = new File(this.getFilepath(tempItem.getFile()) + File.separator + tempItem.getTitle());
+				if (!tempFile.exists() && tempItem.getFile().renameTo(tempFile)) {
+					try {
+						tempList.add(new ListItem(tempFile));
+					} catch (final Exception e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					tempList.add(tempItem);
+				}
+			}
+			this.allList.clear();
+			this.allList.addAll(tempList);
+		} else {
+			this.updatePreviewList();
+		}
+	}
+
+	@Override
+	public void arrayListAddAll(final ArrayListEvent e) {
+		for (final ListItem item : this.allList) {
+			try {
+				this.originalListModel.addElement(item);
+				this.previewListModel.addElement((ListItem) item.clone());
+			} catch (final CloneNotSupportedException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -86,13 +133,17 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	public void arrayListCleared(final ArrayListEvent e) {
 		this.originalListModel.clear();
 		this.previewListModel.clear();
+
 	}
 
 	@Override
 	public void arrayListItemAdded(final ArrayListEvent e) {
 		try {
-			this.originalListModel.addElement((ListItem) e.getItem());
-			this.previewListModel.addElement((ListItem) ((ListItem) e.getItem()).clone());
+			final ArrayList<Object> tempList = e.getItems();
+			for (final Object object : tempList) {
+				this.originalListModel.addElement((ListItem) object);
+				this.previewListModel.addElement((ListItem) ((ListItem) object).clone());
+			}
 		} catch (final CloneNotSupportedException e1) {
 			e1.printStackTrace();
 		}
@@ -100,8 +151,11 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 	@Override
 	public void arrayListItemRemoved(final ArrayListEvent e) {
-		this.originalListModel.removeElement(e.getItem());
-		this.previewListModel.removeElement(e.getItem());
+		final ArrayList<Object> tempList = e.getItems();
+		for (final Object object : tempList) {
+			this.originalListModel.removeElement(object);
+			this.previewListModel.removeElement(object);
+		}
 	}
 
 	@Override
@@ -116,11 +170,31 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		}
 	}
 
+	private String getFilepath(final File file) {
+		return file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(File.separator));
+	}
+
+	private void initBottomBar() {
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.gridwidth = 1;
+		gbc.insets = new Insets(10, 10, 0, 10);
+		gbc.anchor = GridBagConstraints.PAGE_END;
+
+		this.renameButton = new JButton("Rename");
+		this.renameButton.addActionListener(this);
+
+		this.getContentPane().add(this.renameButton, gbc);
+	}
+
 	/**
 	 * Initialize and add the dynamic input to the frame.
 	 */
 	private void initDynamicInput() {
-		this.dynamicReplaceFields = new DynamicReplaceTextField("Add", 1, this);
+		this.dynamicReplaceFields = new DynamicInputCheckPanel("Add", 1, this, this);
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -162,11 +236,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 		this.originalList = new JList<ListItem>(this.originalListModel);
 		this.originalList.setDragEnabled(true);
-		this.originalList.setDropMode(DropMode.INSERT);
 		this.originalList.setLayoutOrientation(JList.VERTICAL);
+		this.originalList.setCellRenderer(new ListItemListCellRenderer());
 
 		this.previewList = new JList<ListItem>(this.previewListModel);
 		this.previewList.setLayoutOrientation(JList.VERTICAL);
+		this.previewList.setCellRenderer(new ListItemListCellRenderer());
 
 		final JScrollPane listScrollerOriginal = new JScrollPane(this.originalList);
 		final JScrollPane listScrollerPreview = new JScrollPane(this.previewList);
@@ -218,16 +293,13 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		p = Pattern.compile("\\[n,\\W?([0-9]+)\\]");
 		m = p.matcher(fileNameMask);
 
-		int x = 0;
 		while (m.find()) {
-			System.out.println(x + " - " + fileNameMask);
 			if (Integer.parseInt(m.group(1)) <= originalItem.getTitle().length()) {
 				fileNameMask = fileNameMask.replaceFirst("\\[n,\\W?([0-9]+)\\]",
 						originalItem.getTitle().substring(Integer.parseInt(m.group(1))));
 			} else {
 				fileNameMask = fileNameMask.replaceFirst("\\[n,\\W?([0-9]+)\\]", "");
 			}
-			x++;
 		}
 
 		// replace [n, X, X] with substring
@@ -247,7 +319,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 			}
 		}
 
-		for (final DynamicReplaceTupel tupel : this.dynamicReplaceFields) {
+		for (final DynamicInputCheckTupel tupel : this.dynamicReplaceFields) {
 			try {
 				p = Pattern.compile(tupel.getFieldA().getText());
 
@@ -260,7 +332,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 					}
 				}
 			} catch (final PatternSyntaxException ex) {
-				System.out.println("error");
+				System.out.println("regex error");
 			}
 		}
 
