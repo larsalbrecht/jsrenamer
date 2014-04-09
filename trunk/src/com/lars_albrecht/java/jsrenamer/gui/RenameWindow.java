@@ -47,6 +47,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 	private JTextField					fileNameInput		= null;
 
+	private DynamicReplaceTextField		drtf				= null;
+
 	public RenameWindow() {
 		super("JSRenamer");
 		this.allList = new EventArrayList<ListItem>();
@@ -56,13 +58,23 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.setSize(600, 400);
 		this.setLocation(50, 50);
 
-		this.initForms();
+		this._initForms();
 
 		this.setVisible(true);
 	}
 
+	private void _initForms() {
+		final GridBagLayout gbl = new GridBagLayout();
+		this.getContentPane().setLayout(gbl);
+
+		this.initInput();
+		this.initDynamicInput();
+		this.initLists();
+	}
+
 	@Override
 	public void arrayListChanged(final ArrayListEvent ale) {
+		this.updatePreviewList();
 	}
 
 	@Override
@@ -93,53 +105,37 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 	private void documentChanged(final DocumentEvent e) {
 		if (e.getDocument() == this.fileNameInput.getDocument()) {
-			ListItem tempItem = null;
-			final Enumeration<ListItem> items = this.previewListModel.elements();
-			int i = 0;
-			while (items.hasMoreElements()) {
-				tempItem = this.replaceName(this.fileNameInput.getText(), items.nextElement(), this.allList.get(i), i);
-				this.previewListModel.setElementAt(tempItem, i);
-				i++;
-			}
-
+			this.updatePreviewList();
 		}
 	}
 
+	/**
+	 * Initialize and add the dynamic input to the frame.
+	 */
 	private void initDynamicInput() {
-		final DynamicReplaceTextField drtf = new DynamicReplaceTextField(5);
+		this.drtf = new DynamicReplaceTextField("Add", 1);
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weightx = .1;
-		gbc.weighty = .1;
+		gbc.weighty = 0;
 		gbc.gridwidth = 4;
 		gbc.insets = new Insets(10, 10, 0, 10);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.PAGE_START;
-		this.fileNameInput = new JTextField("[n]");
-		this.fileNameInput.getDocument().addDocumentListener(this);
 
-		this.getContentPane().add(drtf, gbc);
+		this.getContentPane().add(this.drtf, gbc);
 	}
 
-	private void initForms() {
-		final GridBagLayout gbl = new GridBagLayout();
-		this.getContentPane().setLayout(gbl);
-
-		this.initInput();
-
-		this.initDynamicInput();
-
-		this.initLists();
-
-	}
-
+	/**
+	 * Initialize and add the name input to the frame.
+	 */
 	private void initInput() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = .1;
-		gbc.weighty = .1;
+		gbc.weighty = 0;
 		gbc.gridwidth = 4;
 		gbc.insets = new Insets(10, 10, 0, 10);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -150,6 +146,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.getContentPane().add(this.fileNameInput, gbc);
 	}
 
+	/**
+	 * Initialize and add the lists to the frame.
+	 */
 	private void initLists() {
 		this.originalListModel = new DefaultListModel<ListItem>();
 		this.previewListModel = new DefaultListModel<ListItem>();
@@ -170,7 +169,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.weightx = .4;
-		gbc.weighty = .9;
+		gbc.weighty = 1;
 		gbc.gridwidth = 4;
 		gbc.insets = new Insets(10, 10, 0, 10);
 		gbc.anchor = GridBagConstraints.PAGE_START;
@@ -178,7 +177,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScroller, list2Scroller);
 		splitPane.setOneTouchExpandable(true);
-		splitPane.setResizeWeight(.5);
+		splitPane.setDividerSize(10);
+		splitPane.setResizeWeight(.5d);
 		this.getContentPane().add(splitPane, gbc);
 	}
 
@@ -192,6 +192,15 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.documentChanged(e);
 	}
 
+	/**
+	 * Replaces the title of a listItem and return the item.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @param itemPos
+	 * @return ListItem to set
+	 */
 	private ListItem replaceName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
@@ -234,5 +243,22 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 		listItem.setTitle(fileNameMask);
 		return listItem;
+	}
+
+	private void updatePreviewList() {
+		ListItem tempItem = null;
+		final Enumeration<ListItem> items = this.previewListModel.elements();
+		int i = 0;
+		while (items.hasMoreElements()) {
+			System.out.println(this.fileNameInput.getText());
+			tempItem = this.replaceName(this.fileNameInput.getText(), items.nextElement(), this.allList.get(i), i);
+			this.previewListModel.setElementAt(tempItem, i);
+			i++;
+		}
+
+		while (this.drtf.hasMoreElements()) {
+			System.out.println(this.drtf.nextElement().getPatternField().getText());
+			System.out.println(this.drtf.nextElement().getReplaceField().getText());
+		}
 	}
 }
