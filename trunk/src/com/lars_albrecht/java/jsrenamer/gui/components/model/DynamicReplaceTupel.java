@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui.components.model;
 
+import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 /**
@@ -11,42 +12,59 @@ import javax.swing.JTextField;
  */
 public class DynamicReplaceTupel {
 
-	private JTextField	patternField	= null;
-	private JTextField	replaceField	= null;
+	private JTextField	fieldA		= null;
+	private JTextField	fieldB		= null;
+	private JCheckBox	checkField	= null;
 
-	public DynamicReplaceTupel(final JTextField patternField, final JTextField replaceField) {
-		this.patternField = patternField;
-		this.replaceField = replaceField;
+	public DynamicReplaceTupel(final JTextField fieldA, final JTextField fieldB, final JCheckBox checkField) {
+		this.fieldA = fieldA;
+		this.fieldB = fieldB;
+		this.checkField = checkField;
 	}
 
 	/**
-	 * @return the patternField
+	 * @return the checkField
 	 */
-	public final JTextField getPatternField() {
-		return this.patternField;
+	public final JCheckBox getCheckField() {
+		return this.checkField;
 	}
 
 	/**
-	 * @return the replaceField
+	 * @return the fieldA
 	 */
-	public final JTextField getReplaceField() {
-		return this.replaceField;
+	public final JTextField getFieldA() {
+		return this.fieldA;
 	}
 
 	/**
-	 * @param patternField
-	 *            the patternField to set
+	 * @return the fieldB
 	 */
-	public final void setPatternField(final JTextField patternField) {
-		this.patternField = patternField;
+	public final JTextField getFieldB() {
+		return this.fieldB;
 	}
 
 	/**
-	 * @param replaceField
-	 *            the replaceField to set
+	 * @param checkField
+	 *            the checkField to set
 	 */
-	public final void setReplaceField(final JTextField replaceField) {
-		this.replaceField = replaceField;
+	public final void setCheckField(final JCheckBox checkField) {
+		this.checkField = checkField;
+	}
+
+	/**
+	 * @param fieldA
+	 *            the fieldA to set
+	 */
+	public final void setFieldA(final JTextField fieldA) {
+		this.fieldA = fieldA;
+	}
+
+	/**
+	 * @param fieldB
+	 *            the fieldB to set
+	 */
+	public final void setFieldB(final JTextField fieldB) {
+		this.fieldB = fieldB;
 	}
 
 }

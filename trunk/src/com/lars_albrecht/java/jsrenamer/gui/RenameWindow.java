@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
@@ -21,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.lars_albrecht.java.jsrenamer.gui.components.DynamicReplaceTextField;
+import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicReplaceTupel;
 import com.lars_albrecht.java.jsrenamer.model.ListItem;
 import com.lars_albrecht.java.jsrenamer.objects.ArrayListEvent;
 import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
@@ -35,19 +37,19 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	/**
 	 * 
 	 */
-	private static final long			serialVersionUID	= 1L;
+	private static final long			serialVersionUID		= 1L;
 
-	private JList<ListItem>				originalList		= null;
-	private JList<ListItem>				previewList			= null;
+	private JList<ListItem>				originalList			= null;
+	private JList<ListItem>				previewList				= null;
 
-	private DefaultListModel<ListItem>	originalListModel	= null;
-	private DefaultListModel<ListItem>	previewListModel	= null;
+	private DefaultListModel<ListItem>	originalListModel		= null;
+	private DefaultListModel<ListItem>	previewListModel		= null;
 
-	private EventArrayList<ListItem>	allList				= null;
+	private EventArrayList<ListItem>	allList					= null;
 
-	private JTextField					fileNameInput		= null;
+	private JTextField					fileNameInput			= null;
 
-	private DynamicReplaceTextField		drtf				= null;
+	private DynamicReplaceTextField		dynamicReplaceFields	= null;
 
 	public RenameWindow() {
 		super("JSRenamer");
@@ -61,6 +63,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this._initForms();
 
 		this.setVisible(true);
+
 	}
 
 	private void _initForms() {
@@ -70,6 +73,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.initInput();
 		this.initDynamicInput();
 		this.initLists();
+
+		this.setTransferHandler(new FileTransferHandler(this.allList));
 	}
 
 	@Override
@@ -106,6 +111,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	private void documentChanged(final DocumentEvent e) {
 		if (e.getDocument() == this.fileNameInput.getDocument()) {
 			this.updatePreviewList();
+		} else if (this.dynamicReplaceFields.hasDocument(e.getDocument())) {
+			this.updatePreviewList();
 		}
 	}
 
@@ -113,7 +120,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	 * Initialize and add the dynamic input to the frame.
 	 */
 	private void initDynamicInput() {
-		this.drtf = new DynamicReplaceTextField("Add", 1);
+		this.dynamicReplaceFields = new DynamicReplaceTextField("Add", 1, this);
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -124,7 +131,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.PAGE_START;
 
-		this.getContentPane().add(this.drtf, gbc);
+		this.getContentPane().add(this.dynamicReplaceFields, gbc);
 	}
 
 	/**
@@ -156,14 +163,13 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.originalList = new JList<ListItem>(this.originalListModel);
 		this.originalList.setDragEnabled(true);
 		this.originalList.setDropMode(DropMode.INSERT);
-		this.originalList.setTransferHandler(new FileTransferHandler(this.allList));
-
-		this.originalList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		final JScrollPane listScroller = new JScrollPane(this.originalList);
+		this.originalList.setLayoutOrientation(JList.VERTICAL);
 
 		this.previewList = new JList<ListItem>(this.previewListModel);
-		this.previewList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		final JScrollPane list2Scroller = new JScrollPane(this.previewList);
+		this.previewList.setLayoutOrientation(JList.VERTICAL);
+
+		final JScrollPane listScrollerOriginal = new JScrollPane(this.originalList);
+		final JScrollPane listScrollerPreview = new JScrollPane(this.previewList);
 
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -175,7 +181,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		gbc.anchor = GridBagConstraints.PAGE_START;
 		gbc.fill = GridBagConstraints.BOTH;
 
-		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScroller, list2Scroller);
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollerOriginal, listScrollerPreview);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerSize(10);
 		splitPane.setResizeWeight(.5d);
@@ -241,6 +247,23 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 			}
 		}
 
+		for (final DynamicReplaceTupel tupel : this.dynamicReplaceFields) {
+			try {
+				p = Pattern.compile(tupel.getFieldA().getText());
+
+				m = p.matcher(fileNameMask);
+				if (m.find()) {
+					if (tupel.getCheckField().isSelected()) {
+						fileNameMask = m.replaceAll(tupel.getFieldB().getText());
+					} else {
+						fileNameMask = m.replaceFirst(tupel.getFieldB().getText());
+					}
+				}
+			} catch (final PatternSyntaxException ex) {
+				System.out.println("error");
+			}
+		}
+
 		listItem.setTitle(fileNameMask);
 		return listItem;
 	}
@@ -250,15 +273,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		final Enumeration<ListItem> items = this.previewListModel.elements();
 		int i = 0;
 		while (items.hasMoreElements()) {
-			System.out.println(this.fileNameInput.getText());
 			tempItem = this.replaceName(this.fileNameInput.getText(), items.nextElement(), this.allList.get(i), i);
 			this.previewListModel.setElementAt(tempItem, i);
 			i++;
-		}
-
-		while (this.drtf.hasMoreElements()) {
-			System.out.println(this.drtf.nextElement().getPatternField().getText());
-			System.out.println(this.drtf.nextElement().getReplaceField().getText());
 		}
 	}
 }
