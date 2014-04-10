@@ -327,7 +327,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		String folderName = null;
 		boolean replaced = false;
 
-		p = Pattern.compile("\\[f([0-9]*)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]");
+		final String pattern = "\\[f([0-9]*)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]";
+		p = Pattern.compile(pattern);
 		m = p.matcher(fileNameMask);
 		while (m.find()) {
 			replaced = false;
@@ -343,26 +344,25 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 				if ((Integer.parseInt(m.group(4)) <= folderName.length())
 						&& ((Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))) <= folderName.length())
 						&& (Integer.parseInt(m.group(4)) < (Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))))) {
-					fileNameMask = m.replaceFirst(folderName.substring(Integer.parseInt(m.group(4)),
-							Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))));
-					System.out.println("replace 3");
+					fileNameMask = fileNameMask
+							.replaceAll(
+									pattern,
+									folderName.substring(Integer.parseInt(m.group(4)),
+											Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))));
 					replaced = true;
 				}
 			} else if (m.group(7) != null) { // replace [f|<0-9>, <0-9>]
 				if (Integer.parseInt(m.group(7)) <= folderName.length()) {
-					fileNameMask = m.replaceFirst(folderName.substring(Integer.parseInt(m.group(7))));
-					System.out.println("replace 7");
+					fileNameMask = fileNameMask.replaceAll(pattern, folderName.substring(Integer.parseInt(m.group(7))));
 					replaced = true;
 				}
 			} else { // replace [f|<0-9>]
-				fileNameMask = m.replaceAll(folderName);
-				System.out.println("replace");
+				fileNameMask = fileNameMask.replaceFirst(pattern, folderName);
 				replaced = true;
 			}
 
 			if (!replaced) { // replace unfound
-				System.out.println("replace unfound");
-				fileNameMask = m.replaceFirst("");
+				fileNameMask = fileNameMask.replaceFirst(pattern, "");
 			}
 
 		}
@@ -397,7 +397,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		String fileName = null;
 		boolean replaced = false;
 
-		p = Pattern.compile("\\[n(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]");
+		final String pattern = "\\[n(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]";
+		p = Pattern.compile(pattern);
 		m = p.matcher(fileNameMask);
 		while (m.find()) {
 			replaced = false;
@@ -408,26 +409,22 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 				if ((Integer.parseInt(m.group(3)) <= fileName.length())
 						&& ((Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))) <= fileName.length())
 						&& (Integer.parseInt(m.group(3)) < (Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))))) {
-					fileNameMask = m.replaceFirst(fileName.substring(Integer.parseInt(m.group(3)),
-							Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))));
-					System.out.println("replace 2");
+					fileNameMask = fileNameMask.replaceFirst(pattern,
+							fileName.substring(Integer.parseInt(m.group(3)), Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))));
 					replaced = true;
 				}
 			} else if (m.group(6) != null) { // replace [n, <0-9>]
 				if (Integer.parseInt(m.group(6)) <= fileName.length()) {
-					fileNameMask = m.replaceFirst(fileName.substring(Integer.parseInt(m.group(6))));
-					System.out.println("replace 6");
+					fileNameMask = fileNameMask.replaceFirst(pattern, fileName.substring(Integer.parseInt(m.group(6))));
 					replaced = true;
 				}
-			} else { // replace [n|<0-9>]
-				fileNameMask = m.replaceAll(fileName);
-				System.out.println("replace");
+			} else { // replace [n]
+				fileNameMask = fileNameMask.replaceFirst(pattern, fileName);
 				replaced = true;
 			}
 
 			if (!replaced) { // replace unfound
-				System.out.println("replace unfound");
-				fileNameMask = m.replaceFirst("");
+				fileNameMask = fileNameMask.replaceFirst(pattern, "");
 			}
 
 		}
