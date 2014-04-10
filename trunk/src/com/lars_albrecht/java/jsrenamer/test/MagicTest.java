@@ -3,6 +3,9 @@
  */
 package com.lars_albrecht.java.jsrenamer.test;
 
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -28,6 +31,32 @@ public class MagicTest {
 		result += longest - shorter;
 
 		return result;
+	}
+
+	private static ArrayList<String> getSubparts(final String[] tempArr) {
+		final ArrayList<String> tempList = new ArrayList<String>();
+
+		// remove "other"
+		for (final String string : tempArr) {
+			boolean stringCheck = true;
+			for (final String savedString : tempList) {
+				if (string.length() <= StringUtils.difference(string, savedString).length()) {
+					stringCheck = false;
+					break;
+				}
+			}
+			if (stringCheck) {
+				System.out.println("ADD");
+				tempList.add(string);
+			}
+		}
+		/*
+		 * diff = StringUtils.difference(startString, testString); startDiff =
+		 * testString.indexOf(diff); matches.put(startDiff,
+		 * testString.substring(0, startDiff));
+		 */
+
+		return tempList;
 	}
 
 	public static void main(final String[] args) {
@@ -57,16 +86,37 @@ public class MagicTest {
 	}
 
 	public MagicTest() {
+		final String[] tempArr = new String[] {
+				"The.Vampire.Diaries.S04E02.720p.HDTV.X264-DIMENSION.mkv", "The.Vampire.Diaries.S04E03.720p.HDTV.X264-DIMENSION.mkv",
+				"The.Vampire.Diaries.S04E04.720p.HDTV.X264-DIMENSION.mkv", "The.Vampire.Diaries.S04E05.720p.HDTV.X264-DIMENSION.mkv",
+				"The.Vampire.Diaries.S04E06.720p.HDTV.X264-DIMENSION.mkv", "The.Vampire.Diaries.S04E07.720p.HDTV.X264-DIMENSION.mkv",
+		};
+
+		System.out.println(MagicTest.getSubparts(tempArr));
+		System.exit(-1);
+		final String startString = "This is my Name - S01E10 - An Example Title";
+		final String myPattern = "[STATIC] - [STATIC][VAR] - [STATIC]";
+		String testString = "This.is.my.Name.S02E08.My.Title.GERMAN.X.TEST.TEST.TEST.TEST.TEST";
+
+		final int dist = StringUtils.getLevenshteinDistance(startString, testString);
+		final int newDist = -1;
+		String diff = null;
+		int startDiff = -1;
+		final String newString = "";
+		final ConcurrentHashMap<Integer, String> matches = new ConcurrentHashMap<Integer, String>();
+		for (int i = 0; i < 10; i++) { // test only 10 iterations
+			diff = StringUtils.difference(startString, testString);
+			startDiff = testString.indexOf(diff);
+			matches.put(startDiff, testString.substring(0, startDiff));
+			System.out.println(StringUtils.difference(startString.substring(startDiff + 1), testString.substring(startDiff + 1)));
+		}
+
+		System.exit(-1);
+
 		final String s = "The red car, the red bike, and the red truck went down the red street.";
 		System.out.println(s.substring(MagicTest.nthOccurrence(s, "bike", 1)));
 		System.out.println(MagicTest.nthOccurrence(s, "bike", 1));
 		System.out.println(MagicTest.replaceNthOccurrence(s, "bike", 1, "TEEST"));
-
-		System.exit(-1);
-
-		final String startString = "This is my Name - S01E10 - An Example Title";
-		final String myPattern = "[VARSTRING] - [VARSTRING] - [VARSTRING]";
-		String testString = "This.is.my.Name.S02E08.My.Title.GERMAN.X.TEST.TEST.TEST.TEST.TEST";
 
 		this.printDistances(startString, testString);
 
