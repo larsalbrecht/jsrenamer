@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.java.jsrenamer.gui;
+package com.lars_albrecht.java.jsrenamer.gui.handler;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;

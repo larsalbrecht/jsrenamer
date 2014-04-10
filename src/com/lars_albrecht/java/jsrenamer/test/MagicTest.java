@@ -34,6 +34,14 @@ public class MagicTest {
 		new MagicTest();
 	}
 
+	/**
+	 * @see "http://stackoverflow.com/questions/3976616/how-to-find-nth-occurrence-of-character-in-a-string"
+	 * 
+	 * @param string
+	 * @param toFind
+	 * @param n
+	 * @return
+	 */
 	public static int nthOccurrence(final String string, final String toFind, int n) {
 		n--;
 		int pos = string.indexOf(toFind, 0);
