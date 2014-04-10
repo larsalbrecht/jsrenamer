@@ -12,7 +12,7 @@ import com.lars_albrecht.java.jsrenamer.gui.RenameWindow;
  * @author lalbrecht
  * 
  */
-public class Main {
+public class JSRenamerMain {
 
 	public static void main(final String[] args) {
 		try {
@@ -27,10 +27,10 @@ public class Main {
 		} catch (final IllegalAccessException e) {
 			// handle exception
 		}
-		new Main();
+		new JSRenamerMain();
 	}
 
-	public Main() {
+	public JSRenamerMain() {
 		new RenameWindow();
 	}
 }

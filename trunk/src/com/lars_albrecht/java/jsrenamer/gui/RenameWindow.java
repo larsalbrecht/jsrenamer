@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -25,9 +26,12 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.lars_albrecht.java.jsrenamer.gui.components.DynamicInputCheckPanel;
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
+import com.lars_albrecht.java.jsrenamer.gui.handler.FileTransferHandler;
 import com.lars_albrecht.java.jsrenamer.model.ListItem;
 import com.lars_albrecht.java.jsrenamer.objects.ArrayListEvent;
 import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
@@ -174,6 +178,24 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		return file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(File.separator));
 	}
 
+	/**
+	 * Return the folder name of the folder with index folderIndex (reverse from
+	 * file).
+	 * 
+	 * @param item
+	 * @param folderIndex
+	 * @return
+	 */
+	private String getFolderName(final ListItem item, final int folderIndex) {
+		final String path = this.getFilepath(item.getFile());
+		final String[] pathsArr = path.split(Pattern.quote(File.separator));
+		if (folderIndex < (pathsArr.length - 1)) {
+			ArrayUtils.reverse(pathsArr);
+			return pathsArr[folderIndex];
+		}
+		return "";
+	}
+
 	private void initBottomBar() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -273,52 +295,11 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.documentChanged(e);
 	}
 
-	/**
-	 * Replaces the title of a listItem and return the item.
-	 * 
-	 * @param fileNameMask
-	 * @param listItem
-	 * @param originalItem
-	 * @param itemPos
-	 * @return ListItem to set
-	 */
-	private ListItem replaceName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+	private String replaceDynamicInputs(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
 		Pattern p = null;
 		Matcher m = null;
 
-		// replace [n] with filename
-		fileNameMask = fileNameMask.replaceAll("\\[n\\]", originalItem.getTitle());
-
-		// replace [n, X] with substring
-		p = Pattern.compile("\\[n,\\W?([0-9]+)\\]");
-		m = p.matcher(fileNameMask);
-
-		while (m.find()) {
-			if (Integer.parseInt(m.group(1)) <= originalItem.getTitle().length()) {
-				fileNameMask = fileNameMask.replaceFirst("\\[n,\\W?([0-9]+)\\]",
-						originalItem.getTitle().substring(Integer.parseInt(m.group(1))));
-			} else {
-				fileNameMask = fileNameMask.replaceFirst("\\[n,\\W?([0-9]+)\\]", "");
-			}
-		}
-
-		// replace [n, X, X] with substring
-		p = Pattern.compile("\\[n,\\W?([0-9]+),\\W?([0-9]+)\\]");
-		m = p.matcher(fileNameMask);
-
-		while (m.find()) {
-			if ((Integer.parseInt(m.group(1)) <= originalItem.getTitle().length())
-					&& ((Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2))) <= originalItem.getTitle().length())
-					&& (Integer.parseInt(m.group(1)) < (Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2))))) {
-				fileNameMask = fileNameMask.replaceFirst(
-						"\\[n,\\W?([0-9]+),\\W?([0-9]+)\\]",
-						originalItem.getTitle().substring(Integer.parseInt(m.group(1)),
-								Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2))));
-			} else {
-				fileNameMask = fileNameMask.replaceFirst("\\[n,\\W?([0-9]+),\\W?([0-9]+)\\]", "");
-			}
-		}
-
+		// replace with regexp from dynamic inputs
 		for (final DynamicInputCheckTupel tupel : this.dynamicReplaceFields) {
 			try {
 				p = Pattern.compile(tupel.getFieldA().getText());
@@ -336,16 +317,133 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 			}
 		}
 
+		return fileNameMask;
+	}
+
+	private String replaceFolder(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
+		Pattern p = null;
+		Matcher m = null;
+		int folderIndex = 0;
+		String folderName = null;
+		boolean replaced = false;
+
+		p = Pattern.compile("\\[f([0-9]*)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]");
+		m = p.matcher(fileNameMask);
+		while (m.find()) {
+			replaced = false;
+			if (m.group(1).equals("")) {
+				folderIndex = 0;
+			} else {
+				folderIndex = Integer.parseInt(m.group(1));
+			}
+
+			folderName = this.getFolderName(listItem, folderIndex);
+
+			if (m.group(3) != null) { // replace [f|<0-9>, <0-9>, <0-9>]
+				if ((Integer.parseInt(m.group(4)) <= folderName.length())
+						&& ((Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))) <= folderName.length())
+						&& (Integer.parseInt(m.group(4)) < (Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))))) {
+					fileNameMask = m.replaceFirst(folderName.substring(Integer.parseInt(m.group(4)),
+							Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))));
+					System.out.println("replace 3");
+					replaced = true;
+				}
+			} else if (m.group(7) != null) { // replace [f|<0-9>, <0-9>]
+				if (Integer.parseInt(m.group(7)) <= folderName.length()) {
+					fileNameMask = m.replaceFirst(folderName.substring(Integer.parseInt(m.group(7))));
+					System.out.println("replace 7");
+					replaced = true;
+				}
+			} else { // replace [f|<0-9>]
+				fileNameMask = m.replaceAll(folderName);
+				System.out.println("replace");
+				replaced = true;
+			}
+
+			if (!replaced) { // replace unfound
+				System.out.println("replace unfound");
+				fileNameMask = m.replaceFirst("");
+			}
+
+		}
+
+		return fileNameMask;
+	}
+
+	/**
+	 * Replaces the title of a listItem and return the item.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @param itemPos
+	 * @return ListItem to set
+	 */
+	private ListItem replaceListItemName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+		fileNameMask = this.replaceName(fileNameMask, listItem, originalItem);
+		fileNameMask = this.replaceFolder(fileNameMask, listItem, originalItem);
+
+		final ConcurrentHashMap<String, String> generatedDynamicValues = new ConcurrentHashMap<String, String>();
+
+		fileNameMask = this.replaceDynamicInputs(fileNameMask, listItem, originalItem);
+
 		listItem.setTitle(fileNameMask);
 		return listItem;
 	}
 
+	private String replaceName(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
+		Pattern p = null;
+		Matcher m = null;
+		String fileName = null;
+		boolean replaced = false;
+
+		p = Pattern.compile("\\[n(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]");
+		m = p.matcher(fileNameMask);
+		while (m.find()) {
+			replaced = false;
+
+			fileName = originalItem.getTitle();
+
+			if (m.group(2) != null) { // replace [n, <0-9>, <0-9>]
+				if ((Integer.parseInt(m.group(3)) <= fileName.length())
+						&& ((Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))) <= fileName.length())
+						&& (Integer.parseInt(m.group(3)) < (Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))))) {
+					fileNameMask = m.replaceFirst(fileName.substring(Integer.parseInt(m.group(3)),
+							Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))));
+					System.out.println("replace 2");
+					replaced = true;
+				}
+			} else if (m.group(6) != null) { // replace [n, <0-9>]
+				if (Integer.parseInt(m.group(6)) <= fileName.length()) {
+					fileNameMask = m.replaceFirst(fileName.substring(Integer.parseInt(m.group(6))));
+					System.out.println("replace 6");
+					replaced = true;
+				}
+			} else { // replace [n|<0-9>]
+				fileNameMask = m.replaceAll(fileName);
+				System.out.println("replace");
+				replaced = true;
+			}
+
+			if (!replaced) { // replace unfound
+				System.out.println("replace unfound");
+				fileNameMask = m.replaceFirst("");
+			}
+
+		}
+
+		return fileNameMask;
+	}
+
+	/**
+	 * Updates the preview list
+	 */
 	private void updatePreviewList() {
 		ListItem tempItem = null;
 		final Enumeration<ListItem> items = this.previewListModel.elements();
 		int i = 0;
 		while (items.hasMoreElements()) {
-			tempItem = this.replaceName(this.fileNameInput.getText(), items.nextElement(), this.allList.get(i), i);
+			tempItem = this.replaceListItemName(this.fileNameInput.getText(), items.nextElement(), this.allList.get(i), i);
 			this.previewListModel.setElementAt(tempItem, i);
 			i++;
 		}
