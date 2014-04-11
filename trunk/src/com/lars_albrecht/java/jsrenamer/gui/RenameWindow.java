@@ -345,7 +345,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 						&& ((Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))) <= folderName.length())
 						&& (Integer.parseInt(m.group(4)) < (Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))))) {
 					fileNameMask = fileNameMask
-							.replaceAll(
+							.replaceFirst(
 									pattern,
 									folderName.substring(Integer.parseInt(m.group(4)),
 											Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))));
@@ -353,7 +353,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 				}
 			} else if (m.group(7) != null) { // replace [f|<0-9>, <0-9>]
 				if (Integer.parseInt(m.group(7)) <= folderName.length()) {
-					fileNameMask = fileNameMask.replaceAll(pattern, folderName.substring(Integer.parseInt(m.group(7))));
+					fileNameMask = fileNameMask.replaceFirst(pattern, folderName.substring(Integer.parseInt(m.group(7))));
 					replaced = true;
 				}
 			} else { // replace [f|<0-9>]
