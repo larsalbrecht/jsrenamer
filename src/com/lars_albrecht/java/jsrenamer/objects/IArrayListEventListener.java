@@ -9,16 +9,16 @@ import java.util.EventListener;
  * @author lalbrecht
  * 
  */
-public interface IArrayListEventListener extends EventListener {
+public interface IArrayListEventListener<E> extends EventListener {
 
-	void arrayListAddAll(ArrayListEvent e);
+	void arrayListAddAll(ArrayListEvent<E> e);
 
-	void arrayListChanged(ArrayListEvent e);
+	void arrayListChanged(ArrayListEvent<E> e);
 
-	void arrayListCleared(ArrayListEvent e);
+	void arrayListCleared(ArrayListEvent<E> e);
 
-	void arrayListItemAdded(ArrayListEvent e);
+	void arrayListItemAdded(ArrayListEvent<E> e);
 
-	void arrayListItemRemoved(ArrayListEvent e);
+	void arrayListItemRemoved(ArrayListEvent<E> e);
 
 }

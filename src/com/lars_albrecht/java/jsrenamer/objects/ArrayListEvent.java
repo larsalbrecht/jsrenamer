@@ -10,7 +10,7 @@ import java.util.EventObject;
  * @author lalbrecht
  * 
  */
-public class ArrayListEvent extends EventObject {
+public class ArrayListEvent<E> extends EventObject {
 
 	/**
 	 * 
@@ -23,10 +23,10 @@ public class ArrayListEvent extends EventObject {
 	public final static int		ARRAYLIST_CLEARED	= 20005;
 
 	protected int				id;
-	protected ArrayList<Object>	items;
+	protected ArrayList<E>		items;
 	protected int				itemIndex;
 
-	public ArrayListEvent(final Object source, final int id, final ArrayList<Object> items, final int itemIndex) {
+	public ArrayListEvent(final Object source, final int id, final ArrayList<E> items, final int itemIndex) {
 		super(source);
 		this.id = id;
 		this.items = items;
@@ -47,7 +47,7 @@ public class ArrayListEvent extends EventObject {
 	/**
 	 * @return the items
 	 */
-	public ArrayList<Object> getItems() {
+	public ArrayList<E> getItems() {
 		return this.items;
 	}
 
@@ -55,7 +55,7 @@ public class ArrayListEvent extends EventObject {
 	 * @param items
 	 *            the items to set
 	 */
-	public void setCollectorItems(final ArrayList<Object> items) {
+	public void setCollectorItems(final ArrayList<E> items) {
 		this.items = items;
 	}
 

@@ -7,54 +7,55 @@ import java.util.Vector;
 
 /**
  * @author lalbrecht
+ * @param <E>
  * 
  */
-public class ArrayListEventMulticaster implements IArrayListEventListener {
+public class ArrayListEventMulticaster<E> implements IArrayListEventListener<E> {
 
-	protected Vector<IArrayListEventListener>	listener	= new Vector<IArrayListEventListener>();
+	protected Vector<IArrayListEventListener<E>>	listener	= new Vector<IArrayListEventListener<E>>();
 
-	public void add(final IArrayListEventListener a) {
+	public void add(final IArrayListEventListener<E> a) {
 		if (!this.listener.contains(a)) {
 			this.listener.addElement(a);
 		}
 	}
 
 	@Override
-	public void arrayListAddAll(final ArrayListEvent e) {
+	public void arrayListAddAll(final ArrayListEvent<E> e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListAddAll(e);
 		}
 	}
 
 	@Override
-	public void arrayListChanged(final ArrayListEvent e) {
+	public void arrayListChanged(final ArrayListEvent<E> e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListChanged(e);
 		}
 	}
 
 	@Override
-	public void arrayListCleared(final ArrayListEvent e) {
+	public void arrayListCleared(final ArrayListEvent<E> e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListCleared(e);
 		}
 	}
 
 	@Override
-	public void arrayListItemAdded(final ArrayListEvent e) {
+	public void arrayListItemAdded(final ArrayListEvent<E> e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListItemAdded(e);
 		}
 	}
 
 	@Override
-	public void arrayListItemRemoved(final ArrayListEvent e) {
+	public void arrayListItemRemoved(final ArrayListEvent<E> e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListItemRemoved(e);
 		}
 	}
 
-	public void remove(final IArrayListEventListener l) {
+	public void remove(final IArrayListEventListener<E> l) {
 		this.listener.remove(l);
 	}
 

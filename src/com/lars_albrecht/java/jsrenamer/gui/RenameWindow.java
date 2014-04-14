@@ -44,7 +44,7 @@ import com.lars_albrecht.java.jsrenamer.objects.IArrayListEventListener;
  * @author lalbrecht
  * 
  */
-public class RenameWindow extends JFrame implements IArrayListEventListener, DocumentListener, ActionListener {
+public class RenameWindow extends JFrame implements IArrayListEventListener<ListItem>, DocumentListener, ActionListener {
 
 	/**
 	 * 
@@ -113,6 +113,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 				}
 			}
 			this.allList.clear();
+			this.fileNameInput.setText("");
+			this.dynamicReplaceFields.clear();
 			this.allList.addAll(tempList);
 		} else {
 			this.updatePreviewList();
@@ -120,7 +122,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	}
 
 	@Override
-	public void arrayListAddAll(final ArrayListEvent e) {
+	public void arrayListAddAll(final ArrayListEvent<ListItem> e) {
 		for (final ListItem item : this.allList) {
 			try {
 				this.originalListModel.addElement(item);
@@ -132,24 +134,23 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	}
 
 	@Override
-	public void arrayListChanged(final ArrayListEvent ale) {
+	public void arrayListChanged(final ArrayListEvent<ListItem> ale) {
 		this.updatePreviewList();
 	}
 
 	@Override
-	public void arrayListCleared(final ArrayListEvent e) {
+	public void arrayListCleared(final ArrayListEvent<ListItem> e) {
 		this.originalListModel.clear();
 		this.previewListModel.clear();
-
 	}
 
 	@Override
-	public void arrayListItemAdded(final ArrayListEvent e) {
+	public void arrayListItemAdded(final ArrayListEvent<ListItem> e) {
 		try {
-			final ArrayList<Object> tempList = e.getItems();
-			for (final Object object : tempList) {
-				this.originalListModel.addElement((ListItem) object);
-				this.previewListModel.addElement((ListItem) ((ListItem) object).clone());
+			final ArrayList<ListItem> tempList = e.getItems();
+			for (final ListItem item : tempList) {
+				this.originalListModel.addElement(item);
+				this.previewListModel.addElement((ListItem) item.clone());
 			}
 		} catch (final CloneNotSupportedException e1) {
 			e1.printStackTrace();
@@ -157,11 +158,11 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	}
 
 	@Override
-	public void arrayListItemRemoved(final ArrayListEvent e) {
-		final ArrayList<Object> tempList = e.getItems();
-		for (final Object object : tempList) {
-			this.originalListModel.removeElement(object);
-			this.previewListModel.removeElement(object);
+	public void arrayListItemRemoved(final ArrayListEvent<ListItem> e) {
+		final ArrayList<ListItem> tempList = e.getItems();
+		for (final Object item : tempList) {
+			this.originalListModel.removeElement(item);
+			this.previewListModel.removeElement(item);
 		}
 	}
 
