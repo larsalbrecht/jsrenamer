@@ -9,7 +9,10 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -196,6 +199,14 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		return "";
 	}
 
+	private String getPatternForDecimalFormat(final int length) {
+		String result = "";
+		for (int i = 0; i < length; i++) {
+			result += "0";
+		}
+		return result;
+	}
+
 	private void initBottomBar() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -295,6 +306,89 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		this.documentChanged(e);
 	}
 
+	private String replaceCounter(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+		Pattern p = null;
+		Matcher m = null;
+		boolean replaced = false;
+
+		// \[(counter|c)(\W?,\W?(([0-9]+?)\W?,\W?([0-9]+?)\W?,\W?([0-9]+))|\W?,\W?(([0-9]+?)\W?,\W?([0-9]+))|(\W?,\W?([0-9]+)*))*\]
+		final String pattern = "\\[(counter|c)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+?)\\W?,\\W?([0-9]+))|\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))|(\\W?,\\W?([0-9]+)*))*\\]";
+		p = Pattern.compile(pattern);
+		m = p.matcher(fileNameMask);
+
+		int start = 0;
+		int step = 1;
+		int intWidth = 0;
+		DecimalFormat df = null;
+
+		while (m.find()) {
+			replaced = false;
+
+			if (m.group(3) != null) { // replace [c, <0-9>, <0-9>, <0-9>]
+				start = (m.group(4) != null ? Integer.parseInt(m.group(4)) : start);
+				step = (m.group(5) != null ? Integer.parseInt(m.group(5)) : step);
+				intWidth = (m.group(6) != null ? Integer.parseInt(m.group(6)) : intWidth);
+				df = new DecimalFormat(this.getPatternForDecimalFormat(intWidth));
+
+				fileNameMask = fileNameMask.replaceFirst(pattern, df.format(((itemPos * step) + start)));
+				replaced = true;
+			} else if (m.group(7) != null) { // replace [c, <0-9>, <0-9>]
+				start = (m.group(8) != null ? Integer.parseInt(m.group(8)) : start);
+				step = (m.group(9) != null ? Integer.parseInt(m.group(9)) : step);
+				df = new DecimalFormat(this.getPatternForDecimalFormat(intWidth));
+
+				fileNameMask = fileNameMask.replaceFirst(pattern, df.format(((itemPos * step) + start)));
+				replaced = true;
+			} else if (m.group(10) != null) { // replace [c, <0-9>]
+				start = (m.group(11) != null ? Integer.parseInt(m.group(11)) : start);
+				df = new DecimalFormat(this.getPatternForDecimalFormat(intWidth));
+
+				fileNameMask = fileNameMask.replaceFirst(pattern, df.format(((itemPos * step) + start)));
+				replaced = true;
+			} else { // replace [c]
+				df = new DecimalFormat(this.getPatternForDecimalFormat(intWidth));
+
+				fileNameMask = fileNameMask.replaceFirst(pattern, df.format(((itemPos * step) + start)));
+				replaced = true;
+			}
+
+			if (!replaced) { // replace unfound
+				fileNameMask = fileNameMask.replaceFirst(pattern, "");
+			}
+		}
+
+		return fileNameMask;
+	}
+
+	private String replaceDate(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+		Pattern p = null;
+		Matcher m = null;
+
+		// \[(date|d)(\W?,\W?(.*?))*\]
+		final String pattern = "\\[(date|d)(\\W?,\\W?(.*?))*\\]";
+		p = Pattern.compile(pattern);
+		m = p.matcher(fileNameMask);
+
+		final String origDatePattern = "yyyy-MM-d";
+		String datePattern = origDatePattern;
+		final SimpleDateFormat sdfmt = new SimpleDateFormat();
+
+		while (m.find()) {
+			if (m.group(2) != null) { // replace [d, <pattern>]
+				datePattern = m.group(3);
+			}
+
+			try {
+				sdfmt.applyPattern(datePattern);
+			} catch (final Exception e) {
+				sdfmt.applyPattern(origDatePattern);
+			}
+			fileNameMask = sdfmt.format(new Date());
+		}
+
+		return fileNameMask;
+	}
+
 	private String replaceDynamicInputs(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
 		Pattern p = null;
 		Matcher m = null;
@@ -320,40 +414,41 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		return fileNameMask;
 	}
 
-	private String replaceFolder(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
+	private String replaceFolder(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
 		int folderIndex = 0;
 		String folderName = null;
 		boolean replaced = false;
 
-		final String pattern = "\\[f([0-9]*)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]";
+		// \[(folder|f)([0-9]*)(\W?,\W?(([0-9]+?)\W?,\W?([0-9]+))*|(([0-9]+)*))*\]
+		final String pattern = "\\[(folder|f)([0-9]*)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]";
 		p = Pattern.compile(pattern);
 		m = p.matcher(fileNameMask);
 		while (m.find()) {
 			replaced = false;
-			if (m.group(1).equals("")) {
+			if (m.group(2).equals("")) {
 				folderIndex = 0;
 			} else {
-				folderIndex = Integer.parseInt(m.group(1));
+				folderIndex = Integer.parseInt(m.group(2));
 			}
 
 			folderName = this.getFolderName(listItem, folderIndex);
 
-			if (m.group(3) != null) { // replace [f|<0-9>, <0-9>, <0-9>]
-				if ((Integer.parseInt(m.group(4)) <= folderName.length())
-						&& ((Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))) <= folderName.length())
-						&& (Integer.parseInt(m.group(4)) < (Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))))) {
+			if (m.group(4) != null) { // replace [f|<0-9>, <0-9>, <0-9>]
+				if ((Integer.parseInt(m.group(5)) <= folderName.length())
+						&& ((Integer.parseInt(m.group(5)) + Integer.parseInt(m.group(6))) <= folderName.length())
+						&& (Integer.parseInt(m.group(5)) < (Integer.parseInt(m.group(5)) + Integer.parseInt(m.group(6))))) {
 					fileNameMask = fileNameMask
 							.replaceFirst(
 									pattern,
-									folderName.substring(Integer.parseInt(m.group(4)),
-											Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))));
+									folderName.substring(Integer.parseInt(m.group(5)),
+											Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(6))));
 					replaced = true;
 				}
-			} else if (m.group(7) != null) { // replace [f|<0-9>, <0-9>]
-				if (Integer.parseInt(m.group(7)) <= folderName.length()) {
-					fileNameMask = fileNameMask.replaceFirst(pattern, folderName.substring(Integer.parseInt(m.group(7))));
+			} else if (m.group(8) != null) { // replace [f|<0-9>, <0-9>]
+				if (Integer.parseInt(m.group(8)) <= folderName.length()) {
+					fileNameMask = fileNameMask.replaceFirst(pattern, folderName.substring(Integer.parseInt(m.group(8))));
 					replaced = true;
 				}
 			} else { // replace [f|<0-9>]
@@ -380,9 +475,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	 * @return ListItem to set
 	 */
 	private ListItem replaceListItemName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
-		fileNameMask = this.replaceName(fileNameMask, listItem, originalItem);
-		fileNameMask = this.replaceFolder(fileNameMask, listItem, originalItem);
+		fileNameMask = this.replaceName(fileNameMask, listItem, originalItem, itemPos);
+		fileNameMask = this.replaceFolder(fileNameMask, listItem, originalItem, itemPos);
+		fileNameMask = this.replaceCounter(fileNameMask, listItem, originalItem, itemPos);
+		fileNameMask = this.replaceDate(fileNameMask, listItem, originalItem, itemPos);
 
+		@SuppressWarnings("unused")
 		final ConcurrentHashMap<String, String> generatedDynamicValues = new ConcurrentHashMap<String, String>();
 
 		fileNameMask = this.replaceDynamicInputs(fileNameMask, listItem, originalItem);
@@ -391,13 +489,14 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		return listItem;
 	}
 
-	private String replaceName(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
+	private String replaceName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
 		String fileName = null;
 		boolean replaced = false;
 
-		final String pattern = "\\[n(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]";
+		// \[(name|n)(\W?,\W?(([0-9]+?)\W?,\W?([0-9]+))*|(([0-9]+)*))*\]
+		final String pattern = "\\[(name|n)(\\W?,\\W?(([0-9]+?)\\W?,\\W?([0-9]+))*|(([0-9]+)*))*\\]";
 		p = Pattern.compile(pattern);
 		m = p.matcher(fileNameMask);
 		while (m.find()) {
@@ -405,17 +504,17 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 
 			fileName = originalItem.getTitle();
 
-			if (m.group(2) != null) { // replace [n, <0-9>, <0-9>]
-				if ((Integer.parseInt(m.group(3)) <= fileName.length())
-						&& ((Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))) <= fileName.length())
-						&& (Integer.parseInt(m.group(3)) < (Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))))) {
+			if (m.group(3) != null) { // replace [n, <0-9>, <0-9>]
+				if ((Integer.parseInt(m.group(4)) <= fileName.length())
+						&& ((Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))) <= fileName.length())
+						&& (Integer.parseInt(m.group(4)) < (Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))))) {
 					fileNameMask = fileNameMask.replaceFirst(pattern,
-							fileName.substring(Integer.parseInt(m.group(3)), Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4))));
+							fileName.substring(Integer.parseInt(m.group(4)), Integer.parseInt(m.group(4)) + Integer.parseInt(m.group(5))));
 					replaced = true;
 				}
-			} else if (m.group(6) != null) { // replace [n, <0-9>]
-				if (Integer.parseInt(m.group(6)) <= fileName.length()) {
-					fileNameMask = fileNameMask.replaceFirst(pattern, fileName.substring(Integer.parseInt(m.group(6))));
+			} else if (m.group(7) != null) { // replace [n, <0-9>]
+				if (Integer.parseInt(m.group(7)) <= fileName.length()) {
+					fileNameMask = fileNameMask.replaceFirst(pattern, fileName.substring(Integer.parseInt(m.group(7))));
 					replaced = true;
 				}
 			} else { // replace [n]
