@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -279,17 +280,22 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 		final JScrollPane listScrollerOriginal = new JScrollPane(this.originalList);
 		final JScrollPane listScrollerPreview = new JScrollPane(this.previewList);
+		listScrollerOriginal.setPreferredSize(new Dimension(listScrollerOriginal.getPreferredSize().width, listScrollerOriginal
+				.getPreferredSize().height));
+		listScrollerPreview.setPreferredSize(new Dimension(listScrollerPreview.getPreferredSize().width, listScrollerPreview
+				.getPreferredSize().height));
 
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 2;
-		gbc.weightx = .4;
+		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 4;
 		gbc.insets = new Insets(10, 10, 0, 10);
-		gbc.anchor = GridBagConstraints.PAGE_START;
+		gbc.anchor = GridBagConstraints.NORTH;
 		gbc.fill = GridBagConstraints.BOTH;
 
+		// TODO add options to hor or ver split
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollerOriginal, listScrollerPreview);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerSize(10);
@@ -307,6 +313,15 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.documentChanged(e);
 	}
 
+	/**
+	 * Replace the [c], [counter] tag.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @param itemPos
+	 * @return new fileNameMask
+	 */
 	private String replaceCounter(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
@@ -361,6 +376,15 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		return fileNameMask;
 	}
 
+	/**
+	 * Replace the [d], [date] tag.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @param itemPos
+	 * @return new fileNameMask
+	 */
 	private String replaceDate(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
@@ -390,23 +414,42 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		return fileNameMask;
 	}
 
+	/**
+	 * Replace with regular expression.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @return new fileNameMask
+	 */
 	private String replaceDynamicInputs(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
 		Pattern p = null;
 		Matcher m = null;
 		String fieldAEndStr = "";
+		String fieldAStartStr = "";
 		// replace with regexp from dynamic inputs
 		for (final DynamicInputCheckTupel tupel : this.dynamicReplaceFields) {
+			fieldAEndStr = "";
+			fieldAStartStr = "";
 			try {
 
+				// look ahead
 				if ((tupel.getFieldAEnd() != null) && !tupel.getFieldAEnd().getText().equals("")) {
 					if (tupel.getFieldAEndCheck().isSelected()) {
-						fieldAEndStr = "(?=" + tupel.getFieldAEnd().getText() + ")";
-					} else {
 						fieldAEndStr = "(?!" + tupel.getFieldAEnd().getText() + ")";
+					} else {
+						fieldAEndStr = "(?=" + tupel.getFieldAEnd().getText() + ")";
 					}
 				}
-				System.out.println("Pattern: " + tupel.getFieldA().getText() + fieldAEndStr);
-				p = Pattern.compile(tupel.getFieldA().getText() + fieldAEndStr);
+				// look behind
+				if ((tupel.getFieldAStart() != null) && !tupel.getFieldAStart().getText().equals("")) {
+					if (tupel.getFieldAStartCheck().isSelected()) {
+						fieldAStartStr = "(?<!" + tupel.getFieldAStart().getText() + ")";
+					} else {
+						fieldAStartStr = "(?<=" + tupel.getFieldAStart().getText() + ")";
+					}
+				}
+				p = Pattern.compile(fieldAStartStr + tupel.getFieldA().getText() + fieldAEndStr);
 
 				m = p.matcher(fileNameMask);
 				if (m.find()) {
@@ -416,14 +459,27 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 						fileNameMask = m.replaceFirst(tupel.getFieldB().getText());
 					}
 				}
+				// TODO add error message somewhere (e.g. red background or red
+				// font)
 			} catch (final PatternSyntaxException ex) {
-				System.out.println("regex error");
+				System.out.println("regex error - invalid syntax");
+			} catch (final IndexOutOfBoundsException ex) {
+				System.out.println("regex error - no group found");
 			}
 		}
 
 		return fileNameMask;
 	}
 
+	/**
+	 * Replace the [f], [folder] tag.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @param itemPos
+	 * @return new fileNameMask
+	 */
 	private String replaceFolder(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
@@ -499,6 +555,15 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		return listItem;
 	}
 
+	/**
+	 * Replace the [n], [name] tag.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @param itemPos
+	 * @return new fileNameMask
+	 */
 	private String replaceName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
 		Pattern p = null;
 		Matcher m = null;
