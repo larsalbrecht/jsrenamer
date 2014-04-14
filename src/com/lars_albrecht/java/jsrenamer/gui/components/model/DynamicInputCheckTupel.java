@@ -12,12 +12,17 @@ import javax.swing.JTextField;
  */
 public class DynamicInputCheckTupel {
 
-	private JTextField	fieldA		= null;
-	private JTextField	fieldB		= null;
-	private JCheckBox	checkField	= null;
+	private JTextField	fieldA			= null;
+	private JTextField	fieldAEnd		= null;
+	private JCheckBox	fieldAEndCheck	= null;
+	private JTextField	fieldB			= null;
+	private JCheckBox	checkField		= null;
 
-	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldB, final JCheckBox checkField) {
+	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldAEnd, final JCheckBox fieldAEndCheck,
+			final JTextField fieldB, final JCheckBox checkField) {
 		this.fieldA = fieldA;
+		this.fieldAEnd = fieldAEnd;
+		this.fieldAEndCheck = fieldAEndCheck;
 		this.fieldB = fieldB;
 		this.checkField = checkField;
 	}
@@ -34,6 +39,20 @@ public class DynamicInputCheckTupel {
 	 */
 	public final JTextField getFieldA() {
 		return this.fieldA;
+	}
+
+	/**
+	 * @return the fieldAEnd
+	 */
+	public final JTextField getFieldAEnd() {
+		return this.fieldAEnd;
+	}
+
+	/**
+	 * @return the fieldAEndCheck
+	 */
+	public final JCheckBox getFieldAEndCheck() {
+		return this.fieldAEndCheck;
 	}
 
 	/**
@@ -57,6 +76,22 @@ public class DynamicInputCheckTupel {
 	 */
 	public final void setFieldA(final JTextField fieldA) {
 		this.fieldA = fieldA;
+	}
+
+	/**
+	 * @param fieldAEnd
+	 *            the fieldAEnd to set
+	 */
+	public final void setFieldAEnd(final JTextField fieldAEnd) {
+		this.fieldAEnd = fieldAEnd;
+	}
+
+	/**
+	 * @param fieldAEndCheck
+	 *            the fieldAEndCheck to set
+	 */
+	public final void setFieldAEndCheck(final JCheckBox fieldAEndCheck) {
+		this.fieldAEndCheck = fieldAEndCheck;
 	}
 
 	/**
