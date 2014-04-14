@@ -45,14 +45,21 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	private DocumentListener					documentListener	= null;
 	private ActionListener						actionListener		= null;
 
+	private int									createItemsAtInit	= 0;
+
 	public DynamicInputCheckPanel(final String addButtonText, final int createItemsAtInit, final DocumentListener documentListener,
 			final ActionListener actionListener) {
 		super();
 		this.fieldList = new ArrayList<DynamicInputCheckTupel>();
 		this.addButtonText = addButtonText;
+		this.createItemsAtInit = createItemsAtInit;
 		this.documentListener = documentListener;
 		this.actionListener = actionListener;
 
+		this._init();
+	}
+
+	private void _init() {
 		final GridBagLayout gbl = new GridBagLayout();
 		this.setLayout(gbl);
 
@@ -66,7 +73,8 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.CENTER;
 
-		for (int i = 0; i < createItemsAtInit; i++) {
+		this.removeAll();
+		for (int i = 0; i < this.createItemsAtInit; i++) {
 			this.addLayer();
 		}
 
@@ -99,6 +107,11 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		this.add(this.createNewLayer(this.elemIndex), gbc);
 		this.revalidate();
 		this.elemIndex++;
+	}
+
+	public void clear() {
+		this.fieldList = new ArrayList<DynamicInputCheckTupel>();
+		this._init();
 	}
 
 	/**
