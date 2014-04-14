@@ -47,6 +47,15 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 
 	private int									createItemsAtInit	= 0;
 
+	/**
+	 * TODO add look behind: @ see
+	 * "http://ocpsoft.org/opensource/guide-to-regular-expressions-in-java-part-2/"
+	 * 
+	 * @param addButtonText
+	 * @param createItemsAtInit
+	 * @param documentListener
+	 * @param actionListener
+	 */
 	public DynamicInputCheckPanel(final String addButtonText, final int createItemsAtInit, final DocumentListener documentListener,
 			final ActionListener actionListener) {
 		super();
