@@ -212,9 +212,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		gbc.weightx = 1;
-		gbc.weighty = 1;
+		gbc.weighty = 0;
 		gbc.gridwidth = 1;
-		gbc.insets = new Insets(10, 10, 0, 10);
+		gbc.insets = new Insets(10, 10, 10, 10);
 		gbc.anchor = GridBagConstraints.PAGE_END;
 
 		this.renameButton = new JButton("Rename");
@@ -392,11 +392,20 @@ public class RenameWindow extends JFrame implements IArrayListEventListener, Doc
 	private String replaceDynamicInputs(String fileNameMask, final ListItem listItem, final ListItem originalItem) {
 		Pattern p = null;
 		Matcher m = null;
-
+		String fieldAEndStr = "";
 		// replace with regexp from dynamic inputs
 		for (final DynamicInputCheckTupel tupel : this.dynamicReplaceFields) {
 			try {
-				p = Pattern.compile(tupel.getFieldA().getText());
+
+				if ((tupel.getFieldAEnd() != null) && !tupel.getFieldAEnd().getText().equals("")) {
+					if (tupel.getFieldAEndCheck().isSelected()) {
+						fieldAEndStr = "(?=" + tupel.getFieldAEnd().getText() + ")";
+					} else {
+						fieldAEndStr = "(?!" + tupel.getFieldAEnd().getText() + ")";
+					}
+				}
+				System.out.println("Pattern: " + tupel.getFieldA().getText() + fieldAEndStr);
+				p = Pattern.compile(tupel.getFieldA().getText() + fieldAEndStr);
 
 				m = p.matcher(fileNameMask);
 				if (m.find()) {

@@ -3,9 +3,9 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui.components;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,8 +14,10 @@ import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
@@ -53,6 +55,16 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 
 		final GridBagLayout gbl = new GridBagLayout();
 		this.setLayout(gbl);
+
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = this.elemIndex + 1;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.gridwidth = 4;
+		gbc.insets = new Insets(5, 0, 5, 0);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.CENTER;
 
 		for (int i = 0; i < createItemsAtInit; i++) {
 			this.addLayer();
@@ -96,40 +108,93 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	 * @return JPanel to add
 	 */
 	private JPanel createNewLayer(final int index) {
-		final GridLayout glButtonPanel = new GridLayout();
-		glButtonPanel.setColumns(2);
-		glButtonPanel.setHgap(10);
+		final GridBagLayout gblPanelLayout = new GridBagLayout();
 
-		final GridBagLayout gblPanel = new GridBagLayout();
-		final JPanel p = new JPanel(gblPanel, true);
-		final JPanel buttonPanel = new JPanel(glButtonPanel, true);
+		final JPanel p = new JPanel(gblPanelLayout, true);
 
-		final GridBagConstraints gbcPanel = new GridBagConstraints();
-		gbcPanel.gridx = 0;
-		gbcPanel.gridwidth = 2;
-		gbcPanel.gridy = index;
-		gbcPanel.weightx = 1;
-		gbcPanel.fill = GridBagConstraints.HORIZONTAL;
+		final GridBagConstraints gbc = new GridBagConstraints();
 
-		final GridBagConstraints gbcCheck = new GridBagConstraints();
-		gbcCheck.gridx = 3;
-		gbcCheck.gridwidth = 1;
-		gbcCheck.gridy = index;
+		final JTextField searchField = new JTextField();
+		final JTextField findEndsWithField = new JTextField();
+		final JCheckBox findEndsNotCheck = new JCheckBox();
+		final JTextField replaceWithField = new JTextField();
+		final JCheckBox replaceAllCheck = new JCheckBox();
 
-		final JTextField tempFieldA = new JTextField();
-		final JTextField tempFieldB = new JTextField();
-		final JCheckBox tempCheckField = new JCheckBox();
+		searchField.setPreferredSize(new Dimension(searchField.getPreferredSize().width, searchField.getPreferredSize().height));
+		replaceWithField.setPreferredSize(new Dimension(replaceWithField.getPreferredSize().width,
+				replaceWithField.getPreferredSize().height));
+		findEndsWithField.setPreferredSize(new Dimension(findEndsWithField.getPreferredSize().width,
+				findEndsWithField.getPreferredSize().height));
 
-		tempFieldA.getDocument().addDocumentListener(this.documentListener);
-		tempFieldB.getDocument().addDocumentListener(this.documentListener);
-		tempCheckField.addActionListener(this.actionListener);
+		searchField.getDocument().addDocumentListener(this.documentListener);
+		findEndsWithField.getDocument().addDocumentListener(this.documentListener);
+		findEndsNotCheck.addActionListener(this.actionListener);
+		replaceWithField.getDocument().addDocumentListener(this.documentListener);
+		replaceAllCheck.addActionListener(this.actionListener);
 
-		this.fieldList.add(new DynamicInputCheckTupel(tempFieldA, tempFieldB, tempCheckField));
+		final JLabel searchLabel = new JLabel("Search", SwingConstants.LEFT);
+		final JLabel findEndsWithLabel = new JLabel("Until", SwingConstants.LEFT);
+		final JLabel findEndsNotLabel = new JLabel("Not", SwingConstants.LEFT);
+		final JLabel replaceWithLabel = new JLabel("Replace with", SwingConstants.LEFT);
+		final JLabel replaceAllLabel = new JLabel("Replace all", SwingConstants.LEFT);
+		searchLabel.setPreferredSize(new Dimension(searchLabel.getPreferredSize().width, searchLabel.getPreferredSize().height));
+		findEndsWithLabel.setPreferredSize(new Dimension(findEndsWithLabel.getPreferredSize().width,
+				findEndsWithLabel.getPreferredSize().height));
+		findEndsNotLabel.setPreferredSize(new Dimension(findEndsNotLabel.getPreferredSize().width,
+				findEndsNotLabel.getPreferredSize().height));
+		replaceWithLabel.setPreferredSize(new Dimension(replaceWithLabel.getPreferredSize().width,
+				replaceWithLabel.getPreferredSize().height));
+		replaceAllLabel
+				.setPreferredSize(new Dimension(replaceAllLabel.getPreferredSize().width, replaceAllLabel.getPreferredSize().height));
 
-		buttonPanel.add(this.fieldList.get(this.fieldList.size() - 1).getFieldA());
-		buttonPanel.add(this.fieldList.get(this.fieldList.size() - 1).getFieldB());
-		p.add(buttonPanel, gbcPanel);
-		p.add(this.fieldList.get(this.fieldList.size() - 1).getCheckField(), gbcCheck);
+		this.fieldList.add(new DynamicInputCheckTupel(searchField, findEndsWithField, findEndsNotCheck, replaceWithField, replaceAllCheck));
+
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.gridwidth = 3;
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 0, 0, 10);
+		p.add(searchLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldA(), gbc);
+
+		gbc.gridy = 0;
+		gbc.gridx = 3;
+		gbc.gridwidth = 2;
+		gbc.weightx = .2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		p.add(findEndsWithLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldAEnd(), gbc);
+
+		gbc.gridy = 0;
+		gbc.gridx = 5;
+		gbc.gridwidth = 1;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
+		p.add(findEndsNotLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldAEndCheck(), gbc);
+
+		gbc.gridy = 0;
+		gbc.gridx = 6;
+		gbc.gridwidth = 2;
+		gbc.weightx = .2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		p.add(replaceWithLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldB(), gbc);
+
+		gbc.gridy = 0;
+		gbc.gridx = 8;
+		gbc.gridwidth = 1;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		p.add(replaceAllLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getCheckField(), gbc);
 
 		return p;
 	}
@@ -142,7 +207,8 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	 */
 	public DynamicInputCheckTupel getTupelForDocument(final Document doc) {
 		for (final DynamicInputCheckTupel tupel : this.fieldList) {
-			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)) {
+			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)
+					|| (tupel.getFieldAEnd().getDocument() == doc)) {
 				return tupel;
 			}
 		}
@@ -157,7 +223,8 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	 */
 	public boolean hasDocument(final Document doc) {
 		for (final DynamicInputCheckTupel tupel : this.fieldList) {
-			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)) {
+			if ((tupel.getFieldA().getDocument() == doc)
+					|| ((tupel.getFieldB().getDocument() == doc) || (tupel.getFieldAEnd().getDocument() == doc))) {
 				return true;
 			}
 		}
