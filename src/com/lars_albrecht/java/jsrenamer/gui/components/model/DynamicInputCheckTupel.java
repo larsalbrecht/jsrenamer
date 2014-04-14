@@ -12,15 +12,19 @@ import javax.swing.JTextField;
  */
 public class DynamicInputCheckTupel {
 
-	private JTextField	fieldA			= null;
-	private JTextField	fieldAEnd		= null;
-	private JCheckBox	fieldAEndCheck	= null;
-	private JTextField	fieldB			= null;
-	private JCheckBox	checkField		= null;
+	private JTextField	fieldA				= null;
+	private JTextField	fieldAStart			= null;
+	private JCheckBox	fieldAStartCheck	= null;
+	private JTextField	fieldAEnd			= null;
+	private JCheckBox	fieldAEndCheck		= null;
+	private JTextField	fieldB				= null;
+	private JCheckBox	checkField			= null;
 
-	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldAEnd, final JCheckBox fieldAEndCheck,
-			final JTextField fieldB, final JCheckBox checkField) {
+	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldAStart, final JCheckBox fieldAStartCheck,
+			final JTextField fieldAEnd, final JCheckBox fieldAEndCheck, final JTextField fieldB, final JCheckBox checkField) {
 		this.fieldA = fieldA;
+		this.fieldAStart = fieldAStart;
+		this.fieldAStartCheck = fieldAStartCheck;
 		this.fieldAEnd = fieldAEnd;
 		this.fieldAEndCheck = fieldAEndCheck;
 		this.fieldB = fieldB;
@@ -53,6 +57,20 @@ public class DynamicInputCheckTupel {
 	 */
 	public final JCheckBox getFieldAEndCheck() {
 		return this.fieldAEndCheck;
+	}
+
+	/**
+	 * @return the fieldAStart
+	 */
+	public final JTextField getFieldAStart() {
+		return this.fieldAStart;
+	}
+
+	/**
+	 * @return the fieldAStartCheck
+	 */
+	public final JCheckBox getFieldAStartCheck() {
+		return this.fieldAStartCheck;
 	}
 
 	/**
@@ -92,6 +110,22 @@ public class DynamicInputCheckTupel {
 	 */
 	public final void setFieldAEndCheck(final JCheckBox fieldAEndCheck) {
 		this.fieldAEndCheck = fieldAEndCheck;
+	}
+
+	/**
+	 * @param fieldAStart
+	 *            the fieldAStart to set
+	 */
+	public final void setFieldAStart(final JTextField fieldAStart) {
+		this.fieldAStart = fieldAStart;
+	}
+
+	/**
+	 * @param fieldAStartCheck
+	 *            the fieldAStartCheck to set
+	 */
+	public final void setFieldAStartCheck(final JCheckBox fieldAStartCheck) {
+		this.fieldAStartCheck = fieldAStartCheck;
 	}
 
 	/**

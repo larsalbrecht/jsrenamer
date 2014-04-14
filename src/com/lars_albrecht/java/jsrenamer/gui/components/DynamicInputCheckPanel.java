@@ -48,8 +48,6 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	private int									createItemsAtInit	= 0;
 
 	/**
-	 * TODO add look behind: @ see
-	 * "http://ocpsoft.org/opensource/guide-to-regular-expressions-in-java-part-2/"
 	 * 
 	 * @param addButtonText
 	 * @param createItemsAtInit
@@ -137,6 +135,8 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		final GridBagConstraints gbc = new GridBagConstraints();
 
 		final JTextField searchField = new JTextField();
+		final JTextField findStartsWithField = new JTextField();
+		final JCheckBox findStartsNotCheck = new JCheckBox();
 		final JTextField findEndsWithField = new JTextField();
 		final JCheckBox findEndsNotCheck = new JCheckBox();
 		final JTextField replaceWithField = new JTextField();
@@ -145,21 +145,29 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		searchField.setPreferredSize(new Dimension(searchField.getPreferredSize().width, searchField.getPreferredSize().height));
 		replaceWithField.setPreferredSize(new Dimension(replaceWithField.getPreferredSize().width,
 				replaceWithField.getPreferredSize().height));
+		findStartsWithField.setPreferredSize(new Dimension(findStartsWithField.getPreferredSize().width, findStartsWithField
+				.getPreferredSize().height));
 		findEndsWithField.setPreferredSize(new Dimension(findEndsWithField.getPreferredSize().width,
 				findEndsWithField.getPreferredSize().height));
 
 		searchField.getDocument().addDocumentListener(this.documentListener);
+		findStartsWithField.getDocument().addDocumentListener(this.documentListener);
+		findStartsNotCheck.addActionListener(this.actionListener);
 		findEndsWithField.getDocument().addDocumentListener(this.documentListener);
 		findEndsNotCheck.addActionListener(this.actionListener);
 		replaceWithField.getDocument().addDocumentListener(this.documentListener);
 		replaceAllCheck.addActionListener(this.actionListener);
 
 		final JLabel searchLabel = new JLabel("Search", SwingConstants.LEFT);
+		final JLabel findStartsWithLabel = new JLabel("Before", SwingConstants.LEFT);
+		final JLabel findStartsNotLabel = new JLabel("Not", SwingConstants.LEFT);
 		final JLabel findEndsWithLabel = new JLabel("Until", SwingConstants.LEFT);
 		final JLabel findEndsNotLabel = new JLabel("Not", SwingConstants.LEFT);
 		final JLabel replaceWithLabel = new JLabel("Replace with", SwingConstants.LEFT);
 		final JLabel replaceAllLabel = new JLabel("Replace all", SwingConstants.LEFT);
 		searchLabel.setPreferredSize(new Dimension(searchLabel.getPreferredSize().width, searchLabel.getPreferredSize().height));
+		findStartsWithLabel.setPreferredSize(new Dimension(findStartsWithLabel.getPreferredSize().width, findStartsWithLabel
+				.getPreferredSize().height));
 		findEndsWithLabel.setPreferredSize(new Dimension(findEndsWithLabel.getPreferredSize().width,
 				findEndsWithLabel.getPreferredSize().height));
 		findEndsNotLabel.setPreferredSize(new Dimension(findEndsNotLabel.getPreferredSize().width,
@@ -169,10 +177,29 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		replaceAllLabel
 				.setPreferredSize(new Dimension(replaceAllLabel.getPreferredSize().width, replaceAllLabel.getPreferredSize().height));
 
-		this.fieldList.add(new DynamicInputCheckTupel(searchField, findEndsWithField, findEndsNotCheck, replaceWithField, replaceAllCheck));
+		this.fieldList.add(new DynamicInputCheckTupel(searchField, findStartsWithField, findStartsNotCheck, findEndsWithField,
+				findEndsNotCheck, replaceWithField, replaceAllCheck));
 
 		gbc.gridy = 0;
 		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		gbc.weightx = .2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		p.add(findStartsWithLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldAStart(), gbc);
+
+		gbc.gridy = 0;
+		gbc.gridx = 2;
+		gbc.gridwidth = 1;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
+		p.add(findStartsNotLabel, gbc);
+		gbc.gridy = 1;
+		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldAStartCheck(), gbc);
+
+		gbc.gridy = 0;
+		gbc.gridx = 3;
 		gbc.gridwidth = 3;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -182,7 +209,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldA(), gbc);
 
 		gbc.gridy = 0;
-		gbc.gridx = 3;
+		gbc.gridx = 6;
 		gbc.gridwidth = 2;
 		gbc.weightx = .2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -191,7 +218,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldAEnd(), gbc);
 
 		gbc.gridy = 0;
-		gbc.gridx = 5;
+		gbc.gridx = 8;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.NONE;
@@ -200,7 +227,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldAEndCheck(), gbc);
 
 		gbc.gridy = 0;
-		gbc.gridx = 6;
+		gbc.gridx = 9;
 		gbc.gridwidth = 2;
 		gbc.weightx = .2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -209,7 +236,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		p.add(this.fieldList.get(this.fieldList.size() - 1).getFieldB(), gbc);
 
 		gbc.gridy = 0;
-		gbc.gridx = 8;
+		gbc.gridx = 11;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.NONE;
@@ -230,7 +257,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	public DynamicInputCheckTupel getTupelForDocument(final Document doc) {
 		for (final DynamicInputCheckTupel tupel : this.fieldList) {
 			if ((tupel.getFieldA().getDocument() == doc) || (tupel.getFieldB().getDocument() == doc)
-					|| (tupel.getFieldAEnd().getDocument() == doc)) {
+					|| (tupel.getFieldAEnd().getDocument() == doc) || (tupel.getFieldAStart().getDocument() == doc)) {
 				return tupel;
 			}
 		}
@@ -246,7 +273,8 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	public boolean hasDocument(final Document doc) {
 		for (final DynamicInputCheckTupel tupel : this.fieldList) {
 			if ((tupel.getFieldA().getDocument() == doc)
-					|| ((tupel.getFieldB().getDocument() == doc) || (tupel.getFieldAEnd().getDocument() == doc))) {
+					|| ((tupel.getFieldB().getDocument() == doc) || (tupel.getFieldAEnd().getDocument() == doc) || (tupel.getFieldAStart()
+							.getDocument() == doc))) {
 				return true;
 			}
 		}
