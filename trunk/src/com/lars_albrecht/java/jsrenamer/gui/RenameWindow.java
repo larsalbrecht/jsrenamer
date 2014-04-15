@@ -545,6 +545,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		fileNameMask = this.replaceFolder(fileNameMask, listItem, originalItem, itemPos);
 		fileNameMask = this.replaceCounter(fileNameMask, listItem, originalItem, itemPos);
 		fileNameMask = this.replaceDate(fileNameMask, listItem, originalItem, itemPos);
+		fileNameMask = this.replaceSizes(fileNameMask, listItem, originalItem, itemPos);
 
 		@SuppressWarnings("unused")
 		final ConcurrentHashMap<String, String> generatedDynamicValues = new ConcurrentHashMap<String, String>();
@@ -601,6 +602,40 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 				fileNameMask = fileNameMask.replaceFirst(pattern, "");
 			}
 
+		}
+
+		return fileNameMask;
+	}
+
+	/**
+	 * Replace the [s], [size] tag.
+	 * 
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @return
+	 */
+	private String replaceSizes(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+		Pattern p = null;
+		Matcher m = null;
+
+		// \[(size|s)((\W?,\W?([u|l]))*\](.+?)(?=((\[(size|s)((\W?,\W?([u|l]))*\]))|$)))
+		final String pattern = "\\[(size|s)((\\W?,\\W?([u|l]))*\\](.+?)(?=((\\[(size|s)((\\W?,\\W?([u|l]))*\\]))|$)))";
+		p = Pattern.compile(pattern);
+		m = p.matcher(fileNameMask);
+
+		while (m.find()) {
+			if (m.group(4) != null) { // replace [s, size]
+				if (m.group(4).equals("u")) {
+					fileNameMask = fileNameMask.replaceFirst(pattern, m.group(5).toUpperCase());
+				} else if (m.group(4).equals("l")) {
+					fileNameMask = fileNameMask.replaceFirst(pattern, m.group(5).toLowerCase());
+				} else {
+					fileNameMask = fileNameMask.replaceFirst(pattern, m.group(5));
+				}
+			} else if (m.group(5) != null) {
+				fileNameMask = fileNameMask.replaceFirst(pattern, m.group(5));
+			}
 		}
 
 		return fileNameMask;
