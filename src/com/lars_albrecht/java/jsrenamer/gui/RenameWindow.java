@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,9 +25,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -50,21 +55,26 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	/**
 	 * 
 	 */
-	private static final long			serialVersionUID		= 1L;
+	private static final long			serialVersionUID			= 1L;
 
-	private JList<ListItem>				originalList			= null;
-	private JList<ListItem>				previewList				= null;
+	private JList<ListItem>				originalList				= null;
+	private JList<ListItem>				previewList					= null;
 
-	private DefaultListModel<ListItem>	originalListModel		= null;
-	private DefaultListModel<ListItem>	previewListModel		= null;
+	private DefaultListModel<ListItem>	originalListModel			= null;
+	private DefaultListModel<ListItem>	previewListModel			= null;
 
-	private EventArrayList<ListItem>	allList					= null;
+	private EventArrayList<ListItem>	allList						= null;
 
-	private JTextField					fileNameInput			= null;
+	private JTextField					fileNameInput				= null;
 
-	private DynamicInputCheckPanel		dynamicReplaceFields	= null;
+	private DynamicInputCheckPanel		dynamicReplaceFields		= null;
 
-	private JButton						renameButton			= null;
+	private JButton						renameButton				= null;
+
+	private JSplitPane					splitPane					= null;
+
+	// ** MENU ITEMS **//
+	private JMenuItem					miSettingSwitchFileSplit	= null;
 
 	public RenameWindow() {
 		super("JSRenamer");
@@ -85,6 +95,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		final GridBagLayout gbl = new GridBagLayout();
 		this.getContentPane().setLayout(gbl);
 
+		this.initMenu();
 		this.initInput();
 		this.initDynamicInput();
 		this.initLists();
@@ -117,6 +128,13 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 			this.fileNameInput.setText("");
 			this.dynamicReplaceFields.clear();
 			this.allList.addAll(tempList);
+		} else if (e.getSource() == this.miSettingSwitchFileSplit) {
+			if (this.splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
+				this.splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+			} else {
+				this.splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+			}
+			this.splitPane.setDividerLocation(.5);
 		} else {
 			this.updatePreviewList();
 		}
@@ -296,11 +314,24 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		gbc.fill = GridBagConstraints.BOTH;
 
 		// TODO add options to hor or ver split
-		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollerOriginal, listScrollerPreview);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerSize(10);
-		splitPane.setResizeWeight(.5d);
-		this.getContentPane().add(splitPane, gbc);
+		this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollerOriginal, listScrollerPreview);
+		this.splitPane.setOneTouchExpandable(true);
+		this.splitPane.setDividerSize(10);
+		this.splitPane.setResizeWeight(.5d);
+		this.getContentPane().add(this.splitPane, gbc);
+	}
+
+	private void initMenu() {
+		final JMenuBar mb = new JMenuBar();
+		final JMenu settingsMenu = new JMenu("Settings");
+		this.miSettingSwitchFileSplit = new JMenuItem("Switch Filesplit");
+		this.miSettingSwitchFileSplit.addActionListener(this);
+
+		settingsMenu.add(this.miSettingSwitchFileSplit);
+
+		mb.add(settingsMenu);
+
+		this.setJMenuBar(mb);
 	}
 
 	@Override
@@ -429,6 +460,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		String fieldAStartStr = "";
 		// replace with regexp from dynamic inputs
 		for (final DynamicInputCheckTupel tupel : this.dynamicReplaceFields) {
+			// reset colors
+			tupel.getFieldA().setBackground(UIManager.getColor("TextField.background"));
+			tupel.getFieldAStart().setBackground(UIManager.getColor("TextField.background"));
+			tupel.getFieldAEnd().setBackground(UIManager.getColor("TextField.background"));
+			tupel.getFieldB().setBackground(UIManager.getColor("TextField.background"));
+
 			fieldAEndStr = "";
 			fieldAStartStr = "";
 			try {
@@ -459,12 +496,24 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 						fileNameMask = m.replaceFirst(tupel.getFieldB().getText());
 					}
 				}
-				// TODO add error message somewhere (e.g. red background or red
-				// font)
 			} catch (final PatternSyntaxException ex) {
 				System.out.println("regex error - invalid syntax");
+				// System.out.println("Pattern: " + ex.getPattern());
+				// System.out.println("FieldA: " + tupel.getFieldA().getText());
+				// System.out.println("FieldAS: " +
+				// tupel.getFieldAStart().getText());
+				// System.out.println("FieldAE: " +
+				// tupel.getFieldAEnd().getText());
+				if (tupel.getFieldA().getText().equals(ex.getPattern())) {
+					tupel.getFieldA().setBackground(Color.RED);
+				} else if (fieldAStartStr.equals(ex.getPattern())) {
+					tupel.getFieldAStart().setBackground(Color.RED);
+				} else if (fieldAEndStr.equals(ex.getPattern())) {
+					tupel.getFieldAEnd().setBackground(Color.RED);
+				}
 			} catch (final IndexOutOfBoundsException ex) {
 				System.out.println("regex error - no group found");
+				tupel.getFieldB().setBackground(Color.RED);
 			}
 		}
 
