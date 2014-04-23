@@ -5,6 +5,7 @@ package com.lars_albrecht.java.jsrenamer.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -38,6 +39,7 @@ import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.lars_albrecht.java.jsrenamer.gui.components.DynamicInputCheckPanel;
+import com.lars_albrecht.java.jsrenamer.gui.components.MenuButton;
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
 import com.lars_albrecht.java.jsrenamer.gui.handler.FileTransferHandler;
@@ -70,6 +72,13 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	private DynamicInputCheckPanel		dynamicReplaceFields		= null;
 
 	private JButton						renameButton				= null;
+
+	private MenuButton					menuButton					= null;
+	private JMenuItem					saveAsNewPreset				= null;
+	private JMenuItem					overwritePreset				= null;
+	private JMenuItem					setAsDefaultPreset			= null;
+	private JMenuItem					deletePreset				= null;
+	private JMenuItem					resetCurrent				= null;
 
 	private JSplitPane					splitPane					= null;
 
@@ -128,6 +137,16 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 			this.fileNameInput.setText("");
 			this.dynamicReplaceFields.clear();
 			this.allList.addAll(tempList);
+		} else if (e.getSource() == this.saveAsNewPreset) {
+			System.out.println("Save as new");
+		} else if (e.getSource() == this.overwritePreset) {
+			System.out.println("Overwrite");
+		} else if (e.getSource() == this.setAsDefaultPreset) {
+			System.out.println("Set as Default");
+		} else if (e.getSource() == this.deletePreset) {
+			System.out.println("Delete");
+		} else if (e.getSource() == this.resetCurrent) {
+			System.out.println("Reset");
 		} else if (e.getSource() == this.miSettingSwitchFileSplit) {
 			if (this.splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
 				this.splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -159,8 +178,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	@Override
 	public void arrayListCleared(final ArrayListEvent<ListItem> e) {
-		this.originalListModel.clear();
-		this.previewListModel.clear();
+		this.originalListModel.removeAllElements();
+		this.previewListModel.removeAllElements();
 	}
 
 	@Override
@@ -229,6 +248,27 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	private void initBottomBar() {
 		final GridBagConstraints gbc = new GridBagConstraints();
+
+		this.menuButton = new MenuButton("Preset");
+
+		this.saveAsNewPreset = new JMenuItem("Save as new preset");
+		this.overwritePreset = new JMenuItem("Overwrite preset");
+		this.setAsDefaultPreset = new JMenuItem("Set as default preset");
+		this.deletePreset = new JMenuItem("Delete preset");
+		this.resetCurrent = new JMenuItem("Reset");
+		this.saveAsNewPreset.addActionListener(this);
+		this.overwritePreset.addActionListener(this);
+		this.setAsDefaultPreset.addActionListener(this);
+		this.deletePreset.addActionListener(this);
+		this.resetCurrent.addActionListener(this);
+
+		this.menuButton.addMenuItem(this.saveAsNewPreset);
+		this.menuButton.addMenuItem(this.overwritePreset);
+		this.menuButton.addMenuItem(this.setAsDefaultPreset);
+		this.menuButton.addMenuItem(this.deletePreset);
+		this.menuButton.addMenuItem(this.resetCurrent);
+
+		this.menuButton.addActionListener(this);
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		gbc.weightx = 1;
@@ -237,9 +277,20 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		gbc.insets = new Insets(10, 10, 10, 10);
 		gbc.anchor = GridBagConstraints.PAGE_END;
 
-		this.renameButton = new JButton("Rename");
-		this.renameButton.addActionListener(this);
+		this.getContentPane().add(this.menuButton, gbc);
 
+		this.renameButton = new JButton("Rename");
+		final Font bFont = this.renameButton.getFont();
+		final Font newBFont = new Font(bFont.getName(), Font.BOLD, bFont.getSize() + 1);
+		this.renameButton.setFont(newBFont);
+		this.renameButton.addActionListener(this);
+		gbc.gridx = 2;
+		gbc.gridy = 3;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		gbc.gridwidth = 2;
+		gbc.insets = new Insets(10, 10, 10, 10);
+		gbc.anchor = GridBagConstraints.PAGE_END;
 		this.getContentPane().add(this.renameButton, gbc);
 	}
 
