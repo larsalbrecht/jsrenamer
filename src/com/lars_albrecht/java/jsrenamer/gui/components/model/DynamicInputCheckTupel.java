@@ -3,6 +3,8 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui.components.model;
 
+import java.io.Serializable;
+
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
@@ -10,15 +12,20 @@ import javax.swing.JTextField;
  * @author lalbrecht
  * 
  */
-public class DynamicInputCheckTupel {
+public class DynamicInputCheckTupel implements Serializable {
 
-	private JTextField	fieldA				= null;
-	private JTextField	fieldAStart			= null;
-	private JCheckBox	fieldAStartCheck	= null;
-	private JTextField	fieldAEnd			= null;
-	private JCheckBox	fieldAEndCheck		= null;
-	private JTextField	fieldB				= null;
-	private JCheckBox	checkField			= null;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -8518227484048706672L;
+
+	private JTextField			fieldA				= null;
+	private JTextField			fieldAStart			= null;
+	private JCheckBox			fieldAStartCheck	= null;
+	private JTextField			fieldAEnd			= null;
+	private JCheckBox			fieldAEndCheck		= null;
+	private JTextField			fieldB				= null;
+	private JCheckBox			checkField			= null;
 
 	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldAStart, final JCheckBox fieldAStartCheck,
 			final JTextField fieldAEnd, final JCheckBox fieldAEndCheck, final JTextField fieldB, final JCheckBox checkField) {
