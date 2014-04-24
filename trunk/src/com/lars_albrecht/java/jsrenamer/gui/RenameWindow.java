@@ -12,6 +12,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -44,6 +46,8 @@ import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTu
 import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
 import com.lars_albrecht.java.jsrenamer.gui.handler.FileTransferHandler;
 import com.lars_albrecht.java.jsrenamer.model.ListItem;
+import com.lars_albrecht.java.jsrenamer.model.Preset;
+import com.lars_albrecht.java.jsrenamer.model.PresetList;
 import com.lars_albrecht.java.jsrenamer.objects.ArrayListEvent;
 import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
 import com.lars_albrecht.java.jsrenamer.objects.IArrayListEventListener;
@@ -57,12 +61,22 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	/**
 	 * 
 	 */
-	private static final long			serialVersionUID			= 1L;
+	private static final long	serialVersionUID	= 1L;
 
+	public static Object[] prepend(final Object[] oldArray, final Object o) {
+
+		final Object[] newArray = (Object[]) Array.newInstance(oldArray.getClass().getComponentType(), oldArray.length + 1);
+		System.arraycopy(oldArray, 0, newArray, 1, oldArray.length);
+		newArray[0] = o;
+		return newArray;
+	}
+
+	private PresetList					presetList					= null;
 	private JList<ListItem>				originalList				= null;
-	private JList<ListItem>				previewList					= null;
 
+	private JList<ListItem>				previewList					= null;
 	private DefaultListModel<ListItem>	originalListModel			= null;
+
 	private DefaultListModel<ListItem>	previewListModel			= null;
 
 	private EventArrayList<ListItem>	allList						= null;
@@ -72,12 +86,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	private DynamicInputCheckPanel		dynamicReplaceFields		= null;
 
 	private JButton						renameButton				= null;
-
-	private MenuButton					menuButton					= null;
+	private MenuButton					presetButton				= null;
 	private JMenuItem					saveAsNewPreset				= null;
 	private JMenuItem					overwritePreset				= null;
 	private JMenuItem					setAsDefaultPreset			= null;
 	private JMenuItem					deletePreset				= null;
+
 	private JMenuItem					resetCurrent				= null;
 
 	private JSplitPane					splitPane					= null;
@@ -87,6 +101,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	public RenameWindow() {
 		super("JSRenamer");
+		this.presetList = new PresetList("presets", true);
 		this.allList = new EventArrayList<ListItem>();
 		this.allList.addListener(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -138,15 +153,52 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 			this.dynamicReplaceFields.clear();
 			this.allList.addAll(tempList);
 		} else if (e.getSource() == this.saveAsNewPreset) {
-			System.out.println("Save as new");
+			final String title = JOptionPane.showInputDialog(this, "Preset title", "Preset title(ti)", JOptionPane.QUESTION_MESSAGE);
+
+			// If a string was returned, say so.
+			if ((title != null) && (title.length() > 0)) {
+				ArrayList<DynamicInputCheckTupel> test = this.dynamicReplaceFields.getFieldList();
+				test = new ArrayList<DynamicInputCheckTupel>(test.subList(0, test.size()));
+				this.presetList.add(new Preset(title, this.fileNameInput.getText(), test)).save(title);
+			}
 		} else if (e.getSource() == this.overwritePreset) {
-			System.out.println("Overwrite");
+
+			final Object[] possibilities = this.presetList.getTitles();
+			final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to overwrite (this cannot be undone)",
+					"Overwrite preset", JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
+
+			// If a string was returned, say so.
+			if ((s != null) && (s.length() > 0)) {
+				System.out.println("choosed: " + s);
+			} else {
+				System.out.println("choosed nothing");
+			}
+
 		} else if (e.getSource() == this.setAsDefaultPreset) {
-			System.out.println("Set as Default");
+			final Object[] possibilities = RenameWindow.prepend(this.presetList.getTitles(), "");
+			final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to set as default", "Set preset as default",
+					JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
+
+			// If a string was returned, say so.
+			if ((s != null) && (s.length() > 0)) {
+				System.out.println("choosed: " + s);
+			} else {
+				System.out.println("choosed nothing");
+			}
 		} else if (e.getSource() == this.deletePreset) {
-			System.out.println("Delete");
+			final Object[] possibilities = this.presetList.getTitles();
+			final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to delete (this cannot be undone)",
+					"Delete preset", JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
+
+			// If a string was returned, say so.
+			if ((s != null) && (s.length() > 0)) {
+				System.out.println("choosed: " + s);
+			} else {
+				System.out.println("choosed nothing");
+			}
 		} else if (e.getSource() == this.resetCurrent) {
-			System.out.println("Reset");
+			this.fileNameInput.setText("");
+			this.dynamicReplaceFields.clear();
 		} else if (e.getSource() == this.miSettingSwitchFileSplit) {
 			if (this.splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
 				this.splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -249,26 +301,38 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	private void initBottomBar() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 
-		this.menuButton = new MenuButton("Preset");
+		this.presetButton = new MenuButton("Preset");
+		this.presetButton.setToolTipText("Presets");
 
 		this.saveAsNewPreset = new JMenuItem("Save as new preset");
 		this.overwritePreset = new JMenuItem("Overwrite preset");
+		this.overwritePreset.setEnabled(false);
 		this.setAsDefaultPreset = new JMenuItem("Set as default preset");
+		this.setAsDefaultPreset.setEnabled(false);
 		this.deletePreset = new JMenuItem("Delete preset");
+		this.deletePreset.setEnabled(false);
 		this.resetCurrent = new JMenuItem("Reset");
+
+		this.saveAsNewPreset.setToolTipText("Create a new preset with the current configuration for later use.");
+		this.overwritePreset
+				.setToolTipText("Currently disabled - Overwrite an existing preset with the current configuration (cannot be undone).");
+		this.setAsDefaultPreset.setToolTipText("Currently disabled - Set a preset as default preset to load on startup.");
+		this.deletePreset.setToolTipText("Currently disabled - Delete a preset (cannot be undone).");
+		this.resetCurrent.setToolTipText("Resets the current configuration (cannot be undone)");
+
 		this.saveAsNewPreset.addActionListener(this);
 		this.overwritePreset.addActionListener(this);
 		this.setAsDefaultPreset.addActionListener(this);
 		this.deletePreset.addActionListener(this);
 		this.resetCurrent.addActionListener(this);
 
-		this.menuButton.addMenuItem(this.saveAsNewPreset);
-		this.menuButton.addMenuItem(this.overwritePreset);
-		this.menuButton.addMenuItem(this.setAsDefaultPreset);
-		this.menuButton.addMenuItem(this.deletePreset);
-		this.menuButton.addMenuItem(this.resetCurrent);
+		this.presetButton.addMenuItem(this.saveAsNewPreset);
+		this.presetButton.addMenuItem(this.overwritePreset);
+		this.presetButton.addMenuItem(this.setAsDefaultPreset);
+		this.presetButton.addMenuItem(this.deletePreset);
+		this.presetButton.addMenuItem(this.resetCurrent);
 
-		this.menuButton.addActionListener(this);
+		this.presetButton.addActionListener(this);
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		gbc.weightx = 1;
@@ -277,9 +341,10 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		gbc.insets = new Insets(10, 10, 10, 10);
 		gbc.anchor = GridBagConstraints.PAGE_END;
 
-		this.getContentPane().add(this.menuButton, gbc);
+		this.getContentPane().add(this.presetButton, gbc);
 
 		this.renameButton = new JButton("Rename");
+		this.renameButton.setToolTipText("Renames the files in the list with the current configuration.");
 		final Font bFont = this.renameButton.getFont();
 		final Font newBFont = new Font(bFont.getName(), Font.BOLD, bFont.getSize() + 1);
 		this.renameButton.setFont(newBFont);

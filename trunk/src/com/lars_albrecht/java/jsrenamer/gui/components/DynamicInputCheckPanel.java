@@ -32,7 +32,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	/**
 	 * 
 	 */
-	private static final long					serialVersionUID	= 2000655932132606479L;
+	private static final long					serialVersionUID	= 1L;
 
 	private int									elemIndex			= 0;
 
@@ -249,6 +249,13 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	}
 
 	/**
+	 * @return the fieldList
+	 */
+	public final ArrayList<DynamicInputCheckTupel> getFieldList() {
+		return this.fieldList;
+	}
+
+	/**
 	 * Returns the tupel where the doc exists if available.
 	 * 
 	 * @param doc
@@ -296,6 +303,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		gbc.anchor = GridBagConstraints.EAST;
 
 		this.addButton = new JButton(this.addButtonText);
+		this.addButton.setToolTipText("Add a new line for replacements.");
 		this.addButton.addActionListener(this);
 
 		this.add(this.addButton, gbc);
