@@ -131,71 +131,15 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		if (e.getSource() == this.renameButton) {
-			final Enumeration<ListItem> items = this.previewListModel.elements();
-			ListItem tempItem = null;
-			final EventArrayList<ListItem> tempList = new EventArrayList<ListItem>();
-			File tempFile = null;
-			while (items.hasMoreElements()) {
-				tempItem = items.nextElement();
-				tempFile = new File(this.getFilepath(tempItem.getFile()) + File.separator + tempItem.getTitle());
-				if (!tempFile.exists() && tempItem.getFile().renameTo(tempFile)) {
-					try {
-						tempList.add(new ListItem(tempFile));
-					} catch (final Exception e1) {
-						e1.printStackTrace();
-					}
-				} else {
-					tempList.add(tempItem);
-				}
-			}
-			this.allList.clear();
-			this.fileNameInput.setText("");
-			this.dynamicReplaceFields.clear();
-			this.allList.addAll(tempList);
+			this.onRename();
 		} else if (e.getSource() == this.saveAsNewPreset) {
-			final String title = JOptionPane.showInputDialog(this, "Preset title", "Preset title(ti)", JOptionPane.QUESTION_MESSAGE);
-
-			// If a string was returned, say so.
-			if ((title != null) && (title.length() > 0)) {
-				ArrayList<DynamicInputCheckTupel> test = this.dynamicReplaceFields.getFieldList();
-				test = new ArrayList<DynamicInputCheckTupel>(test.subList(0, test.size()));
-				this.presetList.add(new Preset(title, this.fileNameInput.getText(), test)).save(title);
-			}
+			this.onSaveAsNewPreset();
 		} else if (e.getSource() == this.overwritePreset) {
-
-			final Object[] possibilities = this.presetList.getTitles();
-			final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to overwrite (this cannot be undone)",
-					"Overwrite preset", JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
-
-			// If a string was returned, say so.
-			if ((s != null) && (s.length() > 0)) {
-				System.out.println("choosed: " + s);
-			} else {
-				System.out.println("choosed nothing");
-			}
-
+			this.onOverwritePreset();
 		} else if (e.getSource() == this.setAsDefaultPreset) {
-			final Object[] possibilities = RenameWindow.prepend(this.presetList.getTitles(), "");
-			final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to set as default", "Set preset as default",
-					JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
-
-			// If a string was returned, say so.
-			if ((s != null) && (s.length() > 0)) {
-				System.out.println("choosed: " + s);
-			} else {
-				System.out.println("choosed nothing");
-			}
+			this.onSetAsDefaultPreset();
 		} else if (e.getSource() == this.deletePreset) {
-			final Object[] possibilities = this.presetList.getTitles();
-			final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to delete (this cannot be undone)",
-					"Delete preset", JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
-
-			// If a string was returned, say so.
-			if ((s != null) && (s.length() > 0)) {
-				System.out.println("choosed: " + s);
-			} else {
-				System.out.println("choosed nothing");
-			}
+			this.onDeletePreset();
 		} else if (e.getSource() == this.resetCurrent) {
 			this.fileNameInput.setText("");
 			this.dynamicReplaceFields.clear();
@@ -260,6 +204,16 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	public void changedUpdate(final DocumentEvent e) {
 	}
 
+	/**
+	 * Create a new preset with the current configuration.
+	 * 
+	 * @param presetTitle
+	 * @return new Preset
+	 */
+	private Preset createCurrentPreset(final String presetTitle) {
+		return new Preset(presetTitle, this.fileNameInput.getText(), this.dynamicReplaceFields.getFieldList());
+	}
+
 	private void documentChanged(final DocumentEvent e) {
 		if (e.getDocument() == this.fileNameInput.getDocument()) {
 			this.updatePreviewList();
@@ -268,6 +222,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		}
 	}
 
+	/**
+	 * Returns the filepath of a file.
+	 * 
+	 * @param file
+	 * @return filePath
+	 */
 	private String getFilepath(final File file) {
 		return file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(File.separator));
 	}
@@ -306,18 +266,15 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 		this.saveAsNewPreset = new JMenuItem("Save as new preset");
 		this.overwritePreset = new JMenuItem("Overwrite preset");
-		this.overwritePreset.setEnabled(false);
 		this.setAsDefaultPreset = new JMenuItem("Set as default preset");
 		this.setAsDefaultPreset.setEnabled(false);
 		this.deletePreset = new JMenuItem("Delete preset");
-		this.deletePreset.setEnabled(false);
 		this.resetCurrent = new JMenuItem("Reset");
 
 		this.saveAsNewPreset.setToolTipText("Create a new preset with the current configuration for later use.");
-		this.overwritePreset
-				.setToolTipText("Currently disabled - Overwrite an existing preset with the current configuration (cannot be undone).");
+		this.overwritePreset.setToolTipText("Overwrite an existing preset with the current configuration (cannot be undone).");
 		this.setAsDefaultPreset.setToolTipText("Currently disabled - Set a preset as default preset to load on startup.");
-		this.deletePreset.setToolTipText("Currently disabled - Delete a preset (cannot be undone).");
+		this.deletePreset.setToolTipText("Delete a preset (cannot be undone).");
 		this.resetCurrent.setToolTipText("Resets the current configuration (cannot be undone)");
 
 		this.saveAsNewPreset.addActionListener(this);
@@ -429,7 +386,6 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		gbc.anchor = GridBagConstraints.NORTH;
 		gbc.fill = GridBagConstraints.BOTH;
 
-		// TODO add options to hor or ver split
 		this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollerOriginal, listScrollerPreview);
 		this.splitPane.setOneTouchExpandable(true);
 		this.splitPane.setDividerSize(10);
@@ -453,6 +409,98 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	@Override
 	public void insertUpdate(final DocumentEvent e) {
 		this.documentChanged(e);
+	}
+
+	private void onDeletePreset() {
+		final Object[] possibilities = this.presetList.getPresets();
+		final Preset preset = (Preset) JOptionPane.showInputDialog(this, "Choose the preset to delete (this cannot be undone)",
+				"Delete preset", JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
+
+		// If a string was returned, say so.
+		if ((preset != null)) {
+			this.presetList.remove(preset);
+			this.presetList.save();
+		} else {
+			System.out.println("choosed nothing");
+		}
+	}
+
+	private void onOverwritePreset() {
+		final Object[] possibilities = this.presetList.getPresets();
+		if (possibilities.length > 0) {
+			final Preset preset = (Preset) JOptionPane.showInputDialog(this, "Choose the preset to overwrite (this cannot be undone)",
+					"Overwrite preset", JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
+
+			// If a string was returned, say so.
+			if ((preset != null)) {
+				this.presetList.replace(preset, this.createCurrentPreset(preset.getTitle()));
+				this.presetList.save(preset.getTitle());
+			} else {
+				System.out.println("choosed nothing");
+			}
+		} else {
+			// TODO disable item if no item is there
+			System.out.println("nothing to overwrite");
+		}
+	}
+
+	private void onRename() {
+		final Enumeration<ListItem> items = this.previewListModel.elements();
+		ListItem tempItem = null;
+		final EventArrayList<ListItem> tempList = new EventArrayList<ListItem>();
+		File tempFile = null;
+		while (items.hasMoreElements()) {
+			tempItem = items.nextElement();
+			tempFile = new File(this.getFilepath(tempItem.getFile()) + File.separator + tempItem.getTitle());
+			if (!tempFile.exists() && tempItem.getFile().renameTo(tempFile)) {
+				try {
+					tempList.add(new ListItem(tempFile));
+				} catch (final Exception e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				tempList.add(tempItem);
+			}
+		}
+		this.allList.clear();
+		this.fileNameInput.setText("");
+		this.dynamicReplaceFields.clear();
+		this.allList.addAll(tempList);
+	}
+
+	private void onSaveAsNewPreset() {
+		final String title = JOptionPane.showInputDialog(this, "Preset title", "Preset title(ti)", JOptionPane.QUESTION_MESSAGE);
+		// If a string was returned, say so.
+		if ((title != null) && (title.length() > 0)) {
+			if (this.presetList.get(title) == null) {
+				this.presetList.add(this.createCurrentPreset(title)).save();
+			} else {
+				final int selectedOpt = JOptionPane
+						.showConfirmDialog(this, "Preset with name \"" + title + "\" already exists. Overwrite?");
+				if (selectedOpt == 0) {
+					this.presetList.replace(this.presetList.get(title), this.createCurrentPreset(title));
+					this.presetList.save(title);
+				} else if (selectedOpt == 1) {
+					this.onSaveAsNewPreset();
+				} else {
+					System.out.println("do nothing");
+				}
+			}
+		}
+
+	}
+
+	private void onSetAsDefaultPreset() {
+		final Object[] possibilities = RenameWindow.prepend(this.presetList.getTitles(), "");
+		final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to set as default", "Set preset as default",
+				JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
+
+		// If a string was returned, say so.
+		if ((s != null) && (s.length() > 0)) {
+			System.out.println("choosed: " + s);
+		} else {
+			System.out.println("choosed nothing");
+		}
 	}
 
 	@Override
@@ -614,12 +662,6 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 				}
 			} catch (final PatternSyntaxException ex) {
 				System.out.println("regex error - invalid syntax");
-				// System.out.println("Pattern: " + ex.getPattern());
-				// System.out.println("FieldA: " + tupel.getFieldA().getText());
-				// System.out.println("FieldAS: " +
-				// tupel.getFieldAStart().getText());
-				// System.out.println("FieldAE: " +
-				// tupel.getFieldAEnd().getText());
 				if (tupel.getFieldA().getText().equals(ex.getPattern())) {
 					tupel.getFieldA().setBackground(Color.RED);
 				} else if (fieldAStartStr.equals(ex.getPattern())) {
