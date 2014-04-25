@@ -45,6 +45,7 @@ import com.lars_albrecht.java.jsrenamer.gui.components.MenuButton;
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
 import com.lars_albrecht.java.jsrenamer.gui.handler.FileTransferHandler;
+import com.lars_albrecht.java.jsrenamer.helper.PropertiesHelper;
 import com.lars_albrecht.java.jsrenamer.model.ListItem;
 import com.lars_albrecht.java.jsrenamer.model.Preset;
 import com.lars_albrecht.java.jsrenamer.model.PresetList;
@@ -109,13 +110,23 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.setSize(600, 400);
 		this.setLocation(50, 50);
 
-		this._initForms();
+		PropertiesHelper.loadProperties();
+
+		final String defaultPresetTitle = PropertiesHelper.getProperties().getProperty("presets.default");
+		Preset defaultPreset = null;
+		if (this.presetList.get(defaultPresetTitle) != null) {
+			defaultPreset = this.presetList.get(defaultPresetTitle);
+		}
+
+		this._initForms(defaultPreset);
+
+		this.updatePresetButton();
 
 		this.setVisible(true);
 
 	}
 
-	private void _initForms() {
+	private void _initForms(final Preset preset) {
 		final GridBagLayout gbl = new GridBagLayout();
 		this.getContentPane().setLayout(gbl);
 
@@ -124,6 +135,10 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.initDynamicInput();
 		this.initLists();
 		this.initBottomBar();
+
+		if (preset != null) {
+			this.setValuesFromPreset(preset);
+		}
 
 		this.setTransferHandler(new FileTransferHandler(this.allList));
 	}
@@ -141,8 +156,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		} else if (e.getSource() == this.deletePreset) {
 			this.onDeletePreset();
 		} else if (e.getSource() == this.resetCurrent) {
-			this.fileNameInput.setText("");
-			this.dynamicReplaceFields.clear();
+			this.resetCurrentPreset(false);
 		} else if (e.getSource() == this.miSettingSwitchFileSplit) {
 			if (this.splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
 				this.splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -267,13 +281,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.saveAsNewPreset = new JMenuItem("Save as new preset");
 		this.overwritePreset = new JMenuItem("Overwrite preset");
 		this.setAsDefaultPreset = new JMenuItem("Set as default preset");
-		this.setAsDefaultPreset.setEnabled(false);
 		this.deletePreset = new JMenuItem("Delete preset");
 		this.resetCurrent = new JMenuItem("Reset");
 
 		this.saveAsNewPreset.setToolTipText("Create a new preset with the current configuration for later use.");
 		this.overwritePreset.setToolTipText("Overwrite an existing preset with the current configuration (cannot be undone).");
-		this.setAsDefaultPreset.setToolTipText("Currently disabled - Set a preset as default preset to load on startup.");
+		this.setAsDefaultPreset.setToolTipText("Set a preset as default preset to load on startup.");
 		this.deletePreset.setToolTipText("Delete a preset (cannot be undone).");
 		this.resetCurrent.setToolTipText("Resets the current configuration (cannot be undone)");
 
@@ -423,6 +436,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		} else {
 			System.out.println("choosed nothing");
 		}
+		this.updatePresetButton();
 	}
 
 	private void onOverwritePreset() {
@@ -439,7 +453,6 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 				System.out.println("choosed nothing");
 			}
 		} else {
-			// TODO disable item if no item is there
 			System.out.println("nothing to overwrite");
 		}
 	}
@@ -462,9 +475,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 				tempList.add(tempItem);
 			}
 		}
-		this.allList.clear();
-		this.fileNameInput.setText("");
-		this.dynamicReplaceFields.clear();
+		this.resetCurrentPreset(true);
 		this.allList.addAll(tempList);
 	}
 
@@ -487,7 +498,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 				}
 			}
 		}
-
+		this.updatePresetButton();
 	}
 
 	private void onSetAsDefaultPreset() {
@@ -496,8 +507,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 				JOptionPane.QUESTION_MESSAGE, null, possibilities, null);
 
 		// If a string was returned, say so.
-		if ((s != null) && (s.length() > 0)) {
-			System.out.println("choosed: " + s);
+		if ((s != null)) {
+			if (s.length() > 0) {
+				PropertiesHelper.getProperties().setProperty("presets.default", s);
+			} else {
+				PropertiesHelper.getProperties().remove("presets.default");
+			}
 		} else {
 			System.out.println("choosed nothing");
 		}
@@ -846,6 +861,39 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		}
 
 		return fileNameMask;
+	}
+
+	private void resetCurrentPreset(final boolean doNotIgnoreList) {
+		this.fileNameInput.setText("");
+		this.dynamicReplaceFields.clear(false);
+
+		if (doNotIgnoreList) {
+			this.allList.clear();
+		}
+	}
+
+	private void setValuesFromPreset(final Preset preset) {
+		if (preset != null) {
+			this.dynamicReplaceFields.clear(true);
+			this.fileNameInput.setText(preset.getNameInput());
+			for (int i = 0; i < preset.getDynamicInputList().size(); i++) {
+				this.dynamicReplaceFields.addLayer(preset.getDynamicInputList().get(i));
+			}
+		}
+	}
+
+	private void updatePresetButton() {
+		if (this.presetList.size() > 0) {
+			this.overwritePreset.setEnabled(true);
+			this.deletePreset.setEnabled(true);
+			this.setAsDefaultPreset.setEnabled(true);
+		} else {
+			this.overwritePreset.setEnabled(false);
+			this.deletePreset.setEnabled(false);
+			if (PropertiesHelper.getProperties().getProperty("presets.default") == null) {
+				this.setAsDefaultPreset.setEnabled(false);
+			}
+		}
 	}
 
 	/**
