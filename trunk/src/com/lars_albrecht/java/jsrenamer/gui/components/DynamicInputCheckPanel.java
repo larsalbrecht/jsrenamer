@@ -63,10 +63,10 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		this.documentListener = documentListener;
 		this.actionListener = actionListener;
 
-		this._init();
+		this._init(false);
 	}
 
-	private void _init() {
+	private void _init(final boolean doNotAddLayers) {
 		final GridBagLayout gbl = new GridBagLayout();
 		this.setLayout(gbl);
 
@@ -81,8 +81,10 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		gbc.anchor = GridBagConstraints.CENTER;
 
 		this.removeAll();
-		for (int i = 0; i < this.createItemsAtInit; i++) {
-			this.addLayer();
+		if (!doNotAddLayers) {
+			for (int i = 0; i < this.createItemsAtInit; i++) {
+				this.addLayer();
+			}
 		}
 
 		this.initAddButton();
@@ -116,9 +118,24 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 		this.elemIndex++;
 	}
 
-	public void clear() {
+	public void addLayer(final DynamicInputCheckTupel dynamicInputCheckTupel) {
+		this.addLayer();
+
+		final int index = this.fieldList.size() - 1;
+
+		this.fieldList.get(index).getCheckField().setSelected(dynamicInputCheckTupel.getCheckField().isSelected());
+		this.fieldList.get(index).getFieldA().setText(dynamicInputCheckTupel.getFieldA().getText());
+		this.fieldList.get(index).getFieldAEnd().setText(dynamicInputCheckTupel.getFieldAEnd().getText());
+		this.fieldList.get(index).getFieldAStart().setText(dynamicInputCheckTupel.getFieldAStart().getText());
+		this.fieldList.get(index).getFieldAEndCheck().setSelected(dynamicInputCheckTupel.getFieldAEndCheck().isSelected());
+		this.fieldList.get(index).getFieldAStartCheck().setSelected(dynamicInputCheckTupel.getFieldAStartCheck().isSelected());
+		this.fieldList.get(index).getFieldB().setText(dynamicInputCheckTupel.getFieldB().getText());
+
+	}
+
+	public void clear(final boolean doNotAddLayers) {
 		this.fieldList = new ArrayList<DynamicInputCheckTupel>();
-		this._init();
+		this._init(doNotAddLayers);
 	}
 
 	/**

@@ -154,16 +154,13 @@ public class PresetList {
 			int tupelIndex = 0;
 			int counter = 0;
 			while ((line = reader.readLine()) != null) {
-				System.out.println("new line");
 				tupelIndex = 0;
 				counter++;
 				lineArr = CSVHelper.parseToRead(separator, line);
-				System.out.println("Parts: " + lineArr.length);
 				tempPreset = new Preset(null);
 				tupelList = new ArrayList<DynamicInputCheckTupel>();
 				int i = 0;
 				for (final String string : lineArr) {
-					System.out.println("new string part");
 					switch (i) {
 						case 0:
 							tempPreset.setTitle(string);
@@ -173,50 +170,41 @@ public class PresetList {
 							break;
 						default:
 							if (tempTupel == null) {
-								System.out.println("create new tupel");
 								tempTupel = new DynamicInputCheckTupel(null, null, null, null, null, null, null);
 								tupelIndex = 0;
 							} else {
-								System.out.println("add one index");
 								tupelIndex++;
 							}
 							switch (tupelIndex) {
 								case 0:
 									tempTupel.setFieldAStart(new JTextField(string));
-									System.out.println("0");
 									break;
 								case 1:
 									temp = new JCheckBox();
-									temp.setEnabled(Boolean.parseBoolean(string));
+									temp.setSelected(Boolean.parseBoolean(string));
 									tempTupel.setFieldAStartCheck(temp);
-									System.out.println("1");
 									break;
 								case 2:
 									tempTupel.setFieldA(new JTextField(string));
-									System.out.println("2");
 									break;
 								case 3:
 									tempTupel.setFieldAEnd(new JTextField(string));
-									System.out.println("3");
 									break;
 								case 4:
 									temp = new JCheckBox();
-									temp.setEnabled(Boolean.parseBoolean(string));
+									temp.setSelected(Boolean.parseBoolean(string));
 									tempTupel.setFieldAEndCheck(temp);
-									System.out.println("4");
 									break;
 								case 5:
 									tempTupel.setFieldB(new JTextField(string));
-									System.out.println("5");
 									break;
 								case 6:
 									temp = new JCheckBox();
-									temp.setEnabled(Boolean.parseBoolean(string));
+									temp.setSelected(Boolean.parseBoolean(string));
 									tempTupel.setCheckField(temp);
 									tupelIndex = 0;
 									tupelList.add(tempTupel);
 									tempTupel = null;
-									System.out.println("6");
 									break;
 							}
 							break;
@@ -224,8 +212,6 @@ public class PresetList {
 					i++;
 				}
 				tempPreset.setDynamicInputList(tupelList);
-				System.out.println("Size: " + tempPreset.getDynamicInputList().size());
-				System.out.println(tempPreset.getDynamicInputList().get(0));
 				resultList.add(tempPreset);
 			}
 			if (counter == 0) {
@@ -325,6 +311,10 @@ public class PresetList {
 			} catch (final Exception ex) {
 			}
 		}
+	}
+
+	public int size() {
+		return this.presetList.size();
 	}
 
 }
