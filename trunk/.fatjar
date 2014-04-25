@@ -1,10 +1,10 @@
 #Fat Jar Configuration File
-#Thu Apr 24 14:25:11 CEST 2014
+#Fri Apr 25 12:30:29 CEST 2014
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=fatjar\\JavaSimpleRenamer_-2014-04-24.jar
+jarname=fatjar\\JavaSimpleRenamer_-2014-04-25.jar
 manifest.mergeall=true
 manifest.mainclass=com.lars_albrecht.java.jsrenamer.JSRenamerMain
 manifest.file=<createnew>
