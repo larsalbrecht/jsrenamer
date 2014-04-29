@@ -7,3 +7,30 @@ Pattern: \.(?![a-z]+?$)
 
 ****************************************************
 
+missing features:
+select and choose -> markiere einen bereich in einem dateinamen und übernehme hierfür die [n]-daten. Beispiel:
+ABC DEF GHI
+Hier wird C bis E markiert. Im Feld taucht nun [n, 2, 4] auf.
+
+Groß und Kleinschreibung anpassen (erstes Wort, erster Buchstabe, jedes Wort...)
+
+Suchen und ersetzten wahlweise ohne Regex
+
+
+Metadata (Exif, Music) | use https://tika.apache.org/1.5/formats.html
+
+ignore fileext
+
+http://sourceforge.net/projects/java-registry/
+
+
+
+________
+http://mamu.backmeister.name/praxis-tipps/nautilus-kontextmenu-um-eigene-skripte-erweitern/
+http://forum.chip.de/rund-um-software/kontextmenue-erweitern-windows-7-a-1618594.html
+http://www.java-forum.org/codeschnipsel-u-projekte/38144-registry-auslesen.html
+
+Counter|Date|Folder|Name|Sizes
+
+
+http://www.heise.de/download/systemsoftware/dateimanagement/dateiumbenenner-50000505310/
