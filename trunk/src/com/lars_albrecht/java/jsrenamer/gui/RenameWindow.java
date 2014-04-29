@@ -33,13 +33,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.lars_albrecht.java.jsrenamer.gui.components.AdvancedInputField;
 import com.lars_albrecht.java.jsrenamer.gui.components.DynamicInputCheckPanel;
 import com.lars_albrecht.java.jsrenamer.gui.components.MenuButton;
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
@@ -73,24 +73,25 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	}
 
 	private PresetList					presetList					= null;
-	private JList<ListItem>				originalList				= null;
 
+	private JList<ListItem>				originalList				= null;
 	private JList<ListItem>				previewList					= null;
+
 	private DefaultListModel<ListItem>	originalListModel			= null;
 
 	private DefaultListModel<ListItem>	previewListModel			= null;
 
 	private EventArrayList<ListItem>	allList						= null;
 
-	private JTextField					fileNameInput				= null;
+	private AdvancedInputField			fileNameInput				= null;
 
 	private DynamicInputCheckPanel		dynamicReplaceFields		= null;
-
 	private JButton						renameButton				= null;
 	private MenuButton					presetButton				= null;
 	private JMenuItem					saveAsNewPreset				= null;
 	private JMenuItem					overwritePreset				= null;
 	private JMenuItem					setAsDefaultPreset			= null;
+
 	private JMenuItem					deletePreset				= null;
 
 	private JMenuItem					resetCurrent				= null;
@@ -360,7 +361,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		gbc.insets = new Insets(10, 10, 0, 10);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.PAGE_START;
-		this.fileNameInput = new JTextField("[n]");
+		this.fileNameInput = new AdvancedInputField();
 		this.fileNameInput.getDocument().addDocumentListener(this);
 
 		this.getContentPane().add(this.fileNameInput, gbc);
