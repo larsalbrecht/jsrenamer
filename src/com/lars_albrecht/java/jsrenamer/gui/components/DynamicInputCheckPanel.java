@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui.components;
 
@@ -25,14 +25,14 @@ import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTu
 
 /**
  * @author lalbrecht
- * 
+ *
  */
 public class DynamicInputCheckPanel extends JPanel implements ActionListener, Iterable<DynamicInputCheckTupel> {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long					serialVersionUID	= 1L;
+	private static final long serialVersionUID = 6980164295565007191L;
 
 	private int									elemIndex			= 0;
 
@@ -48,7 +48,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 	private int									createItemsAtInit	= 0;
 
 	/**
-	 * 
+	 *
 	 * @param addButtonText
 	 * @param createItemsAtInit
 	 * @param documentListener
@@ -140,7 +140,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 
 	/**
 	 * Create a new layer with elements
-	 * 
+	 *
 	 * @param index
 	 * @return JPanel to add
 	 */
@@ -274,7 +274,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 
 	/**
 	 * Returns the tupel where the doc exists if available.
-	 * 
+	 *
 	 * @param doc
 	 * @return DynamicReplaceTupel
 	 */
@@ -290,7 +290,7 @@ public class DynamicInputCheckPanel extends JPanel implements ActionListener, It
 
 	/**
 	 * Returns true if the document exists, otherwise false.
-	 * 
+	 *
 	 * @param doc
 	 * @return hasDocument in list
 	 */

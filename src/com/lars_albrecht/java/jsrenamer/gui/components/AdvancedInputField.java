@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui.components;
 
@@ -20,9 +20,14 @@ import com.lars_albrecht.java.jsrenamer.gui.RenameWindow;
 
 /**
  * @author lalbrecht
- * 
+ *
  */
 public class AdvancedInputField extends JTextPane {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 7267731342413393826L;
 
 	protected static ImageIcon createImageIcon(final String path, final String description) {
 		final java.net.URL imgURL = RenameWindow.class.getResource(path);

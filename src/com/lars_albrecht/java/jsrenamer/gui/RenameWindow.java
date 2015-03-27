@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui;
 
@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -16,6 +17,8 @@ import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,6 +45,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.lars_albrecht.java.jsrenamer.gui.components.AdvancedInputField;
 import com.lars_albrecht.java.jsrenamer.gui.components.DynamicInputCheckPanel;
 import com.lars_albrecht.java.jsrenamer.gui.components.MenuButton;
+import com.lars_albrecht.java.jsrenamer.gui.components.OptionPanel;
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
 import com.lars_albrecht.java.jsrenamer.gui.handler.FileTransferHandler;
@@ -55,17 +59,16 @@ import com.lars_albrecht.java.jsrenamer.objects.IArrayListEventListener;
 
 /**
  * @author lalbrecht
- * 
+ *
  */
 public class RenameWindow extends JFrame implements IArrayListEventListener<ListItem>, DocumentListener, ActionListener {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long	serialVersionUID	= 1L;
 
 	public static Object[] prepend(final Object[] oldArray, final Object o) {
-
 		final Object[] newArray = (Object[]) Array.newInstance(oldArray.getClass().getComponentType(), oldArray.length + 1);
 		System.arraycopy(oldArray, 0, newArray, 1, oldArray.length);
 		newArray[0] = o;
@@ -78,12 +81,12 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	private JList<ListItem>				previewList					= null;
 
 	private DefaultListModel<ListItem>	originalListModel			= null;
-
 	private DefaultListModel<ListItem>	previewListModel			= null;
 
 	private EventArrayList<ListItem>	allList						= null;
 
 	private AdvancedInputField			fileNameInput				= null;
+	private OptionPanel 				optionPanel 				= null;
 
 	private DynamicInputCheckPanel		dynamicReplaceFields		= null;
 	private JButton						renameButton				= null;
@@ -109,7 +112,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.setSize(600, 400);
-		this.setLocation(50, 50);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 
 		PropertiesHelper.loadProperties();
 
@@ -134,6 +138,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.initMenu();
 		this.initInput();
 		this.initDynamicInput();
+		this.initOptionPanel();
 		this.initLists();
 		this.initBottomBar();
 
@@ -221,7 +226,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Create a new preset with the current configuration.
-	 * 
+	 *
 	 * @param presetTitle
 	 * @return new Preset
 	 */
@@ -239,7 +244,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Returns the filepath of a file.
-	 * 
+	 *
 	 * @param file
 	 * @return filePath
 	 */
@@ -250,7 +255,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	/**
 	 * Return the folder name of the folder with index folderIndex (reverse from
 	 * file).
-	 * 
+	 *
 	 * @param item
 	 * @param folderIndex
 	 * @return
@@ -305,7 +310,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 		this.presetButton.addActionListener(this);
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 5;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 1;
@@ -321,7 +326,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.renameButton.setFont(newBFont);
 		this.renameButton.addActionListener(this);
 		gbc.gridx = 2;
-		gbc.gridy = 3;
+		gbc.gridy = 5;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 2;
@@ -337,8 +342,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.dynamicReplaceFields = new DynamicInputCheckPanel("Add", 1, this, this);
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.weightx = .1;
+		gbc.gridy = 3;
+		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridwidth = 4;
 		gbc.insets = new Insets(10, 10, 0, 10);
@@ -346,6 +351,22 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		gbc.anchor = GridBagConstraints.PAGE_START;
 
 		this.getContentPane().add(this.dynamicReplaceFields, gbc);
+	}
+
+	private void initOptionPanel() {
+		this.optionPanel = new OptionPanel(this);
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = .5;
+		gbc.weighty = 0;
+		gbc.gridwidth = 4;
+		gbc.gridheight = 2;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.PAGE_START;
+
+		this.getContentPane().add(this.optionPanel, gbc);
 	}
 
 	/**
@@ -392,7 +413,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy = 4;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 4;
@@ -526,7 +547,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replace the [c], [counter] tag.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -589,7 +610,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replace the [d], [date] tag.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -619,7 +640,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 			} catch (final Exception e) {
 				sdfmt.applyPattern(origDatePattern);
 			}
-			fileNameMask = sdfmt.format(new Date());
+			fileNameMask = fileNameMask.replaceFirst(pattern, sdfmt.format(new Date()));
 		}
 
 		return fileNameMask;
@@ -627,7 +648,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replace with regular expression.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -696,7 +717,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replace the [f], [folder] tag.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -756,7 +777,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replaces the title of a listItem and return the item.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -781,7 +802,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replace the [n], [name] tag.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -832,7 +853,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 
 	/**
 	 * Replace the [s], [size] tag.
-	 * 
+	 *
 	 * @param fileNameMask
 	 * @param listItem
 	 * @param originalItem
@@ -908,6 +929,29 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 			tempItem = this.replaceListItemName(this.fileNameInput.getText(), items.nextElement(), this.allList.get(i), i);
 			this.previewListModel.setElementAt(tempItem, i);
 			i++;
+		}
+	}
+
+	public void onUpdateFileMask(final String newFileMask){
+		boolean isValid = Boolean.TRUE;
+		try {
+			Pattern.compile(newFileMask);
+		} catch (PatternSyntaxException e) {
+			isValid = Boolean.FALSE;
+	    }
+
+		this.originalListModel.clear();
+		this.previewListModel.clear();
+
+		if(isValid){
+			for (ListItem listItem : allList) {
+				if(listItem.getFile().getName().matches(newFileMask)){
+					this.originalListModel.addElement(listItem);
+					this.previewListModel.addElement(listItem);
+				}
+			}
+		} else {
+			System.err.println("\"" + newFileMask + "\" is not a valid regex");
 		}
 	}
 }
