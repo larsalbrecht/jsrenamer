@@ -17,8 +17,6 @@ import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
@@ -278,6 +276,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		return result;
 	}
 
+	/**
+	 * Initilize and add the bottom bar (the bar with the buttons for preset and rename).
+	 */
 	private void initBottomBar() {
 		final GridBagConstraints gbc = new GridBagConstraints();
 
@@ -353,6 +354,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.getContentPane().add(this.dynamicReplaceFields, gbc);
 	}
 
+	/**
+	 * Initilize and add the option panel.
+	 */
 	private void initOptionPanel() {
 		this.optionPanel = new OptionPanel(this);
 		final GridBagConstraints gbc = new GridBagConstraints();
@@ -428,17 +432,20 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.getContentPane().add(this.splitPane, gbc);
 	}
 
+	/**
+	 * Initilize the top menu of the application.
+	 */
 	private void initMenu() {
-		final JMenuBar mb = new JMenuBar();
+		final JMenuBar menuBar = new JMenuBar();
 		final JMenu settingsMenu = new JMenu("Settings");
 		this.miSettingSwitchFileSplit = new JMenuItem("Switch Filesplit");
 		this.miSettingSwitchFileSplit.addActionListener(this);
 
 		settingsMenu.add(this.miSettingSwitchFileSplit);
 
-		mb.add(settingsMenu);
+		menuBar.add(settingsMenu);
 
-		this.setJMenuBar(mb);
+		this.setJMenuBar(menuBar);
 	}
 
 	@Override
@@ -446,6 +453,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.documentChanged(e);
 	}
 
+	/**
+	 * Opens a dialog where the user can delete a preset.
+	 */
 	private void onDeletePreset() {
 		final Object[] possibilities = this.presetList.getPresets();
 		final Preset preset = (Preset) JOptionPane.showInputDialog(this, "Choose the preset to delete (this cannot be undone)",
@@ -461,6 +471,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.updatePresetButton();
 	}
 
+	/**
+	 * Opens a dialog where the user can overwrite an existing preset.
+	 */
 	private void onOverwritePreset() {
 		final Object[] possibilities = this.presetList.getPresets();
 		if (possibilities.length > 0) {
@@ -479,6 +492,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		}
 	}
 
+	/**
+	 * Renames all files with the current configuration.
+	 */
 	private void onRename() {
 		final Enumeration<ListItem> items = this.previewListModel.elements();
 		ListItem tempItem = null;
@@ -501,6 +517,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.allList.addAll(tempList);
 	}
 
+	/**
+	 * Opens a dialog where a user can type the title for the preset.
+	 */
 	private void onSaveAsNewPreset() {
 		final String title = JOptionPane.showInputDialog(this, "Preset title", "Preset title(ti)", JOptionPane.QUESTION_MESSAGE);
 		// If a string was returned, say so.
@@ -523,6 +542,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		this.updatePresetButton();
 	}
 
+	/**
+	 * Shows a input dialog where the user can choose the default preset.
+	 */
 	private void onSetAsDefaultPreset() {
 		final Object[] possibilities = RenameWindow.prepend(this.presetList.getTitles(), "");
 		final String s = (String) JOptionPane.showInputDialog(this, "Choose the preset to set as default", "Set preset as default",
@@ -790,6 +812,8 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		fileNameMask = this.replaceCounter(fileNameMask, listItem, originalItem, itemPos);
 		fileNameMask = this.replaceDate(fileNameMask, listItem, originalItem, itemPos);
 		fileNameMask = this.replaceSizes(fileNameMask, listItem, originalItem, itemPos);
+		fileNameMask = this.replaceExtension(fileNameMask, listItem, originalItem, itemPos);
+
 
 		@SuppressWarnings("unused")
 		final ConcurrentHashMap<String, String> generatedDynamicValues = new ConcurrentHashMap<String, String>();
@@ -885,8 +909,52 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		return fileNameMask;
 	}
 
+	/**
+	 * Replace the [e], [extension] tag.
+	 *
+	 * @param fileNameMask
+	 * @param listItem
+	 * @param originalItem
+	 * @return
+	 */
+	private String replaceExtension(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+		Pattern p = null;
+		Matcher m = null;
+
+		String fileExtension = null;
+
+		String pattern = "(\\.[^\\.]+$)"; // (\.[^\.]+$)
+		p = Pattern.compile(pattern);
+		m = p.matcher(originalItem.getFile().getName());
+		while (m.find()) {
+			if(m.group(1) != null){
+				fileExtension = m.group(1);
+			}
+		}
+
+		if(fileExtension != null && !fileExtension.isEmpty()){
+			pattern = "\\[(extension|e)\\]";
+			p = Pattern.compile(pattern);
+			m = p.matcher(fileNameMask);
+
+			while (m.find()) {
+				if (m.group(1) != null) { // replace [extension, e]
+					fileNameMask = fileNameMask.replaceFirst(pattern, fileExtension);
+				}
+			}
+			return fileNameMask;
+		}
+
+		return originalItem.getTitle();
+	}
+
+	/**
+	 * Clears the current preset.
+	 *
+	 * @param doNotIgnoreList
+	 */
 	private void resetCurrentPreset(final boolean doNotIgnoreList) {
-		this.fileNameInput.setText("");
+		this.fileNameInput.setText("[n]");
 		this.dynamicReplaceFields.clear(false);
 
 		if (doNotIgnoreList) {
@@ -894,6 +962,11 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		}
 	}
 
+	/**
+	 * Sets the preset to the gui.
+	 *
+	 * @param preset
+	 */
 	private void setValuesFromPreset(final Preset preset) {
 		if (preset != null) {
 			this.dynamicReplaceFields.clear(true);
@@ -904,6 +977,9 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		}
 	}
 
+	/**
+	 * Replaces a preset with the current configuration.
+	 */
 	private void updatePresetButton() {
 		if (this.presetList.size() > 0) {
 			this.overwritePreset.setEnabled(true);
@@ -919,7 +995,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	}
 
 	/**
-	 * Updates the preview list
+	 * Updates the preview list.
 	 */
 	private void updatePreviewList() {
 		ListItem tempItem = null;
@@ -932,26 +1008,43 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 		}
 	}
 
+	/**
+	 * If the user type text to the fileMask input, this method will be called.
+	 * If newFileMask is empty or NULL, the full list will be displayed.
+	 * Otherwise, the filtered list will be displayed.
+	 *
+	 * @param newFileMask
+	 */
 	public void onUpdateFileMask(final String newFileMask){
-		boolean isValid = Boolean.TRUE;
-		try {
-			Pattern.compile(newFileMask);
-		} catch (PatternSyntaxException e) {
-			isValid = Boolean.FALSE;
-	    }
+		if(newFileMask.isEmpty()){
+			this.originalListModel.clear();
+			this.previewListModel.clear();
 
-		this.originalListModel.clear();
-		this.previewListModel.clear();
-
-		if(isValid){
 			for (ListItem listItem : allList) {
-				if(listItem.getFile().getName().matches(newFileMask)){
-					this.originalListModel.addElement(listItem);
-					this.previewListModel.addElement(listItem);
-				}
+				this.originalListModel.addElement(listItem);
+				this.previewListModel.addElement(listItem);
 			}
 		} else {
-			System.err.println("\"" + newFileMask + "\" is not a valid regex");
+			boolean isValid = Boolean.TRUE;
+			try {
+				Pattern.compile(newFileMask);
+			} catch (PatternSyntaxException e) {
+				isValid = Boolean.FALSE;
+		    }
+
+			this.originalListModel.clear();
+			this.previewListModel.clear();
+
+			if(isValid){
+				for (ListItem listItem : allList) {
+					if(listItem.getFile().getName().matches(newFileMask)){
+						this.originalListModel.addElement(listItem);
+						this.previewListModel.addElement(listItem);
+					}
+				}
+			} else {
+				System.err.println("\"" + newFileMask + "\" is not a valid regex");
+			}
 		}
 	}
 }
