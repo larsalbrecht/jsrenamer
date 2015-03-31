@@ -85,7 +85,7 @@ public class CharacterEx {
 
 	public static int getTypeForChar(final char c){
 		String cS = Character.toString(c);
-		if(PatternTest.isInteger(cS)){
+		if(StringEx.isInteger(cS)){
 			return CharacterEx.TYPE_INTEGER;
 		}
 		return CharacterEx.TYPE_STRING;
@@ -95,7 +95,7 @@ public class CharacterEx {
 		String cS1 = Character.toString(c1.getC());
 		String cS2 = Character.toString(c2);
 		if(c1.isPlaceholder()){
-			if(PatternTest.isInteger(cS2)){
+			if(StringEx.isInteger(cS2)){
 				return CharacterEx.TYPE_INTEGER;
 			} else {
 				return CharacterEx.TYPE_STRING;
@@ -108,7 +108,7 @@ public class CharacterEx {
 	public static int getTypeForChars(final char c1, final char c2){
 		String cS1 = Character.toString(c1);
 		String cS2 = Character.toString(c2);
-		if(PatternTest.isInteger(cS1) && PatternTest.isInteger(cS2)){
+		if(StringEx.isInteger(cS1) && StringEx.isInteger(cS2)){
 			return CharacterEx.TYPE_INTEGER;
 		}
 		return CharacterEx.TYPE_STRING;
