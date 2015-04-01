@@ -5,7 +5,9 @@ package com.lars_albrecht.java.jsrenamer.test.stringPattern;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -36,6 +38,8 @@ public class StringEx implements Iterable<CharacterEx> {
 	 * Is complete StringEx int?
 	 */
 	private boolean isInt = Boolean.FALSE;
+
+	public int length;
 
 	public static boolean isInteger(String s) {
 	    return isInteger(s,10);
@@ -165,68 +169,7 @@ public class StringEx implements Iterable<CharacterEx> {
 			}
 		}
 
-		this.containsPlaceholder = StringEx.containsPlaceholder(this.characterList);
-		this.containsIntPlaceholder = StringEx.containsIntPlaceholder(this.characterList);
-		this.isInt = StringEx.isInt(this.characterList);
-
-		if(this.containsIntPlaceholder){
-			this.placeholderIntPositions = StringEx.getIntPositions(this.characterList, Boolean.TRUE);
-
-			if(output){
-				System.out.println("");
-				System.out.println("|------------------------|");
-				System.out.println("|  INTEGER POSITION (PH) |");
-				System.out.println("|------------------------|");
-				System.out.println("");
-				for (Point point : this.placeholderIntPositions) {
-					System.out.println("Ints @ pos (" + point.x + " / "+ point.y + "):");
-					int count = point.y - point.x + 1;
-					for(int i = 0; i < count; i++){
-						System.out.print(this.characterList.get(point.x + i));
-					}
-					System.out.println("");
-				}
-			}
-		}
-		this.intPositions = StringEx.getIntPositions(this.characterList, Boolean.FALSE);
-		if(output){
-			System.out.println("");
-			System.out.println("|------------------------|");
-			System.out.println("|    INTEGER POSITION    |");
-			System.out.println("|------------------------|");
-			System.out.println("");
-			for (Point point : this.intPositions) {
-				System.out.println("Ints @ pos (" + point.x + " / "+ point.y + "):");
-				int count = point.y - point.x + 1;
-				for(int i = 0; i < count; i++){
-					System.out.print(this.characterList.get(point.x + i));
-				}
-				System.out.println("");
-			}
-		}
-
-
-		if(output){
-			System.out.println("");
-			System.out.println("|------------------------|");
-			System.out.println("|         RESULT         |");
-			System.out.println("|------------------------|");
-			System.out.println("");
-			for (CharacterEx character : this) {
-				System.out.print(character);
-			}
-			System.out.println("");
-			for (CharacterEx character : this) {
-				System.out.print(character.getType() == CharacterEx.TYPE_INTEGER ? "^" : " ");
-			}
-			System.out.println("");
-			System.out.println("|------------------------|");
-			System.out.println("|         GENERAL        |");
-			System.out.println("|------------------------|");
-			System.out.println("");
-			System.out.println("Contains Placeholder: " + this.containsPlaceholder());
-			System.out.println("Is int: " + this.isInt());
-		}
+		this.parseCharacters(output);
 	}
 
 	/**
@@ -273,6 +216,116 @@ public class StringEx implements Iterable<CharacterEx> {
 		this.placeholder = placeholder;
 	}
 
+	public ArrayList<SubString> getSubStrings(final String splitter) {
+		ArrayList<SubString> tempResultList = new ArrayList<SubString>();
+		ArrayList<ArrayList<CharacterEx>> tempList = new ArrayList<ArrayList<CharacterEx>>();
+		ArrayList<String> tempStrList = new ArrayList<String>();
+		String tempString = "";
+		for (CharacterEx characterEx : characterList) {
+			tempString += characterEx.toString();
+		}
+		String splitterQuoted = Pattern.quote(splitter);
+		tempStrList = new ArrayList<String>(Arrays.asList(tempString.split(splitterQuoted)));
 
+		int startIndex = 0;
+		ArrayList<CharacterEx> tempCharList = null;
+		for (String string : tempStrList) {
+			tempCharList = new ArrayList<CharacterEx>();
+			for(int i = startIndex; i < (startIndex + string.length()); i++){
+				tempCharList.add(this.characterList.get(i));
+			}
+			tempList.add(tempCharList);
+			startIndex = startIndex + (string.length() + splitter.length());
+		}
+
+		StringEx temp = null;
+		for (ArrayList<CharacterEx> characterList : tempList) {
+			temp = new StringEx();
+			temp.setCharacters(characterList);
+			temp.parseCharacters(Boolean.FALSE);
+			tempResultList.add(new SubString(temp));
+		}
+
+		return tempResultList;
+	}
+
+	private void parseCharacters(boolean output) {
+		this.containsPlaceholder = StringEx.containsPlaceholder(this.characterList);
+		this.containsIntPlaceholder = StringEx.containsIntPlaceholder(this.characterList);
+		this.isInt = StringEx.isInt(this.characterList);
+
+		if(this.containsIntPlaceholder){
+			this.placeholderIntPositions = StringEx.getIntPositions(this.characterList, Boolean.TRUE);
+
+			if(output){
+				System.out.println("");
+				System.out.println("|------------------------|");
+				System.out.println("|  INTEGER POSITION (PH) |");
+				System.out.println("|------------------------|");
+				System.out.println("");
+				for (Point point : this.placeholderIntPositions) {
+					System.out.println("Ints @ pos (" + point.x + " / "+ point.y + "):");
+					int count = point.y - point.x + 1;
+					for(int i = 0; i < count; i++){
+						System.out.print(this.characterList.get(point.x + i));
+					}
+					System.out.println("");
+				}
+			}
+		}
+		this.intPositions = StringEx.getIntPositions(this.characterList, Boolean.FALSE);
+		if(output){
+			System.out.println("");
+			System.out.println("|------------------------|");
+			System.out.println("|    INTEGER POSITION    |");
+			System.out.println("|------------------------|");
+			System.out.println("");
+			for (Point point : this.intPositions) {
+				System.out.println("Ints @ pos (" + point.x + " / "+ point.y + "):");
+				int count = point.y - point.x + 1;
+				for(int i = 0; i < count; i++){
+					System.out.print(this.characterList.get(point.x + i));
+				}
+				System.out.println("");
+			}
+		}
+
+		if(output){
+			System.out.println("");
+			System.out.println("|------------------------|");
+			System.out.println("|         RESULT         |");
+			System.out.println("|------------------------|");
+			System.out.println("");
+			for (CharacterEx character : this) {
+				System.out.print(character);
+			}
+			System.out.println("");
+			for (CharacterEx character : this) {
+				System.out.print(character.getType() == CharacterEx.TYPE_INTEGER ? "^" : " ");
+			}
+			System.out.println("");
+			System.out.println("|------------------------|");
+			System.out.println("|         GENERAL        |");
+			System.out.println("|------------------------|");
+			System.out.println("");
+			System.out.println("Contains Placeholder: " + this.containsPlaceholder());
+			System.out.println("Contains Integer Placeholder: " + this.containsIntPlaceholder());
+			System.out.println("Is int: " + this.isInt());
+		}
+	}
+
+	private void setCharacters(ArrayList<CharacterEx> characterList) {
+		this.characterList = characterList;
+	}
+
+
+	@Override
+	public String toString() {
+		String temp = "";
+		for (CharacterEx characterEx : characterList) {
+			temp += characterEx.toString();
+		}
+		return temp;
+	}
 
 }
