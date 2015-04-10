@@ -163,6 +163,3 @@ You can also combine tags and text.
     MYIMAGES - 03
     MYIMAGES - 04
 ```
-
-
-
