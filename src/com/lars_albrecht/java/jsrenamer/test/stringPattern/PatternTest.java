@@ -73,7 +73,7 @@ public class PatternTest {
 		testList.add("Greys.Anatomy.S11E03.Irrtum.ausgeschlossen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E04.Ellis.Grey.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E05.Auszeit.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
-		testList.add("Greys.Anatomy.S11E06.Familienzusammenfuehrung.GERMAN.DUBBED.DL.720p.WebHD");
+		testList.add("Greys.Anatomy.S11E06.Familienzusammenfuehrung.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E07.Noch.mal.von.vorne.bitte.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E08.Risiko.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E09.Schockzustand.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
@@ -89,10 +89,19 @@ public class PatternTest {
 		testList.add("Dexter - S08E12 - Abschied");
 		*/
 
-		// [S] = STRING
+		// [S] = VARIABLE STRING
+		// [SH] = HARD STRING
 		// [SI] = STRING WITH INT
 		// [T] = TEMPLATE STRING
-		String pattern = "[S] - [SI] - [T]";
+		/**
+		 * Greys.Anatomy.S11E01.Im.Wind.verloren.GERMAN.DUBBED.DL.720p.WebHD.h264.REPACK-euHD
+		 * Greys Anatomy = SH
+		 * S11E01 = SI
+		 * Im Wind verloren = S
+		 * .GERMAN.DUBBED.DL.720p.WebHD.h264.REPACK-euHD = T
+		 */
+		String pattern = "[SH] - [SI] - [S][T]";
+		//String pattern = "[S] - [SI] - [T]";
 
 		StringEx s = new StringEx();
 		s.setStrings(testList);
@@ -119,9 +128,18 @@ public class PatternTest {
 		int patternIndex = 0;
 		for (String string : splittedPattern) {
 			String tempStr = "";
-			if(string.matches("^\\[S\\]{1}$")){
+			if(string.matches("^\\[SH\\]{1}$")){
 				for (SubString subString : subStrings.subList(startIndex, subStrings.size())) {
-					if(!subString.isTemplate() && !subString.getSubString().containsIntPlaceholder()){
+					if(!subString.isTemplate() && !subString.getSubString().containsPlaceholder()){
+						tempStr += subString + " ";
+						startIndex++;
+					} else {
+						break;
+					}
+				}
+			} else if(string.matches("^\\[S\\]{1}$")){
+				for (SubString subString : subStrings.subList(startIndex, subStrings.size())) {
+					if(!subString.isTemplate() && !subString.getSubString().containsIntPlaceholder() && subString.getSubString().containsPlaceholder()){
 						tempStr += subString + " ";
 						startIndex++;
 					} else {

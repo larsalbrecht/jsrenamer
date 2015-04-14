@@ -125,51 +125,71 @@ public class StringEx implements Iterable<CharacterEx> {
 			System.out.println("|------------------------|");
 			System.out.println("");
 		}
-		for (String testString : this.stringList) {
-			if(baseString == null){
-				baseString = testString;
-				if(output){
-					System.out.println("Basestring: ");
-					System.out.println(baseString);
-					System.out.println("");
-				}
-				char[] tempCharArr = baseString.toCharArray();
-				baseChars = ArrayUtils.toObject(tempCharArr);
+
+
+		baseString = this.findBaseString();
+		if(baseString != null){
+			char[] tempCharArr = baseString.toCharArray();
+			baseChars = ArrayUtils.toObject(tempCharArr);
+			if(output){
+				System.out.println("Basestring: ");
+				System.out.println(baseString);
+				System.out.println("");
 			}
 
-			if(!baseString.equals(testString)){
-				char[] charArray = testString.toCharArray();
-				Character[] testCharArray = ArrayUtils.toObject(charArray);
-				for(int i = 0; i < baseChars.length; i++){
-					if(testCharArray.length-1 >= i){
-						if(baseChars[i].equals(testCharArray[i])){
-							if(this.characterList.isEmpty() || this.characterList.size() <= i){
-								this.characterList.add(new CharacterEx(baseChars[i], CharacterEx.getTypeForChar(baseChars[i]), Boolean.FALSE));
-							} else if(!(this.characterList.get(i).getC() == baseChars[i].charValue())){
-								this.characterList.set(i, new CharacterEx(this.placeholder, CharacterEx.getTypeForChars(this.characterList.get(i), baseChars[i]), Boolean.TRUE));
-							}
-							if(output){
-								System.out.print(new CharacterEx(baseChars[i], StringEx.isInteger(baseChars[i].toString()) ? CharacterEx.TYPE_INTEGER : CharacterEx.TYPE_STRING));
-							}
-						} else {
-							if(this.characterList.isEmpty() || this.characterList.size() <= i){
-								this.characterList.add(new CharacterEx(this.placeholder, CharacterEx.getTypeForChars(baseChars[i], testCharArray[i]), Boolean.TRUE));
-							} else if(!(this.characterList.get(i).getC() == this.placeholder)){
-								this.characterList.set(i, new CharacterEx(this.placeholder, CharacterEx.getTypeForChars(this.characterList.get(i), testCharArray[i]), Boolean.TRUE));
-							}
-							if(output){
-								System.out.print(new CharacterEx(this.placeholder));
+			for (String testString : this.stringList) {
+				if(!baseString.equals(testString)){
+					char[] charArray = testString.toCharArray();
+					Character[] testCharArray = ArrayUtils.toObject(charArray);
+
+					for(int i = 0; i < baseChars.length; i++){
+						if(testCharArray.length-1 >= i){
+							if(baseChars[i].equals(testCharArray[i])){
+								if(this.characterList.isEmpty() || this.characterList.size() <= i){
+									this.characterList.add(new CharacterEx(baseChars[i], CharacterEx.getTypeForChar(baseChars[i]), Boolean.FALSE));
+								} else if(!(this.characterList.get(i).getC() == baseChars[i].charValue())){
+									this.characterList.set(i, new CharacterEx(this.placeholder, CharacterEx.getTypeForChars(this.characterList.get(i), baseChars[i]), Boolean.TRUE));
+								}
+								if(output){
+									System.out.print(new CharacterEx(baseChars[i], StringEx.isInteger(baseChars[i].toString()) ? CharacterEx.TYPE_INTEGER : CharacterEx.TYPE_STRING));
+								}
+							} else {
+								if(this.characterList.isEmpty() || this.characterList.size() <= i){
+									this.characterList.add(new CharacterEx(this.placeholder, CharacterEx.getTypeForChars(baseChars[i], testCharArray[i]), Boolean.TRUE));
+								} else if(!(this.characterList.get(i).getC() == this.placeholder)){
+									this.characterList.set(i, new CharacterEx(this.placeholder, CharacterEx.getTypeForChars(this.characterList.get(i), testCharArray[i]), Boolean.TRUE));
+								}
+								if(output){
+									System.out.print(new CharacterEx(this.placeholder));
+								}
 							}
 						}
 					}
-				}
-				if(output){
-					System.out.println("");
+					if(output){
+						System.out.println("");
+					}
 				}
 			}
 		}
 
 		this.parseCharacters(output);
+	}
+
+	/**
+	 * Find the base string. It is the longest string.
+	 *
+	 * @return baseString
+	 */
+	private String findBaseString() {
+		String baseString = null;
+		for (String string : stringList) {
+			if(baseString == null){
+				baseString = string;
+			} else if(baseString.length() < string.length()){
+				baseString = string;
+			}
+		}
+		return baseString;
 	}
 
 	/**
