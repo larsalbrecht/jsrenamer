@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.lars_albrecht.java.jsrenamer.test.stringPattern;
+package com.lars_albrecht.java.jsrenamer.test.oldTwo;
 
 /**
  * @author lalbrecht

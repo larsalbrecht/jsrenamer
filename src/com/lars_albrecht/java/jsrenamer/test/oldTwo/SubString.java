@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.lars_albrecht.java.jsrenamer.test.stringPattern;
+package com.lars_albrecht.java.jsrenamer.test.oldTwo;
 
 /**
  * @author lalbrecht
@@ -17,7 +17,7 @@ public class SubString {
 	private double percentOfPlaceholder = 0.0;
 	private double percentOfReal = 0.0;
 
-	private boolean isTemplate = Boolean.FALSE;
+	private boolean isDummy = Boolean.FALSE;
 
 	public SubString(StringEx subString) {
 		this.subString = subString;
@@ -27,7 +27,7 @@ public class SubString {
 		this.calcPercentOfPlaceholder();
 
 		if(percentOfPlaceholder > 60.0){
-			isTemplate = Boolean.TRUE;
+			isDummy = Boolean.TRUE;
 		}
 	}
 
@@ -156,15 +156,15 @@ public class SubString {
 	/**
 	 * @return the isTemplate
 	 */
-	public boolean isTemplate() {
-		return isTemplate;
+	public boolean isDummy() {
+		return isDummy;
 	}
 
 	/**
-	 * @param isTemplate the isTemplate to set
+	 * @param isDummy the isDummy to set
 	 */
-	public void setTemplate(boolean isTemplate) {
-		this.isTemplate = isTemplate;
+	public void setDummy(boolean isDummy) {
+		this.isDummy = isDummy;
 	}
 
 	@Override

@@ -1,49 +1,91 @@
-STEP1: Find all same and different parts
-STEP2: Find the separator(one of: " " | ".") and split
-STEP3: Own filter for different implementations
+"Greys.Anatomy.S11E01.Im.Wind.verloren.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD"
+"Greys.Anatomy.S11E02.Das.fehlende.Puzzleteil.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD"
+"Greys.Anatomy.S11E03.Irrtum.ausgeschlossen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD"
 
-ORIG:	The.Vampire.Diaries.S04E01.STAB.720p.HDTV.X264-DIMENSION.mkv
-STEP1:	The.Vampire.Diaries.S04E | 01 | . | STAB | . | 720p.HDTV.X264-DIMENSION.mkv
-STEP2:	The | Vampire | Diaries | S04E | 01 | STAB | 720p | HDTV | X264-DIMENSION.mkv
+testList = array
+pattern = "[SH] - [SI] - [S][D]" // [D] will be overwritten with 
+substringSeparator = "."
 
-ORIG:	The.Vampire.Diaries.S04E02.ESTA.720p.HDTV.X264-DIMENSION.mkv
-STEP1:	The.Vampire.Diaries.S04E | 02 | . | ESTA | . | 720p.HDTV.X264-DIMENSION.mkv
-STEP2:	The | Vampire | Diaries | S04E | 02 | ESTA | 720p | HDTV | X264-DIMENSION.mkv
+// separate by substringSeparator:
+Greys | Anatomy | S11E01 | Im | Wind | verloren | GERMAN | DUBBED | DL | 720p | WebHD | h264-euHD
+Greys | Anatomy | S11E02 | Das | fehlende | Puzzleteil | GERMAN | DUBBED | DL | 720p | WebHD | h264-euHD
+Greys | Anatomy | S11E02 | Irrtum | ausgeschlossen | GERMAN | DUBBED | DL | 720p | WebHD | h264-euHD
 
-ORIG:	The.Vampire.Diaries.S04E12.BLUB.BLAT.720p.HDTV.X264-DIMENSION.mkv
-STEP1:	The.Vampire.Diaries.S04E | 12 | . | BLUB.BLAT | . | 720p.HDTV.X264-DIMENSION.mkv
-STEP2:	The | Vampire | Diaries | S04E | 12 | BLUB | BLAT | 720p | HDTV | X264-DIMENSION.mkv
+// find longest
+Greys | Anatomy | S11E02 | Das | fehlende | Puzzleteil | GERMAN | DUBBED | DL | 720p | WebHD | h264-euHD
 
-
-FOR SERIES:
-pattern: "[STATIC] - [S[0-9]{0,2}?][E[0-9]{0,2}?] - [VAR]"
-separator: " "
-nonmatches: IGNORE
-
-STEP3:	The Vampire Diaries - S04E01 - STAB.mkv
-
-STEP3:	The Vampire Diaries - S04E02 - ESTA.mkv
-
-STEP3:	The Vampire Diaries - S04E12 - BLUB BLAT.mkv
-
-
-FOR STEP1:
-Map<position, string> staticStrings
-0 The.Vampire.Diaries.S04E
-2 .
-4 .
-5 720p.HDTV.X264-DIMENSION.mkv
-
-Map<File, Map<position, string>> variableStrings
-File A 
-	1 : 01
-	3 : STAB
+// compare
+foreach(
+i = 0
+	Greys -> Greys = Greys
+	Anatomy -> Anatomy = Anatomy
+	S11E01 -> S11E02 = S11E0*
+	Im -> Das = *
+	Wind -> fehlende = *
+	verloren -> Puzzleteil = *
+	GERMAN -> GERMAN = GERMAN
+	....
 	
-File B:
-	1 : 02
-	3 : ESTA
+i = 1
+	Greys -> Greys = Greys
+	Anatomy -> Anatomy = Anatomy
+	S11E01 -> S11E03 = S11E0*
+	Im -> Irrtum = *
+	Wind -> ausgeschlossen = *
+	verloren -> GERMAN = *
+	GERMAN -> DUBBED = *
+	....
+)
 
-File C:
-	1 : 12
-	3 : BLUB.BLAT
-	
+// results
+1)
+Greys | Anatomy | S11E0* | * | * | * | GERMAN | DUBBED | DL | 720p | WebHD | h264-euHD
+
+2)
+Greys | Anatomy | S11E0* | * | * | * | * | * | * | * | * | *
+
+// compare backwards
+foreach(
+i = 0
+	h264-euHD -> h264-euHD = h264-euHD
+	WebHD -> WebHD = WebHD
+	720p -> 720p = 720p
+	DL -> DL = DL
+	DUBBED -> DUBBED = DUBBED
+	GERMAN -> GERMAN = GERMAN
+	verloren -> Puzzleteil = *
+	Wind -> fehlende = *
+	Im -> Das = *
+	S11E01 -> S11E02 = S11E0*
+	Anatomy -> Anatomy = Anatomy
+	Greys -> Greys = Greys
+i = 1
+	h264-euHD -> h264-euHD = h264-euHD
+	WebHD -> WebHD = WebHD
+	720p -> 720p = 720p
+	DL -> DL = DL
+	DUBBED -> DUBBED = DUBBED
+	GERMAN -> GERMAN = GERMAN
+	verloren -> ausgeschlossen = *
+	Wind -> Irrtum = *
+	Im -> S11E02 = *
+	S11E01 -> Anatomy = *
+	Anatomy -> Greys = *
+	Greys -> - = [ONE TO MUCH]
+)
+
+// results
+1)
+
+h264-euHD | WebHD | 720p | DL | DUBBED | GERMAN | * | * | * | S11E0* | Anatomy | Greys
+
+2)
+h264-euHD | WebHD | 720p | DL | DUBBED | GERMAN | * | * | * | * | * | *
+
+
+// define strings
+forward Hard String:
+0, 1
+
+backward Hard String:
+0, 5

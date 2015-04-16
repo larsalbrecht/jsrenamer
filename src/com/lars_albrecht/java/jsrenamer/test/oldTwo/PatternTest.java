@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.lars_albrecht.java.jsrenamer.test.stringPattern;
+package com.lars_albrecht.java.jsrenamer.test.oldTwo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,16 +92,16 @@ public class PatternTest {
 		// [S] = VARIABLE STRING
 		// [SH] = HARD STRING
 		// [SI] = STRING WITH INT
-		// [T] = TEMPLATE STRING
+		// [D] = DUMMY STRING
 		/**
 		 * Greys.Anatomy.S11E01.Im.Wind.verloren.GERMAN.DUBBED.DL.720p.WebHD.h264.REPACK-euHD
 		 * Greys Anatomy = SH
 		 * S11E01 = SI
 		 * Im Wind verloren = S
-		 * .GERMAN.DUBBED.DL.720p.WebHD.h264.REPACK-euHD = T
+		 * .GERMAN.DUBBED.DL.720p.WebHD.h264.REPACK-euHD = D
 		 */
-		String pattern = "[SH] - [SI] - [S][T]";
-		//String pattern = "[S] - [SI] - [T]";
+		String pattern = "[SH] - [SI] - [S][D]";
+		//String pattern = "[S] - [SI] - [D]";
 
 		StringEx s = new StringEx();
 		s.setStrings(testList);
@@ -115,8 +115,10 @@ public class PatternTest {
 			System.out.println("------------");
 			System.out.println(subString.getSubString());
 			System.out.println(subString.getSubString().containsIntPlaceholder());
-			System.out.println(subString.isTemplate());
+			System.out.println(subString.isDummy());
 		}
+
+		System.out.println("-------||||||||||||||||--------");
 
 		// Match subStrings to pattern
 
@@ -130,7 +132,7 @@ public class PatternTest {
 			String tempStr = "";
 			if(string.matches("^\\[SH\\]{1}$")){
 				for (SubString subString : subStrings.subList(startIndex, subStrings.size())) {
-					if(!subString.isTemplate() && !subString.getSubString().containsPlaceholder()){
+					if(!subString.isDummy() && !subString.getSubString().containsPlaceholder()){
 						tempStr += subString + " ";
 						startIndex++;
 					} else {
@@ -139,7 +141,7 @@ public class PatternTest {
 				}
 			} else if(string.matches("^\\[S\\]{1}$")){
 				for (SubString subString : subStrings.subList(startIndex, subStrings.size())) {
-					if(!subString.isTemplate() && !subString.getSubString().containsIntPlaceholder() && subString.getSubString().containsPlaceholder()){
+					if(!subString.isDummy() && !subString.getSubString().containsIntPlaceholder() && subString.getSubString().containsPlaceholder()){
 						tempStr += subString + " ";
 						startIndex++;
 					} else {
@@ -148,7 +150,7 @@ public class PatternTest {
 				}
 			} else if(string.matches("^\\[SI\\]{1}$")){
 				for (SubString subString : subStrings.subList(startIndex, subStrings.size())) {
-					if(!subString.isTemplate() && subString.getSubString().containsIntPlaceholder()){
+					if(!subString.isDummy() && subString.getSubString().containsIntPlaceholder()){
 						// TODO replace ints with real ones
 						tempStr += subString + " ";
 						startIndex++;
@@ -156,9 +158,9 @@ public class PatternTest {
 						break;
 					}
 				}
-			} else if(string.matches("^\\[T\\]{1}$")){
+			} else if(string.matches("^\\[D\\]{1}$")){
 				for (SubString subString : subStrings.subList(startIndex, subStrings.size())) {
-					if(subString.isTemplate()){
+					if(subString.isDummy()){
 						// replace this with a real string
 						tempStr += subString + " ";
 						startIndex++;
