@@ -3,6 +3,10 @@
  */
 package com.lars_albrecht.java.jsrenamer.test;
 
+import java.util.ArrayList;
+
+import com.lars_albrecht.java.jsrenamer.test.CharacterEx;
+
 /**
  * @author lalbrecht
  *
@@ -16,6 +20,10 @@ public class StringEx {
 	public static final int TYPE_DUMMY = 3;
 
 	private String string = null;
+
+	// TODO fill only when needed
+	private ArrayList<CharacterEx> characterList = null;
+
 	private Integer type = TYPE_UNKNOWN;
 
 	public StringEx(final String string, final Integer type) {

@@ -53,7 +53,7 @@ public class PatternParser {
 			}
 		}
 
-		return new CompareResult(resultList, 0, 0);
+		return new CompareResult(resultList, -1, -1);
 	}
 
 	private CompareResult getCompared(int compareDirection,
@@ -67,7 +67,7 @@ public class PatternParser {
 			Collections.reverse(baseStringList);
 		}
 
-		ArrayList<String> resultList = new ArrayList<String>();
+		ArrayList<StringEx> resultList = new ArrayList<StringEx>();
 		for (ArrayList<String> testSeparatedList : separatedList) {
 			if(!testSeparatedList.equals(baseStringList)){
 				if(compareDirection == PatternParser.LOOK_BACKWARD){
@@ -80,9 +80,9 @@ public class PatternParser {
 						}
 						if(resultList.size() <= i || (resultList.size() > i && resultList.get(i) != null)){
 							if(resultList.size() > i){
-								resultList.set(i, testSeparatedList.get(i));
+								resultList.set(i, new StringEx(testSeparatedList.get(i), StringEx.TYPE_HARDSTRING));
 							} else {
-								resultList.add(testSeparatedList.get(i));
+								resultList.add(new StringEx(testSeparatedList.get(i), StringEx.TYPE_HARDSTRING));
 							}
 						}
 					} else {
