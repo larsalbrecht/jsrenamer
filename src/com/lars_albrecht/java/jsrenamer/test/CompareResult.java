@@ -11,11 +11,11 @@ import java.util.ArrayList;
  */
 public class CompareResult {
 
-	private ArrayList<String> resultList = null;
+	private ArrayList<StringEx> resultList = null;
 	private Integer start = null;
 	private Integer end = null;
 
-	public CompareResult(ArrayList<String> resultList, Integer start,
+	public CompareResult(ArrayList<StringEx> resultList, Integer start,
 			Integer end) {
 		super();
 		this.resultList = resultList;
@@ -26,14 +26,14 @@ public class CompareResult {
 	/**
 	 * @return the resultList
 	 */
-	public ArrayList<String> getResultList() {
+	public ArrayList<StringEx> getResultList() {
 		return resultList;
 	}
 
 	/**
 	 * @param resultList the resultList to set
 	 */
-	public void setResultList(ArrayList<String> resultList) {
+	public void setResultList(ArrayList<StringEx> resultList) {
 		this.resultList = resultList;
 	}
 

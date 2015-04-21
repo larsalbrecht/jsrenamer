@@ -35,6 +35,16 @@ public class StringEx {
 		}
 	}
 
+	@Override
+	public String toString() {
+//		String temp = "";
+//		for (CharacterEx characterEx : characterList) {
+//			temp += characterEx.toString();
+//		}
+//		return temp;
+		return this.string;
+	}
+
 	/**
 	 * @return the string
 	 */

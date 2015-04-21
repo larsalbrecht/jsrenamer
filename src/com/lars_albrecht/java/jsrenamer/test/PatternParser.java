@@ -46,7 +46,7 @@ public class PatternParser {
 	private CompareResult getMergedCompareResult(
 			CompareResult compareResultForward,
 			CompareResult compareResultBackward) {
-		ArrayList<String> resultList = compareResultForward.getResultList();
+		ArrayList<StringEx> resultList = compareResultForward.getResultList();
 		for(int i = 0; i < resultList.size(); i++){
 			if(resultList.get(i) == null && compareResultBackward.getResultList().get(i) != null){
 				resultList.set(i, compareResultBackward.getResultList().get(i));
