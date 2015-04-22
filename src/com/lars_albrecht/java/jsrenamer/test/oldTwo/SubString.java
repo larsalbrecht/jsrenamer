@@ -3,6 +3,9 @@
  */
 package com.lars_albrecht.java.jsrenamer.test.oldTwo;
 
+import com.lars_albrecht.java.jsrenamer.test.oldTwo.CharacterEx;
+import com.lars_albrecht.java.jsrenamer.test.oldTwo.StringEx;
+
 /**
  * @author lalbrecht
  *
