@@ -14,19 +14,20 @@ import com.lars_albrecht.java.jsrenamer.test.CharacterEx;
  */
 public class StringEx {
 
-	public static final int TYPE_UNKNOWN = -1;
-	public static final int TYPE_HARDSTRING = 0;
-	public static final int TYPE_STRINGINTEGER = 1;
-	public static final int TYPE_INTEGER = 2;
-	public static final int TYPE_STRING = 3;
-	public static final int TYPE_DUMMY = 4;
+	public static final int TYPE_UNKNOWN = -1; // unknown
+	public static final int TYPE_HARDSTRING = 0; // for hard strings
+	public static final int TYPE_STRINGINTEGER = 1; // for hard strings with
+													// integer to parse
+	public static final int TYPE_INTEGER = 2; // for integer to parse
+	public static final int TYPE_STRING = 3; // for dynamic strings
+	public static final int TYPE_DUMMY = 4; // dummy (will be removed later)
 
 	private String string = null;
 
 	// TODO fill only when needed
 	private ArrayList<CharacterEx> characterList = null;
 
-	private Integer type = TYPE_UNKNOWN;
+	private int type = StringEx.TYPE_UNKNOWN;
 
 	private int listIndex = -1;
 
@@ -51,8 +52,8 @@ public class StringEx {
 	public StringEx(final String string, final Integer type, final int listIndex) {
 		this.string = string;
 		this.listIndex = listIndex;
-		if (type > TYPE_DUMMY || type < TYPE_UNKNOWN) {
-			this.type = TYPE_UNKNOWN;
+		if (type > StringEx.TYPE_DUMMY || type < StringEx.TYPE_UNKNOWN) {
+			this.type = StringEx.TYPE_UNKNOWN;
 		} else {
 			this.type = type;
 		}
@@ -63,8 +64,8 @@ public class StringEx {
 		this.string = string;
 		this.listIndex = listIndex;
 		this.characterList = characterList;
-		if (type > TYPE_DUMMY && type <= TYPE_UNKNOWN) {
-			this.type = TYPE_UNKNOWN;
+		if (type > StringEx.TYPE_DUMMY && type <= StringEx.TYPE_UNKNOWN) {
+			this.type = StringEx.TYPE_UNKNOWN;
 		} else {
 			this.type = type;
 		}
@@ -74,6 +75,11 @@ public class StringEx {
 		}
 	}
 
+	/**
+	 * Parse characters and define this type.
+	 *
+	 * @param output
+	 */
 	private void parseCharacters(boolean output) {
 		this.containsPlaceholder = StringEx
 				.containsPlaceholder(this.characterList);
@@ -84,6 +90,7 @@ public class StringEx {
 		if (this.containsIntPlaceholder) {
 			this.placeholderIntPositions = StringEx.getIntPositions(
 					this.characterList, Boolean.TRUE);
+			System.out.println(">> " + this.placeholderIntPositions);
 
 			if (output) {
 				System.out.println("");
@@ -149,13 +156,14 @@ public class StringEx {
 		}
 
 		if (isInt) {
-			this.type = TYPE_INTEGER;
+			this.type = StringEx.TYPE_INTEGER;
 		} else if (containsIntPlaceholder && containsPlaceholder && !isInt) {
-			this.type = TYPE_STRINGINTEGER;
+			this.type = StringEx.TYPE_STRINGINTEGER;
 		} else if (!containsIntPlaceholder && containsPlaceholder && !isInt) {
-			this.type = TYPE_STRING;
+			this.type = StringEx.TYPE_STRING;
 
-			if (this.string == null && this.characterList != null && characterList.size() > 0) {
+			if (this.string == null && this.characterList != null
+					&& characterList.size() > 0) {
 				this.string = "";
 				for (CharacterEx characterEx : characterList) {
 					this.string += characterEx.getC();

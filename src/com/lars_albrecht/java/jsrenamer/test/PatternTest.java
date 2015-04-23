@@ -3,11 +3,7 @@
  */
 package com.lars_albrecht.java.jsrenamer.test;
 
-import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.regex.Pattern;
 
 /**
  * @author albrech

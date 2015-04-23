@@ -43,6 +43,7 @@ public class PatternParser {
 		CompareResult compareResultBackward = this.getCompared(LOOK_BACKWARD, baseStringList, separatedList);
 
 		this.result = this.getMergedResult(compareResultForward, compareResultBackward);
+
 		System.out.println(compareResultForward.getResultList());
 		System.out.println(compareResultBackward.getResultList());
 		System.out.println(this.result);
@@ -52,14 +53,11 @@ public class PatternParser {
 	}
 
 	public void getStrings(){
-		for (ArrayList<String> stringList : this.separatedList) {
-			System.out.println(stringList);
-			for (StringEx resultStr : this.result) {
-				if(resultStr.getListIndex() < stringList.size()){
-					System.out.print(stringList.get(resultStr.getListIndex()));
-					System.out.print(" - ");
-				}
-			}
+		for (StringEx resultStr : this.result) {
+			System.out.println(resultStr);
+			System.out.println(resultStr.getListIndex());
+			System.out.println(resultStr.getType());
+			System.out.println(resultStr.getPlaceholderIntPositions());
 			System.out.println("");
 		}
 	}
