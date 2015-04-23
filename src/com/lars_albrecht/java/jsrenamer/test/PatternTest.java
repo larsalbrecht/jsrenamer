@@ -27,7 +27,7 @@ public class PatternTest {
 		testList.add("Greys.Anatomy.S11E07.Noch.mal.von.vorne.bitte.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD.a");
 		testList.add("Greys.Anatomy.S11E08.Risiko.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD.a");
 		testList.add("Greys.Anatomy.S11E09.Schockzustand.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD.a");
-		testList.add("Greys.Anatomy.S11E10.Der.letzte.Einsiedler.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD.b");
+		testList.add("Greys.Anatomy.S11E10.Der.letzte.Einsiedler.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD.a");
 		testList.add("Greys.Anatomy.S11E11.Hoellenqualen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD.a");
 
 		String pattern = "[SH] - [SI] - [S][D]";
@@ -35,6 +35,7 @@ public class PatternTest {
 
 		PatternParser pp = new PatternParser(testList, pattern, separator);
 		pp.parse();
+		pp.getStrings();
 
 	}
 

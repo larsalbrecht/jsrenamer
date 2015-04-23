@@ -99,14 +99,6 @@ public class CharacterEx {
 	    return true;
 	}
 
-	public static int getTypeForChar(final char c){
-		String cS = Character.toString(c);
-		if(CharacterEx.isInteger(cS)){
-			return CharacterEx.TYPE_INTEGER;
-		}
-		return CharacterEx.TYPE_STRING;
-	}
-
 	public static int getTypeForChars(final CharacterEx c1, final char c2){
 		String cS1 = Character.toString(c1.getC());
 		String cS2 = Character.toString(c2);
@@ -125,6 +117,14 @@ public class CharacterEx {
 		String cS1 = Character.toString(c1);
 		String cS2 = Character.toString(c2);
 		if(CharacterEx.isInteger(cS1) && CharacterEx.isInteger(cS2)){
+			return CharacterEx.TYPE_INTEGER;
+		}
+		return CharacterEx.TYPE_STRING;
+	}
+
+	public static int getTypeForChar(final char c){
+		String cS = Character.toString(c);
+		if(CharacterEx.isInteger(cS)){
 			return CharacterEx.TYPE_INTEGER;
 		}
 		return CharacterEx.TYPE_STRING;
