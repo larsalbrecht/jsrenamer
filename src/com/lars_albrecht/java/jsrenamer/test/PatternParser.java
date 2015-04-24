@@ -53,12 +53,30 @@ public class PatternParser {
 	}
 
 	public void getStrings(){
-		for (StringEx resultStr : this.result) {
-			System.out.println(resultStr);
-			System.out.println(resultStr.getListIndex());
-			System.out.println(resultStr.getType());
-			System.out.println(resultStr.getPlaceholderIntPositions());
-			System.out.println("");
+		String tempStr = null;
+		System.out.println("GET STRINGS NOW");
+		System.out.println("");
+		for (ArrayList<String> stringList : separatedList) {
+			System.out.println(stringList);
+			tempStr = "";
+			boolean added = Boolean.FALSE;
+			for (int i = 0; i < this.result.size(); i++){
+				System.out.println(this.result.get(i).getType());
+				if(this.result.get(i).getType().equals(StringEx.TYPE_HARDSTRING)){
+					tempStr += this.result.get(i).getString();
+					added = Boolean.TRUE;
+				} else if(this.result.get(i).getType().equals(StringEx.TYPE_DUMMY)){
+					tempStr += this.result.get(i).getString();
+					added = Boolean.TRUE;
+				}
+
+				if(added){ // TODO remove this. Only for test
+					added = Boolean.FALSE;
+					tempStr += " - ";
+				}
+
+			}
+			System.out.println(tempStr);
 		}
 	}
 
@@ -74,7 +92,11 @@ public class PatternParser {
 		ArrayList<StringEx> resultList = compareResultForward.getResultList();
 		for(int i = 0; i < resultList.size(); i++){
 			if((resultList.get(i).getType().equals(compareResultBackward.getResultList().get(i).getType()) && compareResultBackward.getResultList().get(i).getType() >= StringEx.TYPE_INTEGER) || (compareResultBackward.getResultList().get(i).getType() != StringEx.TYPE_UNKNOWN)){
-				resultList.set(i, compareResultBackward.getResultList().get(i));
+				StringEx tempStringEx = compareResultBackward.getResultList().get(i);
+				if(tempStringEx.getType().equals(StringEx.TYPE_HARDSTRING)){
+					tempStringEx.setType(compareResultForward.getResultList().get(i).getType());
+				}
+				resultList.set(i, tempStringEx);
 			}
 		}
 
@@ -124,6 +146,7 @@ public class PatternParser {
 							if(resultList.size() > i){
 								resultList.set(i, new StringEx(testSeparatedList.get(i), type, i));
 							} else {
+								type = StringEx.TYPE_HARDSTRING;
 								resultList.add(new StringEx(testSeparatedList.get(i), type, i));
 							}
 						}
