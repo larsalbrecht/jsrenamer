@@ -201,6 +201,9 @@ public class StringEx {
 					start = characterList.indexOf(characterEx);
 				}
 				count++;
+				if(characterList.indexOf(characterEx) == characterList.size()-1){ // if last element
+					tempList.add(new Point(start, start + count - 1));
+				}
 			} else {
 				if (count > 0) {
 					tempList.add(new Point(start, start + count - 1));

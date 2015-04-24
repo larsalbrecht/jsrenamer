@@ -194,13 +194,18 @@ public class PatternParser {
 							if(baseChars[i].equals(testChars[i])){
 								if(resultList.isEmpty() || resultList.size() <= i){
 									resultList.add(new CharacterEx(baseChars[i], CharacterEx.getTypeForChar(baseChars[i]), Boolean.FALSE));
-								} else if(!(resultList.get(i).getC() == baseChars[i].charValue())){
+									System.out.println("add - equal -> " + baseChars[i] + " | " + testChars[i]);
+								} else if((resultList.get(i).getC() != baseChars[i].charValue())){
+									System.out.println("set - equal -> " + baseChars[i] + " | " + testChars[i]);
 									resultList.set(i, new CharacterEx(placeholder, CharacterEx.getTypeForChars(resultList.get(i), baseChars[i]), Boolean.TRUE));
 								}
 							} else {
 								if(resultList.isEmpty() || resultList.size() <= i){
+									System.out.println("add - unequal -> " + baseChars[i] + " | " + testChars[i]);
 									resultList.add(new CharacterEx(placeholder, CharacterEx.getTypeForChars(baseChars[i], testChars[i]), Boolean.TRUE));
+									System.out.println(resultList.get(resultList.size()-1));
 								} else if(!(resultList.get(i).getC() == placeholder)){
+									System.out.println("set - unequal -> " + baseChars[i] + " | " + testChars[i]);
 									resultList.set(i, new CharacterEx(placeholder, CharacterEx.getTypeForChars(resultList.get(i), testChars[i]), Boolean.TRUE));
 								}
 							}
