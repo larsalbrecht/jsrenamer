@@ -90,7 +90,6 @@ public class StringEx {
 		if (this.containsIntPlaceholder) {
 			this.placeholderIntPositions = StringEx.getIntPositions(
 					this.characterList, Boolean.TRUE);
-			System.out.println(">> " + this.placeholderIntPositions);
 
 			if (output) {
 				System.out.println("");
