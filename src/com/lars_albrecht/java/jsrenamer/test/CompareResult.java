@@ -11,12 +11,11 @@ import java.util.ArrayList;
  */
 public class CompareResult {
 
-	private ArrayList<StringEx> resultList = null;
-	private Integer start = null;
-	private Integer end = null;
+	private ArrayList<StringEx>	resultList	= null;
+	private Integer				start		= null;
+	private Integer				end			= null;
 
-	public CompareResult(ArrayList<StringEx> resultList, Integer start,
-			Integer end) {
+	public CompareResult(ArrayList<StringEx> resultList, Integer start, Integer end) {
 		super();
 		this.resultList = resultList;
 		this.start = start;
@@ -31,7 +30,8 @@ public class CompareResult {
 	}
 
 	/**
-	 * @param resultList the resultList to set
+	 * @param resultList
+	 *            the resultList to set
 	 */
 	public void setResultList(ArrayList<StringEx> resultList) {
 		this.resultList = resultList;
@@ -45,7 +45,8 @@ public class CompareResult {
 	}
 
 	/**
-	 * @param start the start to set
+	 * @param start
+	 *            the start to set
 	 */
 	public void setStart(Integer start) {
 		this.start = start;
@@ -59,12 +60,11 @@ public class CompareResult {
 	}
 
 	/**
-	 * @param end the end to set
+	 * @param end
+	 *            the end to set
 	 */
 	public void setEnd(Integer end) {
 		this.end = end;
 	}
-
-
 
 }

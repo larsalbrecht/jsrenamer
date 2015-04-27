@@ -14,40 +14,56 @@ import com.lars_albrecht.java.jsrenamer.test.CharacterEx;
  */
 public class StringEx {
 
-	public static final int TYPE_UNKNOWN = -1; // unknown
-	public static final int TYPE_HARDSTRING = 0; // for hard strings
-	public static final int TYPE_STRINGINTEGER = 1; // for hard strings with
-													// integer to parse
-	public static final int TYPE_INTEGER = 2; // for integer to parse
-	public static final int TYPE_STRING = 3; // for dynamic strings
-	public static final int TYPE_DUMMY = 4; // dummy (will be removed later)
+	public static final int			TYPE_UNKNOWN			= -1;						// unknown
+	public static final int			TYPE_HARDSTRING			= 0;						// for
+																						// hard
+																						// strings
+	public static final int			TYPE_STRINGINTEGER		= 1;						// for
+																						// hard
+																						// strings
+																						// with
+																						// integer
+																						// to
+																						// parse
+	public static final int			TYPE_INTEGER			= 2;						// for
+																						// integer
+																						// to
+																						// parse
+	public static final int			TYPE_STRING				= 3;						// for
+																						// dynamic
+																						// strings
+	public static final int			TYPE_DUMMY				= 4;						// dummy
+																						// (will
+																						// be
+																						// removed
+																						// later)
 
-	private String string = null;
+	private String					string					= null;
 
 	// TODO fill only when needed
-	private ArrayList<CharacterEx> characterList = null;
+	private ArrayList<CharacterEx>	characterList			= null;
 
-	private int type = StringEx.TYPE_UNKNOWN;
+	private int						type					= StringEx.TYPE_UNKNOWN;
 
-	private int listIndex = -1;
+	private int						listIndex				= -1;
 
-	private ArrayList<Point> placeholderIntPositions = null;
-	private ArrayList<Point> intPositions = null;
+	private ArrayList<Point>		placeholderIntPositions	= null;
+	private ArrayList<Point>		intPositions			= null;
 
 	/**
 	 * Has StringEx placeholders?
 	 */
-	private boolean containsPlaceholder = Boolean.FALSE;
+	private boolean					containsPlaceholder		= Boolean.FALSE;
 
 	/**
 	 * Has StringEx placeholders of type Int?
 	 */
-	private boolean containsIntPlaceholder = Boolean.FALSE;
+	private boolean					containsIntPlaceholder	= Boolean.FALSE;
 
 	/**
 	 * Is complete StringEx int?
 	 */
-	private boolean isInt = Boolean.FALSE;
+	private boolean					isInt					= Boolean.FALSE;
 
 	public StringEx(final String string, final Integer type, final int listIndex) {
 		this.string = string;
@@ -59,8 +75,7 @@ public class StringEx {
 		}
 	}
 
-	public StringEx(final String string, final Integer type,
-			final int listIndex, ArrayList<CharacterEx> characterList) {
+	public StringEx(final String string, final Integer type, final int listIndex, ArrayList<CharacterEx> characterList) {
 		this.string = string;
 		this.listIndex = listIndex;
 		this.characterList = characterList;
@@ -81,15 +96,12 @@ public class StringEx {
 	 * @param output
 	 */
 	private void parseCharacters(boolean output) {
-		this.containsPlaceholder = StringEx
-				.containsPlaceholder(this.characterList);
-		this.containsIntPlaceholder = StringEx
-				.containsIntPlaceholder(this.characterList);
+		this.containsPlaceholder = StringEx.containsPlaceholder(this.characterList);
+		this.containsIntPlaceholder = StringEx.containsIntPlaceholder(this.characterList);
 		this.isInt = StringEx.isInt(this.characterList);
 
 		if (this.containsIntPlaceholder) {
-			this.placeholderIntPositions = StringEx.getIntPositions(
-					this.characterList, Boolean.TRUE);
+			this.placeholderIntPositions = StringEx.getIntPositions(this.characterList, Boolean.TRUE);
 
 			if (output) {
 				System.out.println("");
@@ -98,8 +110,7 @@ public class StringEx {
 				System.out.println("|------------------------|");
 				System.out.println("");
 				for (Point point : this.placeholderIntPositions) {
-					System.out.println("Ints @ pos (" + point.x + " / "
-							+ point.y + "):");
+					System.out.println("Ints @ pos (" + point.x + " / " + point.y + "):");
 					int count = point.y - point.x + 1;
 					for (int i = 0; i < count; i++) {
 						System.out.print(this.characterList.get(point.x + i));
@@ -108,8 +119,7 @@ public class StringEx {
 				}
 			}
 		}
-		this.intPositions = StringEx.getIntPositions(this.characterList,
-				Boolean.FALSE);
+		this.intPositions = StringEx.getIntPositions(this.characterList, Boolean.FALSE);
 		if (output) {
 			System.out.println("");
 			System.out.println("|------------------------|");
@@ -117,8 +127,7 @@ public class StringEx {
 			System.out.println("|------------------------|");
 			System.out.println("");
 			for (Point point : this.intPositions) {
-				System.out.println("Ints @ pos (" + point.x + " / " + point.y
-						+ "):");
+				System.out.println("Ints @ pos (" + point.x + " / " + point.y + "):");
 				int count = point.y - point.x + 1;
 				for (int i = 0; i < count; i++) {
 					System.out.print(this.characterList.get(point.x + i));
@@ -138,19 +147,15 @@ public class StringEx {
 			}
 			System.out.println("");
 			for (CharacterEx character : this.characterList) {
-				System.out
-						.print(character.getType() == CharacterEx.TYPE_INTEGER ? "^"
-								: " ");
+				System.out.print(character.getType() == CharacterEx.TYPE_INTEGER ? "^" : " ");
 			}
 			System.out.println("");
 			System.out.println("|------------------------|");
 			System.out.println("|         GENERAL        |");
 			System.out.println("|------------------------|");
 			System.out.println("");
-			System.out.println("Contains Placeholder: "
-					+ this.containsPlaceholder);
-			System.out.println("Contains Integer Placeholder: "
-					+ this.containsIntPlaceholder);
+			System.out.println("Contains Placeholder: " + this.containsPlaceholder);
+			System.out.println("Contains Integer Placeholder: " + this.containsIntPlaceholder);
 			System.out.println("Is int: " + this.isInt);
 		}
 
@@ -161,8 +166,7 @@ public class StringEx {
 		} else if (!containsIntPlaceholder && containsPlaceholder && !isInt) {
 			this.type = StringEx.TYPE_STRING;
 
-			if (this.string == null && this.characterList != null
-					&& characterList.size() > 0) {
+			if (this.string == null && this.characterList != null && characterList.size() > 0) {
 				this.string = "";
 				for (CharacterEx characterEx : characterList) {
 					this.string += characterEx.getC();
@@ -174,33 +178,25 @@ public class StringEx {
 
 	@Override
 	public String toString() {
-		String result = this.string;
-		if (characterList != null) {
-			result = "";
-			for (CharacterEx characterEx : characterList) {
-				result += characterEx.toString();
-			}
-		}
-
-		return result;
+		return this.getString();
 	}
 
-	private static ArrayList<Point> getIntPositions(
-			final ArrayList<CharacterEx> characterList,
+	private static ArrayList<Point> getIntPositions(final ArrayList<CharacterEx> characterList,
 			final boolean onlyPlaceholder) {
 		ArrayList<Point> tempList = new ArrayList<Point>();
 		int start = -1;
 		int count = 0;
 		for (CharacterEx characterEx : characterList) {
-			if ((onlyPlaceholder && characterEx.isPlaceholder() && characterEx
-					.getType() == CharacterEx.TYPE_INTEGER)
+			if ((onlyPlaceholder && characterEx.isPlaceholder() && characterEx.getType() == CharacterEx.TYPE_INTEGER)
 					|| (!onlyPlaceholder && characterEx.getType() == CharacterEx.TYPE_INTEGER)) {
 				if (start == -1) {
 					count = 0;
 					start = characterList.indexOf(characterEx);
 				}
 				count++;
-				if(characterList.indexOf(characterEx) == characterList.size()-1){ // if last element
+				if (characterList.indexOf(characterEx) == characterList.size() - 1) { // if
+																						// last
+																						// element
 					tempList.add(new Point(start, start + count - 1));
 				}
 			} else {
@@ -214,19 +210,16 @@ public class StringEx {
 		return tempList;
 	}
 
-	private static boolean containsIntPlaceholder(
-			final ArrayList<CharacterEx> characterList) {
+	private static boolean containsIntPlaceholder(final ArrayList<CharacterEx> characterList) {
 		for (CharacterEx characterEx : characterList) {
-			if (characterEx.isPlaceholder()
-					&& characterEx.getType() == CharacterEx.TYPE_INTEGER) {
+			if (characterEx.isPlaceholder() && characterEx.getType() == CharacterEx.TYPE_INTEGER) {
 				return Boolean.TRUE;
 			}
 		}
 		return Boolean.FALSE;
 	}
 
-	private static boolean containsPlaceholder(
-			final ArrayList<CharacterEx> characterList) {
+	private static boolean containsPlaceholder(final ArrayList<CharacterEx> characterList) {
 		for (CharacterEx characterEx : characterList) {
 			if (characterEx.isPlaceholder()) {
 				return Boolean.TRUE;
@@ -248,7 +241,15 @@ public class StringEx {
 	 * @return the string
 	 */
 	public String getString() {
-		return string;
+		String result = this.string;
+		if (characterList != null) {
+			result = "";
+			for (CharacterEx characterEx : characterList) {
+				result += characterEx.toString();
+			}
+			this.string = result;
+		}
+		return this.string;
 	}
 
 	/**

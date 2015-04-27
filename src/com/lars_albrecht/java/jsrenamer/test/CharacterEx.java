@@ -9,14 +9,14 @@ package com.lars_albrecht.java.jsrenamer.test;
  */
 public class CharacterEx {
 
-	public static final int TYPE_UNKNOWN = -1;
-	public static final int TYPE_STRING = 0;
-	public static final int TYPE_INTEGER = 1;
+	public static final int	TYPE_UNKNOWN	= -1;
+	public static final int	TYPE_STRING		= 0;
+	public static final int	TYPE_INTEGER	= 1;
 
-	private char c;
-	private int type = CharacterEx.TYPE_UNKNOWN;
-	private boolean isPlaceholder = Boolean.FALSE;
-	private boolean isDynamic = Boolean.FALSE;
+	private char			c;
+	private int				type			= CharacterEx.TYPE_UNKNOWN;
+	private boolean			isPlaceholder	= Boolean.FALSE;
+	private boolean			isDynamic		= Boolean.FALSE;
 
 	@SuppressWarnings("unused")
 	private CharacterEx() {
@@ -31,8 +31,12 @@ public class CharacterEx {
 		this.type = type;
 	}
 
-	public CharacterEx(final Character c, final int type,
-			final boolean isPlaceholder/*, final boolean isDynamic*/) {
+	public CharacterEx(final Character c, final int type, final boolean isPlaceholder/*
+																					 * ,
+																					 * final
+																					 * boolean
+																					 * isDynamic
+																					 */) {
 		this.c = c;
 		this.type = type;
 		this.isPlaceholder = isPlaceholder;

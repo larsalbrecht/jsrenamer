@@ -39,6 +39,9 @@ public class StringEx implements Iterable<CharacterEx> {
 	 */
 	private boolean isInt = Boolean.FALSE;
 
+	public int startIndex = -1;
+	public int endIndex = -1;
+
 	public int length;
 
 	public static boolean isInteger(String s) {
