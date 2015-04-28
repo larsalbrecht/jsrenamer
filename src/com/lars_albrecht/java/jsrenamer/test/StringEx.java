@@ -90,6 +90,20 @@ public class StringEx {
 		}
 	}
 
+	public StringEx(final String string, final Integer type, final int listIndex, final boolean retype) {
+		this.string = string;
+		this.listIndex = listIndex;
+		if(retype){
+			if (type > StringEx.TYPE_DUMMY && type <= StringEx.TYPE_UNKNOWN) {
+				this.type = StringEx.TYPE_UNKNOWN;
+			} else {
+				this.type = type;
+			}
+		} else {
+			this.type = type;
+		}
+	}
+
 	/**
 	 * Parse characters and define this type.
 	 *

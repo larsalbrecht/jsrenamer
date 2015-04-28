@@ -6,7 +6,9 @@ package com.lars_albrecht.java.jsrenamer.test;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -17,14 +19,15 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class PatternParser {
 
-	public static final int					LOOK_FORWARD	= 0;
-	public static final int					LOOK_BACKWARD	= 1;
+	public static final int					LOOK_FORWARD		= 0;
+	public static final int					LOOK_BACKWARD		= 1;
 
-	private ArrayList<String>				inputList		= null;
-	private ArrayList<ArrayList<String>>	separatedList	= null;
-	private String							pattern			= null;
-	private String							separator		= null;
-	private ArrayList<StringEx>				result			= null;
+	private ArrayList<String>				inputList			= null;
+	private ArrayList<ArrayList<String>>	separatedList		= null;
+	private ArrayList<ArrayList<StringEx>>	separatedTypedList	= null;
+	private String							pattern				= null;
+	private String							separator			= null;
+	private ArrayList<StringEx>				result				= null;
 
 	public PatternParser(final ArrayList<String> inputList, final String pattern, final String separator) {
 		this.inputList = inputList;
@@ -45,12 +48,82 @@ public class PatternParser {
 
 		this.result = this.getMergedResult(compareResultForward, compareResultBackward);
 		this.result = this.cleanUpResult(this.result);
-		System.out.println(compareResultForward.getResultList());
-		System.out.println(compareResultBackward.getResultList());
-		System.out.println(this.result);
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
+		this.separatedTypedList = this.getTypedList(this.separatedList, this.result);
+	}
+
+	/**
+	 *
+	 * Create a new ArrayList of ArrayList<StringEx> with the needed values
+	 * (StringEx.TYPE_HARDSTRING and StringEx.TYPE_STRINGINTEGER)
+	 *
+	 * @param separatedList
+	 * @param resultList
+	 * @return separatedTypedList
+	 */
+	private ArrayList<ArrayList<StringEx>> getTypedList(ArrayList<ArrayList<String>> separatedList, ArrayList<StringEx> resultList) {
+		ArrayList<ArrayList<StringEx>> separatedTypedList = new ArrayList<ArrayList<StringEx>>();
+		ArrayList<StringEx> tempList = null;
+		for (ArrayList<String> arrayList : separatedList) { // for all strings
+			tempList = new ArrayList<StringEx>();
+			for (int i = 0; i < arrayList.size(); i++) { // for each string
+				if (i < resultList.size() && this.addToTypedList(arrayList.get(i), resultList.get(i))) {
+					tempList.add(new StringEx(arrayList.get(i), StringEx.TYPE_HARDSTRING, i));
+				} else {
+					tempList.add(new StringEx(arrayList.get(i), StringEx.TYPE_UNKNOWN, i, Boolean.FALSE));
+				}
+			}
+			tempList = this.cleanUpTempTypedList(tempList, resultList);
+			separatedTypedList.add(tempList);
+		}
+		return separatedTypedList;
+	}
+
+	/**
+	 * Cleans the typedList. Remove StringEx.TYPE_DUMMY entries and set entries
+	 * with type StringEx.TYPE_UNKNOWN to type StringEx.TYPE_STRING.
+	 *
+	 * @param typedList
+	 * @param resultList
+	 * @return typedList
+	 */
+	private ArrayList<StringEx> cleanUpTempTypedList(final ArrayList<StringEx> typedList, final ArrayList<StringEx> resultList) {
+		// reverse lists to work from end to start easily
+		Collections.reverse(resultList);
+		Collections.reverse(typedList);
+		int i = 0;
+		System.out.println("Before: " + typedList);
+		boolean removeComplete = Boolean.FALSE;
+		for (Iterator<StringEx> iterator = typedList.iterator(); iterator.hasNext();) {
+			StringEx string = iterator.next();
+			if (!removeComplete && string.getString().equals(resultList.get(i).getString())) {
+				iterator.remove();
+			} else {
+				removeComplete = Boolean.TRUE;
+				if (string.getType().equals(StringEx.TYPE_UNKNOWN)) {
+					string.setType(StringEx.TYPE_STRING);
+				}
+			}
+			i++;
+		}
+
+		Collections.reverse(resultList);
+		Collections.reverse(typedList);
+		return typedList;
+	}
+
+	/**
+	 * Checks if the given original String can be added to list. The element
+	 * will be added to list if:<br>
+	 * - compareable is not null<br>
+	 * - both are of type StringEx.TYPE_HARDSTRING or type
+	 * StringEx.TYPE_STRINGINTEGER<br>
+	 *
+	 * @param original
+	 * @param compareable
+	 * @return Boolean.TRUE|Boolean.FALSE
+	 */
+	private boolean addToTypedList(final String original, final StringEx compareable) {
+		return (compareable.getString() != null && compareable.getType().equals(StringEx.TYPE_HARDSTRING) || compareable.getType().equals(StringEx.TYPE_STRINGINTEGER));
 	}
 
 	/**
@@ -97,13 +170,13 @@ public class PatternParser {
 		System.out.println("");
 		String splitter = " - ";
 		ArrayList<String> splittedPattern = new ArrayList<String>(Arrays.asList(pattern.split(splitter)));
-		System.out.println("ALLLIST: " + this.separatedList);
+		System.out.println("ALLLIST: " + this.separatedTypedList);
 
 		/*
 		 * each SplittedPattern if(matches...) each string
 		 */
 		int patternIndex = 0;
-		for (ArrayList<String> stringList : this.separatedList) {
+		for (ArrayList<StringEx> stringList : this.separatedTypedList) {
 			tempStr = "";
 			patternIndex = 0;
 			boolean added = Boolean.FALSE;
@@ -113,27 +186,26 @@ public class PatternParser {
 					for (int i = 0; i < this.result.size(); i++) {
 						int type = this.result.get(i).getType();
 						if (type == StringEx.TYPE_HARDSTRING) {
-							tempStr += this.result.get(i).getString();
+							tempStr += this.result.get(i).getString() + " ";
 							added = Boolean.TRUE;
 						}
 					}
+					tempStr = tempStr.trim();
 				} else if (string.matches("^\\[S\\]{1}$")) {
-					for (int i = 0; i < this.result.size(); i++) {
-						int type = this.result.get(i).getType();
+					for (int i = 0; i < stringList.size(); i++) {
+						int type = stringList.get(i).getType();
 						if (type == StringEx.TYPE_STRING) {
-							tempStr += ">CONCATINATE STRINGS FOR THIS POSITION<"; // TODO
-																					// Fill
-																					// this
-																					// correctly
+							tempStr += stringList.get(i).getString().trim() + " ";
 							added = Boolean.TRUE;
 						}
 					}
+					tempStr = tempStr.trim();
 				} else if (string.matches("^\\[SI\\]{1}$")) {
 					for (int i = 0; i < this.result.size(); i++) {
 						int type = this.result.get(i).getType();
 						if (type == StringEx.TYPE_STRINGINTEGER) {
-							tempStr += this.getStringForIntPosition(this.result.get(i), stringList.get(this.result.get(
-									i).getListIndex()), this.result.get(i).getPlaceholderIntPositions());
+							tempStr += this.getStringForIntPosition(this.result.get(i), stringList.get(this.result.get(i).getListIndex()).getString(), this.result.get(i)
+									.getPlaceholderIntPositions());
 							added = Boolean.TRUE;
 						}
 					}
@@ -175,8 +247,7 @@ public class PatternParser {
 		 */
 	}
 
-	private String getStringForIntPosition(StringEx originalStringItem, String replaceStringItem,
-			ArrayList<Point> placeholderIntPositions) {
+	private String getStringForIntPosition(StringEx originalStringItem, String replaceStringItem, ArrayList<Point> placeholderIntPositions) {
 		String result = originalStringItem.getString();
 		StringBuilder resultBuilder = null;
 		for (Point point : placeholderIntPositions) {
@@ -200,8 +271,7 @@ public class PatternParser {
 	private ArrayList<StringEx> getMergedResult(CompareResult compareResultForward, CompareResult compareResultBackward) {
 		ArrayList<StringEx> resultList = compareResultForward.getResultList();
 		for (int i = 0; i < resultList.size(); i++) {
-			if ((resultList.get(i).getType().equals(compareResultBackward.getResultList().get(i).getType()) && compareResultBackward
-					.getResultList().get(i).getType() >= StringEx.TYPE_INTEGER)
+			if ((resultList.get(i).getType().equals(compareResultBackward.getResultList().get(i).getType()) && compareResultBackward.getResultList().get(i).getType() >= StringEx.TYPE_INTEGER)
 					|| (compareResultBackward.getResultList().get(i).getType() != StringEx.TYPE_UNKNOWN)) {
 				StringEx tempStringEx = compareResultBackward.getResultList().get(i);
 				if (tempStringEx.getType().equals(StringEx.TYPE_HARDSTRING)) {
@@ -220,8 +290,7 @@ public class PatternParser {
 	 * @param separatedList
 	 * @return CompareResult
 	 */
-	private CompareResult getCompared(int compareDirection, ArrayList<String> baseStringList,
-			ArrayList<ArrayList<String>> separatedList) {
+	private CompareResult getCompared(int compareDirection, ArrayList<String> baseStringList, ArrayList<ArrayList<String>> separatedList) {
 
 		ArrayList<StringEx> resultList = new ArrayList<StringEx>();
 
@@ -277,16 +346,13 @@ public class PatternParser {
 							Collections.reverse(testSeparatedList);
 						}
 						// compare by characters
-						ArrayList<CharacterEx> characterList = this.getCharacterList(baseStringList.get(i),
-								testSeparatedList.get(i));
+						ArrayList<CharacterEx> characterList = this.getCharacterList(baseStringList.get(i), testSeparatedList.get(i));
 						StringEx tempStringEx = new StringEx(null, StringEx.TYPE_UNKNOWN, index, characterList);
 
 						if (i < resultList.size()) {
-							if ((resultList.get(i).getType() != tempStringEx.getType() && tempStringEx.getType() > resultList
-									.get(i).getType())
+							if ((resultList.get(i).getType() != tempStringEx.getType() && tempStringEx.getType() > resultList.get(i).getType())
 									|| resultList.get(i).getType() == tempStringEx.getType()
-									&& (resultList.get(i).getPlaceholderIntPositions() == null || resultList.get(i)
-											.getPlaceholderIntPositions().size() == tempStringEx
+									&& (resultList.get(i).getPlaceholderIntPositions() == null || resultList.get(i).getPlaceholderIntPositions().size() == tempStringEx
 											.getPlaceholderIntPositions().size())) {
 								resultList.set(i, tempStringEx);
 							}
@@ -340,28 +406,15 @@ public class PatternParser {
 						if (testChars.length - 1 >= i) {
 							if (baseChars[i].equals(testChars[i])) {
 								if (resultList.isEmpty() || resultList.size() <= i) {
-									resultList.add(new CharacterEx(baseChars[i], CharacterEx
-											.getTypeForChar(baseChars[i]), Boolean.FALSE));
-									System.out.println("add - equal -> " + baseChars[i] + " | " + testChars[i]);
+									resultList.add(new CharacterEx(baseChars[i], CharacterEx.getTypeForChar(baseChars[i]), Boolean.FALSE));
 								} else if ((resultList.get(i).getC() != baseChars[i].charValue())) {
-									System.out.println("set - equal -> " + baseChars[i] + " | " + testChars[i]);
-									resultList.set(
-											i,
-											new CharacterEx(placeholder, CharacterEx.getTypeForChars(resultList.get(i),
-													baseChars[i]), Boolean.TRUE));
+									resultList.set(i, new CharacterEx(placeholder, CharacterEx.getTypeForChars(resultList.get(i), baseChars[i]), Boolean.TRUE));
 								}
 							} else {
 								if (resultList.isEmpty() || resultList.size() <= i) {
-									System.out.println("add - unequal -> " + baseChars[i] + " | " + testChars[i]);
-									resultList.add(new CharacterEx(placeholder, CharacterEx.getTypeForChars(
-											baseChars[i], testChars[i]), Boolean.TRUE));
-									System.out.println(resultList.get(resultList.size() - 1));
+									resultList.add(new CharacterEx(placeholder, CharacterEx.getTypeForChars(baseChars[i], testChars[i]), Boolean.TRUE));
 								} else if (!(resultList.get(i).getC() == placeholder)) {
-									System.out.println("set - unequal -> " + baseChars[i] + " | " + testChars[i]);
-									resultList.set(
-											i,
-											new CharacterEx(placeholder, CharacterEx.getTypeForChars(resultList.get(i),
-													testChars[i]), Boolean.TRUE));
+									resultList.set(i, new CharacterEx(placeholder, CharacterEx.getTypeForChars(resultList.get(i), testChars[i]), Boolean.TRUE));
 								}
 							}
 						}
