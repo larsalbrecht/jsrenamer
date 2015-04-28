@@ -27,14 +27,16 @@ public class PatternParser {
 	private ArrayList<ArrayList<StringEx>>	separatedTypedList	= null;
 	private String							pattern				= null;
 	private String							separator			= null;
+	private String							splitter			= null;
 	private ArrayList<StringEx>				result				= null;
 
-	public PatternParser(final ArrayList<String> inputList, final String pattern, final String separator) {
+	public PatternParser(final ArrayList<String> inputList, final String pattern, final String separator, final String splitter) {
 		this.inputList = inputList;
 		this.pattern = pattern;
 		if (separator != null) {
 			this.separator = Pattern.quote(separator);
 		}
+		this.splitter = splitter;
 	}
 
 	/**
@@ -91,7 +93,6 @@ public class PatternParser {
 		Collections.reverse(resultList);
 		Collections.reverse(typedList);
 		int i = 0;
-		System.out.println("Before: " + typedList);
 		boolean removeComplete = Boolean.FALSE;
 		for (Iterator<StringEx> iterator = typedList.iterator(); iterator.hasNext();) {
 			StringEx string = iterator.next();
@@ -164,13 +165,10 @@ public class PatternParser {
 		return --index;
 	}
 
-	public void getStrings() {
+	public ArrayList<String> getStrings() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
 		String tempStr = null;
-		System.out.println("GET STRINGS NOW");
-		System.out.println("");
-		String splitter = " - ";
-		ArrayList<String> splittedPattern = new ArrayList<String>(Arrays.asList(pattern.split(splitter)));
-		System.out.println("ALLLIST: " + this.separatedTypedList);
+		ArrayList<String> splittedPattern = new ArrayList<String>(Arrays.asList(pattern.split(this.splitter)));
 
 		/*
 		 * each SplittedPattern if(matches...) each string
@@ -210,41 +208,17 @@ public class PatternParser {
 						}
 					}
 				} else if (string.matches("^\\[D\\]{1}$")) {
-					/*
-					 * for (int i = 0; i < this.result.size(); i++) { int type =
-					 * this.result.get(i).getType(); if(type ==
-					 * StringEx.TYPE_DUMMY){ tempStr += "X"; added =
-					 * Boolean.TRUE; System.out.println("XXXXX"); } }
-					 */
+					// ITS DUMMY, DONT DO ANYTHING
 				}
 				if (patternIndex < (splittedPattern.size() - 1) && added) {
-					tempStr += splitter;
+					tempStr += this.splitter;
 				}
 				patternIndex++;
 			}
-			System.out.println(tempStr);
+			resultStrings.add(tempStr);
 		}
 
-		/*
-		 * for (ArrayList<String> stringList : this.separatedList) {
-		 * System.out.println(stringList); tempStr = "";
-		 * System.out.println("Results: " + this.result.size()); for (int i = 0;
-		 * i < this.result.size(); i++) { int type =
-		 * this.result.get(i).getType(); System.out.println("Find type: " +
-		 * this.result.get(i).getType()); for (String string : splittedPattern)
-		 * { if (string.matches("^\\[SH\\]{1}$") && type ==
-		 * StringEx.TYPE_HARDSTRING) { tempStr += this.result.get(i).getString()
-		 * + " "; } else if (string.matches("^\\[S\\]{1}$")) {
-		 *
-		 * } else if (string.matches("^\\[SI\\]{1}$") && type ==
-		 * StringEx.TYPE_STRINGINTEGER) { tempStr +=
-		 * this.getStringForIntPosition(this.result.get(i),
-		 * stringList.get(this.result.get(i).getListIndex()),
-		 * this.result.get(i).getPlaceholderIntPositions()); } else if
-		 * (string.matches("^\\[D\\]{1}$") && type == StringEx.TYPE_DUMMY) {
-		 *
-		 * } } } System.out.println(tempStr); }
-		 */
+		return resultStrings;
 	}
 
 	private String getStringForIntPosition(StringEx originalStringItem, String replaceStringItem, ArrayList<Point> placeholderIntPositions) {
