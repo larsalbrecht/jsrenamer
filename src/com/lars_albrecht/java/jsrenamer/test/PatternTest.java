@@ -34,10 +34,7 @@ public class PatternTest {
 		testList.add("Greys.Anatomy.S11E10.Der.letzte.Einsiedler.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E11.Hoellenqualen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 
-		String pattern = "[SH] - [SI] - [S]";
-		String separator = ".";
-
-		PatternParser pp = new PatternParser(testList, pattern, separator, " - ");
+		PatternParser pp = new PatternParser(testList, "[SH] - [SI] - [S]", ".", " - ");
 		pp.parse();
 		for (String string : pp.getStrings()) {
 			System.out.println(string);
@@ -61,10 +58,7 @@ public class PatternTest {
 		testList.add("Sleepy.Hollow.S01E12.Der.Unverzichtbare.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
 		testList.add("Sleepy.Hollow.S01E13.Hoelle.auf.Erden.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
 
-		String pattern = "[SH] - [SI] - [S]";
-		String separator = ".";
-
-		PatternParser pp = new PatternParser(testList, pattern, separator, " - ");
+		PatternParser pp = new PatternParser(testList, "[SH] - [SI] - [S]", ".", " - ");
 		pp.parse();
 		for (String string : pp.getStrings()) {
 			System.out.println(string);
@@ -74,7 +68,7 @@ public class PatternTest {
 	private void test3(){
 		ArrayList<String> testList = new ArrayList<String>();
 
-		testList.add("2.Broke.Girls.S02E01.Die.Glueckskette.GERMAN.DUBBED.DL.720p.HDTV.x264-TVP");
+		testList.add("2.Broke.Girls.S02E01.Die.Glueckskette.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 		testList.add("2.Broke.Girls.S02E02.Die.Glueckskette.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 		testList.add("2.Broke.Girls.S02E03.And.the.Hold.Up.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 		testList.add("2.Broke.Girls.S02E04.Cupcake.Wars.GERMAN.DUBBED.720p.HDTV.x264-TVP");
@@ -99,10 +93,7 @@ public class PatternTest {
 		testList.add("2.Broke.Girls.S02E22.And.The.Extra.Work.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 		testList.add("2.Broke.Girls.S02E23.And.the.Tip.Slip.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 
-		String pattern = "[SH] - [SI] - [S]";
-		String separator = ".";
-
-		PatternParser pp = new PatternParser(testList, pattern, separator, " - ");
+		PatternParser pp = new PatternParser(testList, "[SH] - [SI] - [S]", ".", " - ");
 		pp.parse();
 		for (String string : pp.getStrings()) {
 			System.out.println(string);
