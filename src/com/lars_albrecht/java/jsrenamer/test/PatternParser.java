@@ -46,10 +46,14 @@ public class PatternParser {
 		this.separatedList = this.separateBySeparator(inputList, separator);
 		ArrayList<String> baseStringList = this.getLongestItem(separatedList);
 		CompareResult compareResultForward = this.getCompared(LOOK_FORWARD, baseStringList, separatedList);
+		System.out.println(compareResultForward.getResultList());
 		CompareResult compareResultBackward = this.getCompared(LOOK_BACKWARD, baseStringList, separatedList);
+		System.out.println(compareResultBackward.getResultList());
 
 		this.result = this.getMergedResult(compareResultForward, compareResultBackward);
+		System.out.println(this.result);
 		this.result = this.cleanUpResult(this.result);
+		System.out.println(this.result);
 		this.separatedTypedList = this.getTypedList(this.separatedList, this.result);
 	}
 
