@@ -63,15 +63,19 @@ public class PatternParser {
 		if (list != null) {
 			System.out.println("DEBUG:");
 			for (CharacterEx characterEx : list) {
-				System.out.print(PatternParser.padLeft(characterEx.getCharacter() != null ? characterEx.getCharacter().toString() : "*", 2));
+				System.out.print(PatternParser.padLeft(characterEx.getCharacter() != null ? characterEx.getCharacter().toString() : "*", 3));
 			}
 			System.out.println("");
 			for (CharacterEx characterEx : list) {
-				System.out.print(PatternParser.padLeft(Integer.toString(characterEx.getCharacterType()), 2));
+				System.out.print(PatternParser.padLeft(Integer.toString(characterEx.getCharacterType()), 3));
 			}
 			System.out.println("");
 			for (CharacterEx characterEx : list) {
-				System.out.print(PatternParser.padLeft(characterEx.getCompareDirection() == 0 ? "<" : ">", 2));
+				System.out.print(PatternParser.padLeft(characterEx.getCompareDirection() == 0 ? "<" : ">", 3));
+			}
+			System.out.println("");
+			for(int i = 0; i < list.size()-1; i++){
+				System.out.print(PatternParser.padLeft(Integer.toString(i), 3));
 			}
 			System.out.println("");
 			System.out.println("");
@@ -94,19 +98,20 @@ public class PatternParser {
 	private ArrayList<CharacterEx> getComparedString() {
 		String baseString = this.getBaseItem(this.inputList);
 		ArrayList<CharacterEx> forwardString = this.getCompared(LOOK_FORWARD, baseString, this.inputList);
-		ArrayList<CharacterEx> backwardString = this.getCompared(LOOK_BACKWARD, baseString, this.inputList);
-		ArrayList<CharacterEx> mergedString = this.getMergedResult(forwardString, backwardString);
-		ArrayList<CharacterEx> cleanedString = this.getCleanedResult(mergedString);
+//		ArrayList<CharacterEx> backwardString = this.getCompared(LOOK_BACKWARD, baseString, this.inputList);
+//		ArrayList<CharacterEx> mergedString = this.getMergedResult(forwardString, backwardString);
+//		ArrayList<CharacterEx> cleanedString = this.getCleanedResult(mergedString);
 		System.out.println("FORWARD: " + forwardString);
 		debugPringCharacterEx(forwardString);
-		System.out.println("BACKWAR: " + backwardString);
-		debugPringCharacterEx(backwardString);
-		System.out.println("MERGED : " + mergedString);
-		debugPringCharacterEx(mergedString);
-		System.out.println("CLEANED: " + cleanedString);
-		debugPringCharacterEx(cleanedString);
-		System.out.println("");
-		return cleanedString;
+//		System.out.println("BACKWAR: " + backwardString);
+//		debugPringCharacterEx(backwardString);
+//		System.out.println("MERGED : " + mergedString);
+//		debugPringCharacterEx(mergedString);
+//		System.out.println("CLEANED: " + cleanedString);
+//		debugPringCharacterEx(cleanedString);
+//		System.out.println("");
+//		return cleanedString;
+		return null;
 	}
 
 	/**
@@ -213,6 +218,7 @@ public class PatternParser {
 					toLongDiff = diff;
 				} else {
 					// do nothing
+					System.out.println("baseCharArr.length > index" + baseCharArr.length + " > " + index);
 				}
 			}
 		}
