@@ -3,6 +3,7 @@
 2.Broke.Girls.S02E03.And.the.Hold.Up.GERMAN.DUBBED.720p.HDTV.x264-TVP
 Result:
 2.Broke.Girls.S02E0*.*.GERMAN.DUBBED.720p.HDTV.x264-TVP
+
 // PATTERN MATCH
 [HS].[HIS].[S].[D]
 Result:

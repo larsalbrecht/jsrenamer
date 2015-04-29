@@ -13,11 +13,11 @@ public class PatternTest {
 
 	public static void main(String[] args) {
 		PatternTest pt = new PatternTest();
-		// pt.test1();
-		// System.out.println("");
-		// pt.test2();
-		// System.out.println("");
-		pt.test3();
+		pt.test1();
+		System.out.println("");
+//		pt.test2();
+		System.out.println("");
+//		pt.test3();
 	}
 
 	private void test1() {
