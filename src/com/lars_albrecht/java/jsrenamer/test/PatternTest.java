@@ -22,7 +22,6 @@ public class PatternTest {
 
 	private void test1() {
 		ArrayList<String> testList = new ArrayList<String>();
-
 		testList.add("Greys.Anatomy.S11E01.Im.Wind.verloren.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E02.Das.fehlende.Puzzleteil.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 		testList.add("Greys.Anatomy.S11E03.Irrtum.ausgeschlossen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");

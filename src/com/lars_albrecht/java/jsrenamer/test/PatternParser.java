@@ -188,6 +188,9 @@ public class PatternParser {
 					Character baseChar = baseCharArr[index];
 					Character testChar = testCharArr[index];
 					if (index >= resultList.size()) { // add
+						if(index == 57){
+							System.out.println("X");
+						}
 						if (baseChar.equals(testChar)) {
 							resultList.add(new CharacterEx(baseChar, compareDirection, CharacterEx.getCharacterType(baseChar, testChar)));
 						} else {
