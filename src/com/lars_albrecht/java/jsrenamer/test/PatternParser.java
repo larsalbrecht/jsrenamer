@@ -74,8 +74,12 @@ public class PatternParser {
 				System.out.print(PatternParser.padLeft(characterEx.getCompareDirection() == 0 ? "<" : ">", 3));
 			}
 			System.out.println("");
-			for(int i = 0; i < list.size()-1; i++){
+			for (int i = 0; i < list.size() - 1; i++) {
 				System.out.print(PatternParser.padLeft(Integer.toString(i), 3));
+			}
+			System.out.println("");
+			for (CharacterEx characterEx : list) {
+				System.out.print(PatternParser.padLeft(Integer.toString(characterEx.getPosition()), 3));
 			}
 			System.out.println("");
 			System.out.println("");
@@ -92,7 +96,20 @@ public class PatternParser {
 	public void parse() {
 		ArrayList<CharacterEx> mergedString = this.getComparedString();
 		System.out.println(mergedString);
+		ArrayList<StringEx> patternMatchedString = this.getPatternMatchedString(mergedString);
+		System.out.println(patternMatchedString);
+	}
 
+	private ArrayList<StringEx> getPatternMatchedString(final ArrayList<CharacterEx> mergedString) {
+		String pattern = this.inputPattern;
+		System.out.println(pattern);
+
+		for (CharacterEx characterEx : mergedString) {
+				System.out.print(characterEx.getCharacter());
+		}
+		System.out.println("");
+
+		return null;
 	}
 
 	private ArrayList<CharacterEx> getComparedString() {
@@ -101,15 +118,15 @@ public class PatternParser {
 		ArrayList<CharacterEx> backwardString = this.getCompared(LOOK_BACKWARD, baseString, this.inputList);
 		ArrayList<CharacterEx> mergedString = this.getMergedResult(forwardString, backwardString);
 		ArrayList<CharacterEx> cleanedString = this.getCleanedResult(mergedString);
-//		System.out.println("FORWARD: " + forwardString);
-//		debugPringCharacterEx(forwardString);
-//		System.out.println("BACKWAR: " + backwardString);
-//		debugPringCharacterEx(backwardString);
-//		System.out.println("MERGED : " + mergedString);
-//		debugPringCharacterEx(mergedString);
-//		System.out.println("CLEANED: " + cleanedString);
-//		debugPringCharacterEx(cleanedString);
-//		System.out.println("");
+		// System.out.println("FORWARD: " + forwardString);
+		// debugPringCharacterEx(forwardString);
+		// System.out.println("BACKWAR: " + backwardString);
+		// debugPringCharacterEx(backwardString);
+		// System.out.println("MERGED : " + mergedString);
+		// debugPringCharacterEx(mergedString);
+		// System.out.println("CLEANED: " + cleanedString);
+		// debugPringCharacterEx(cleanedString);
+		// System.out.println("");
 		return cleanedString;
 	}
 
@@ -138,7 +155,7 @@ public class PatternParser {
 				start = index;
 				int lastUnknown = this.getNextUnknown(mergedString, start);
 				if (lastUnknown > start) {
-					for (int i = lastUnknown ; i > start; i--) {
+					for (int i = lastUnknown; i > start; i--) {
 						result.remove(i);
 					}
 					CharacterEx temp = result.get(start);
@@ -193,20 +210,20 @@ public class PatternParser {
 					Character testChar = testCharArr[index];
 					if (index >= resultList.size()) { // add
 						if (baseChar.equals(testChar)) {
-							resultList.add(new CharacterEx(baseChar, compareDirection, CharacterEx.getCharacterType(baseChar, testChar)));
+							resultList.add(new CharacterEx(baseChar, compareDirection, index, CharacterEx.getCharacterType(baseChar, testChar)));
 						} else {
-							resultList.add(new CharacterEx(null, compareDirection, CharacterEx.getCharacterType(baseChar, testChar)));
+							resultList.add(new CharacterEx(null, compareDirection, index, CharacterEx.getCharacterType(baseChar, testChar)));
 						}
 					} else { // replace
 						if (!testChar.equals(resultList.get(index).getCharacter())) {
-							resultList.set(index, new CharacterEx(null, compareDirection, CharacterEx.getCharacterType(baseChar, testChar, resultList.get(index))));
+							resultList.set(index, new CharacterEx(null, compareDirection, index, CharacterEx.getCharacterType(baseChar, testChar, resultList.get(index))));
 						}
 					}
 				} else if (!toLong || diff > toLongDiff) { // add empty
 															// characters
 					toLong = Boolean.TRUE;
 					for (int i = 0; i < diff; i++) {
-						resultList.add(new CharacterEx(null, compareDirection));
+						resultList.add(new CharacterEx(null, compareDirection, (i + index)));
 					}
 					toLongDiff = diff;
 				} else {

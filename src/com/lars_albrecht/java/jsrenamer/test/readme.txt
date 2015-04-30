@@ -11,3 +11,10 @@ Result:
 [HIS]. = S02E0*.
 [S]. = *
 [D] = GERMAN.DUBBED.720p.HDTV.x264-TVP
+
+StringEx a = 2.Broke.Girls.
+StringEx b = S02E0*
+StringEx c = *
+StringEx d = GERMAN.DUBBED.720p.HDTV.x264-TVP
+
+// PARSE STRINGS WITH PATTERN

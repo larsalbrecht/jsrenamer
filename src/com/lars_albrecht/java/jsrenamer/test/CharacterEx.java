@@ -15,16 +15,19 @@ public class CharacterEx {
 
 	private Character		character				= null;
 	private int				compareDirection;
+	private int				position = -1;
 	private int				characterType			= CharacterEx.CHARACTER_TYPE_UNKNOWN;
 
-	public CharacterEx(final Character character, final int compareDirection) {
+	public CharacterEx(final Character character, final int compareDirection, final int position) {
 		this.character = character;
 		this.compareDirection = compareDirection;
+		this.position = position;
 	}
 
-	public CharacterEx(final Character character, final int compareDirection, final int characterType) {
+	public CharacterEx(final Character character, final int compareDirection, final int position, final int characterType) {
 		this.character = character;
 		this.compareDirection = compareDirection;
+		this.position = position;
 		this.characterType = characterType;
 	}
 
@@ -61,6 +64,21 @@ public class CharacterEx {
 	}
 
 	/**
+	 * @return the position
+	 */
+	public final int getPosition() {
+		return position;
+	}
+
+	/**
+	 * @param position
+	 *            the position to set
+	 */
+	public final void setPosition(int position) {
+		this.position = position;
+	}
+
+	/**
 	 * @return the characterType
 	 */
 	public final int getCharacterType() {
@@ -74,6 +92,9 @@ public class CharacterEx {
 	public final void setCharacterType(int characterType) {
 		this.characterType = characterType;
 	}
+
+
+
 
 	/******************************** OVERRIDE ********************************/
 
