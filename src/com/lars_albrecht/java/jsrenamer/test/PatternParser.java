@@ -98,11 +98,11 @@ public class PatternParser {
 	private ArrayList<CharacterEx> getComparedString() {
 		String baseString = this.getBaseItem(this.inputList);
 		ArrayList<CharacterEx> forwardString = this.getCompared(LOOK_FORWARD, baseString, this.inputList);
-//		ArrayList<CharacterEx> backwardString = this.getCompared(LOOK_BACKWARD, baseString, this.inputList);
-//		ArrayList<CharacterEx> mergedString = this.getMergedResult(forwardString, backwardString);
-//		ArrayList<CharacterEx> cleanedString = this.getCleanedResult(mergedString);
-		System.out.println("FORWARD: " + forwardString);
-		debugPringCharacterEx(forwardString);
+		ArrayList<CharacterEx> backwardString = this.getCompared(LOOK_BACKWARD, baseString, this.inputList);
+		ArrayList<CharacterEx> mergedString = this.getMergedResult(forwardString, backwardString);
+		ArrayList<CharacterEx> cleanedString = this.getCleanedResult(mergedString);
+//		System.out.println("FORWARD: " + forwardString);
+//		debugPringCharacterEx(forwardString);
 //		System.out.println("BACKWAR: " + backwardString);
 //		debugPringCharacterEx(backwardString);
 //		System.out.println("MERGED : " + mergedString);
@@ -110,8 +110,7 @@ public class PatternParser {
 //		System.out.println("CLEANED: " + cleanedString);
 //		debugPringCharacterEx(cleanedString);
 //		System.out.println("");
-//		return cleanedString;
-		return null;
+		return cleanedString;
 	}
 
 	/**
@@ -193,9 +192,6 @@ public class PatternParser {
 					Character baseChar = baseCharArr[index];
 					Character testChar = testCharArr[index];
 					if (index >= resultList.size()) { // add
-						if(index == 57){
-							System.out.println("X");
-						}
 						if (baseChar.equals(testChar)) {
 							resultList.add(new CharacterEx(baseChar, compareDirection, CharacterEx.getCharacterType(baseChar, testChar)));
 						} else {
@@ -203,10 +199,7 @@ public class PatternParser {
 						}
 					} else { // replace
 						if (!testChar.equals(resultList.get(index).getCharacter())) {
-							if(index == 57){
-								System.out.println("X");
-							}
-							resultList.set(index, new CharacterEx(null, compareDirection, CharacterEx.getCharacterType(baseChar, resultList.get(index))));
+							resultList.set(index, new CharacterEx(null, compareDirection, CharacterEx.getCharacterType(baseChar, testChar, resultList.get(index))));
 						}
 					}
 				} else if (!toLong || diff > toLongDiff) { // add empty
@@ -218,7 +211,6 @@ public class PatternParser {
 					toLongDiff = diff;
 				} else {
 					// do nothing
-					System.out.println("baseCharArr.length > index" + baseCharArr.length + " > " + index);
 				}
 			}
 		}

@@ -91,8 +91,8 @@ public class CharacterEx {
 		return CharacterEx.CHARACTER_TYPE_STRING;
 	}
 
-	public static int getCharacterType(Character testChar, CharacterEx baseChar) {
-		if ((Utilities.isInteger(testChar.toString()) && baseChar.getCharacterType() == CHARACTER_TYPE_INTEGER)) {
+	public static int getCharacterType(Character testChar, Character testChar2, CharacterEx baseChar) {
+		if(Utilities.isInteger(testChar.toString()) && Utilities.isInteger(testChar2.toString()) && baseChar.getCharacterType() == CHARACTER_TYPE_INTEGER) {
 			return CharacterEx.CHARACTER_TYPE_INTEGER;
 		}
 		return CharacterEx.CHARACTER_TYPE_UNKNOWN;
