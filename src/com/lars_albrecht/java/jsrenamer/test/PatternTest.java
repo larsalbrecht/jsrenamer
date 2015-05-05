@@ -18,6 +18,10 @@ public class PatternTest {
 //		pt.test2();
 		System.out.println("");
 //		pt.test3();
+		System.out.println("");
+		pt.test4();
+		System.out.println("");
+		pt.test5();
 	}
 
 	private void test1() {
@@ -92,6 +96,59 @@ public class PatternTest {
 		testList.add("2.Broke.Girls.S02E21.And.the.Worst.Selfie.Ever.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 		testList.add("2.Broke.Girls.S02E22.And.The.Extra.Work.GERMAN.DUBBED.720p.HDTV.x264-TVP");
 		testList.add("2.Broke.Girls.S02E23.And.the.Tip.Slip.GERMAN.DUBBED.720p.HDTV.x264-TVP");
+
+		PatternParser pp = new PatternParser(testList, "[HS].[HIS].[S].[D]", "[HS|1] - [HIS|1] - [S|1]");
+		pp.parse();
+		for (String string : pp.getStrings()) {
+			System.out.println(string);
+		}
+	}
+
+	private void test4() {
+		ArrayList<String> testList = new ArrayList<String>();
+
+		testList.add("Person.of.Interest.S04E01.und.die.im.Lichte.sieht.man.nicht.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+		testList.add("Person.of.Interest.S04E02.Nautilus.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+		testList.add("Person.of.Interest.S04E03.Gefuehl.und.Gewissen.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+		testList.add("Person.of.Interest.S04E04.Beschuetzt.die.Nacht.ihre.Kinder.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+		testList.add("Person.of.Interest.S04E04.Propheten.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+		testList.add("Person.of.Interest.S04E06.Detective.Forge.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+		testList.add("Person.of.Interest.S04E07.Eine.Kraehe.hackt.der.anderen.ein.Auge.aus.GERMAN.DUBBED.DL.1080p.WebHD.x264-TVP");
+
+		PatternParser pp = new PatternParser(testList, "[HS].[HIS].[S].[D]", "[HS|1] - [HIS|1] - [S|1]");
+		pp.parse();
+		for (String string : pp.getStrings()) {
+			System.out.println(string);
+		}
+	}
+
+	private void test5() {
+		ArrayList<String> testList = new ArrayList<String>();
+
+		testList.add("Bones.S09E01.Booth.und.Bones.und.das.gebrochene.Herz.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E02.Luchs.isst.Luegner.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E03.Wer.war.schlecht.fuer.den.Schlachter.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E04.Pelant.und.die.Goetzendaemmerung.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E05.Ein.Vorbild.als.Vogelfutter.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E06.Die.Frau.in.Weiss.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E07.Flitterwochen.mit.Sonne.Pool.und.totem.Nazi.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E08.Im.Biberdamm.der.Samenmann.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E09.Die.Wut.der.Geschworenen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E10.Grausiger.Geschmacksverstaerker.mit.Geheimnis.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E11.Die.Fetzen.nach.dem.Funken.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E12.Pelants.Raetsel.um.den.Phantommoerder.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E13.Ein.Star.auf.den.Philippinen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E14.Ein.Meister.vor.die.Saeue.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E15.Der.Zeh.und.die.Dazugehoerige.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E16.Letzte.Info.ueber.die.Informantin.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E17.Ungeklaertes.aus.dem.Klaertank.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E18.Tot.ist.die.Karotte.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E19.Phoenix.in.der.Asche.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E20.Zerfallen.zwischen.Baum.und.Borke.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E21.Eine.Eiszeit.vor.dem.Ende.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E22.Ziemlich.boese.Freunde.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E23.Das.Drama.in.der.Queen.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
+		testList.add("Bones.S09E24.Bones.und.Booth.in.einem.Bild.der.Zerstoerung.GERMAN.DUBBED.DL.720p.WebHD.h264-euHD");
 
 		PatternParser pp = new PatternParser(testList, "[HS].[HIS].[S].[D]", "[HS|1] - [HIS|1] - [S|1]");
 		pp.parse();

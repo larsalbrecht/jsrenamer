@@ -62,22 +62,27 @@ public class PatternParser {
 	public static void debugPringCharacterEx(ArrayList<CharacterEx> list) {
 		if (list != null) {
 			System.out.println("DEBUG:");
+			// char
 			for (CharacterEx characterEx : list) {
 				System.out.print(PatternParser.padLeft(characterEx.getCharacter() != null ? characterEx.getCharacter().toString() : "*", 3));
 			}
 			System.out.println("");
+			// type
 			for (CharacterEx characterEx : list) {
 				System.out.print(PatternParser.padLeft(Integer.toString(characterEx.getCharacterType()), 3));
 			}
 			System.out.println("");
+			// direction
 			for (CharacterEx characterEx : list) {
 				System.out.print(PatternParser.padLeft(characterEx.getCompareDirection() == 0 ? "<" : ">", 3));
 			}
 			System.out.println("");
+			// position absolute
 			for (int i = 0; i < list.size() - 1; i++) {
 				System.out.print(PatternParser.padLeft(Integer.toString(i), 3));
 			}
 			System.out.println("");
+			// position relative (get from character)
 			for (CharacterEx characterEx : list) {
 				System.out.print(PatternParser.padLeft(Integer.toString(characterEx.getPosition()), 3));
 			}
@@ -102,7 +107,7 @@ public class PatternParser {
 
 	private ArrayList<StringEx> getPatternMatchedString(final ArrayList<CharacterEx> mergedString) {
 		String pattern = this.inputPattern;
-		System.out.println(pattern);
+		System.out.println("Pattern: " + pattern);
 
 		for (CharacterEx characterEx : mergedString) {
 				System.out.print(characterEx.getCharacter());
@@ -125,7 +130,7 @@ public class PatternParser {
 		// System.out.println("MERGED : " + mergedString);
 		// debugPringCharacterEx(mergedString);
 		// System.out.println("CLEANED: " + cleanedString);
-		// debugPringCharacterEx(cleanedString);
+		debugPringCharacterEx(cleanedString);
 		// System.out.println("");
 		return cleanedString;
 	}
@@ -140,7 +145,7 @@ public class PatternParser {
 	 */
 	private int getNextUnknown(final ArrayList<CharacterEx> input, int index) {
 		index++;
-		if (input.size() >= index && input.get(index).getCharacterType() == CharacterEx.CHARACTER_TYPE_UNKNOWN) {
+		if (input.size() > index && input.get(index).getCharacterType() == CharacterEx.CHARACTER_TYPE_UNKNOWN) {
 			return getNextUnknown(input, index);
 		}
 		return --index;
