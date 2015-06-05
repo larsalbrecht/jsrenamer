@@ -3,18 +3,11 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui.components;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Insets;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
 
 import com.lars_albrecht.java.jsrenamer.gui.RenameWindow;
 
