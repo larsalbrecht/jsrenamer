@@ -4,3 +4,5 @@
 /.gradle
 /presets
 .settings
+/gradlew
+/gradlew.bat

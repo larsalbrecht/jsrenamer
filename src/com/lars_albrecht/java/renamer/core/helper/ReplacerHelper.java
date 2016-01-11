@@ -1,4 +1,4 @@
-package com.lars_albrecht.java.jsrenamer.helper;
+package com.lars_albrecht.java.renamer.core.helper;
 
 import java.io.File;
 

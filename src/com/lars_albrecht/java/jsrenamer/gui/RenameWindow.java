@@ -10,17 +10,16 @@ import com.lars_albrecht.java.jsrenamer.gui.components.OptionPanel;
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 import com.lars_albrecht.java.jsrenamer.gui.components.renderer.ListItemListCellRenderer;
 import com.lars_albrecht.java.jsrenamer.gui.handler.FileTransferHandler;
-import com.lars_albrecht.java.jsrenamer.helper.FileHelper;
-import com.lars_albrecht.java.jsrenamer.helper.PropertiesHelper;
-import com.lars_albrecht.java.jsrenamer.helper.ReplacerHelper;
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
-import com.lars_albrecht.java.jsrenamer.model.Preset;
-import com.lars_albrecht.java.jsrenamer.model.PresetList;
-import com.lars_albrecht.java.jsrenamer.objects.ArrayListEvent;
-import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
-import com.lars_albrecht.java.jsrenamer.objects.IArrayListEventListener;
-import com.lars_albrecht.java.jsrenamer.replacer.*;
-import com.lars_albrecht.java.jsrenamer.replacer.base.BaseReplacer;
+import com.lars_albrecht.java.jsrenamer.core.helper.FileHelper;
+import com.lars_albrecht.java.jsrenamer.core.helper.PropertiesHelper;
+import com.lars_albrecht.java.jsrenamer.core.model.ListItem;
+import com.lars_albrecht.java.jsrenamer.core.model.Preset;
+import com.lars_albrecht.java.jsrenamer.core.model.PresetList;
+import com.lars_albrecht.java.jsrenamer.core.objects.ArrayListEvent;
+import com.lars_albrecht.java.jsrenamer.core.objects.EventArrayList;
+import com.lars_albrecht.java.jsrenamer.core.objects.IArrayListEventListener;
+import com.lars_albrecht.java.renamer.core.controller.ReplacerController;
+import com.lars_albrecht.java.renamer.core.helper.ReplacerHelper;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -45,33 +44,34 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	/**
 	 *
 	 */
-	private static final long                                                                   serialVersionUID         = 1L;
-	private              ArrayList<com.lars_albrecht.java.jsrenamer.replacer.base.BaseReplacer> replacerList             = null;
-	private              PresetList                                                             presetList               = null;
+	private static final long                       serialVersionUID         = 1L;
+	private              PresetList                 presetList               = null;
 	@SuppressWarnings("FieldCanBeLocal")
-	private              JList<ListItem>                                                        originalList             = null;
+	private              JList<ListItem>            originalList             = null;
 	@SuppressWarnings("FieldCanBeLocal")
-	private              JList<ListItem>                                                        previewList              = null;
-	private              DefaultListModel<ListItem>                                             originalListModel        = null;
-	private              DefaultListModel<ListItem>                                             previewListModel         = null;
-	private              EventArrayList<ListItem>                                               allList                  = null;
-	private              AdvancedInputField                                                     fileNameInput            = null;
+	private              JList<ListItem>            previewList              = null;
+	private              DefaultListModel<ListItem> originalListModel        = null;
+	private              DefaultListModel<ListItem> previewListModel         = null;
+	private              EventArrayList<ListItem>   allList                  = null;
+	private              AdvancedInputField         fileNameInput            = null;
 	@SuppressWarnings("FieldCanBeLocal")
-	private              OptionPanel                                                            optionPanel              = null;
-	private              DynamicInputCheckPanel                                                 dynamicReplaceFields     = null;
-	private              JButton                                                                renameButton             = null;
+	private              OptionPanel                optionPanel              = null;
+	private              DynamicInputCheckPanel     dynamicReplaceFields     = null;
+	private              JButton                    renameButton             = null;
 	@SuppressWarnings("FieldCanBeLocal")
-	private              MenuButton                                                             presetButton             = null;
-	private              JMenuItem                                                              saveAsNewPreset          = null;
-	private              JMenuItem                                                              overwritePreset          = null;
-	private              JMenuItem                                                              setAsDefaultPreset       = null;
-	private              JMenuItem                                                              deletePreset             = null;
-	private              JMenuItem                                                              resetCurrent             = null;
-	private              JSplitPane                                                             splitPane                = null;
+	private              MenuButton                 presetButton             = null;
+	private              JMenuItem                  saveAsNewPreset          = null;
+	private              JMenuItem                  overwritePreset          = null;
+	private              JMenuItem                  setAsDefaultPreset       = null;
+	private              JMenuItem                  deletePreset             = null;
+	private              JMenuItem                  resetCurrent             = null;
+	private              JSplitPane                 splitPane                = null;
 	@SuppressWarnings("FieldCanBeLocal")
-	private              JTextArea                                                              nameItemList             = null;
+	private              JTextArea                  nameItemList             = null;
 	// ** MENU ITEMS **//
-	private              JMenuItem                                                              miSettingSwitchFileSplit = null;
+	private              JMenuItem                  miSettingSwitchFileSplit = null;
+
+	private ReplacerController replacerController = null;
 
 	public RenameWindow() {
 		super("JSRenamer");
@@ -109,16 +109,10 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	}
 
 	/**
-	 * Initialize the data (replacer).
+	 * Initialize the data (renamer).
 	 */
 	private void _initData() {
-		this.replacerList = new ArrayList<BaseReplacer>();
-		this.replacerList.add(new NameReplacer());
-		this.replacerList.add(new FolderReplacer());
-		this.replacerList.add(new CounterReplacer());
-		this.replacerList.add(new DateReplacer());
-		this.replacerList.add(new SizeReplacer());
-		this.replacerList.add(new FileExtensionReplacer());
+		this.replacerController = new ReplacerController();
 	}
 
 	/**
@@ -631,9 +625,7 @@ public class RenameWindow extends JFrame implements IArrayListEventListener<List
 	 * @return ListItem to set
 	 */
 	private ListItem replaceListItemName(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
-		for (com.lars_albrecht.java.jsrenamer.replacer.base.BaseReplacer replacer : this.replacerList) {
-			fileNameMask = replacer.getReplacement(fileNameMask, listItem, originalItem, itemPos);
-		}
+		fileNameMask = this.replacerController.doReplace(fileNameMask, originalItem.getFile(), itemPos);
 
 		@SuppressWarnings("unused")
 		final ConcurrentHashMap<String, String> generatedDynamicValues = new ConcurrentHashMap<String, String>();

@@ -1,5 +1,14 @@
 apply plugin: 'java'
 
+version = '0.1.0'
+sourceCompatibility = '1.8'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.lars_albrecht.java.jsrenamer.JSRenamerMain'
+    }
+}
+
 sourceSets {
     main {
         java {
@@ -10,15 +19,6 @@ sourceSets {
         java {
             srcDir 'test'
         }
-    }
-}
-
-version = '0.1.0'
-sourceCompatibility = '1.8'
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'com.lars_albrecht.java.jsrenamer.JSRenamerMain'
     }
 }
 

@@ -1,9 +1,10 @@
-package com.lars_albrecht.java.jsrenamer.replacer;
+package com.lars_albrecht.java.renamer.objects;
 
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
-import com.lars_albrecht.java.jsrenamer.replacer.base.ReplacerOption;
-import com.lars_albrecht.java.jsrenamer.replacer.base.ReplacerOptions;
+import com.lars_albrecht.java.renamer.core.base.BaseReplacer;
+import com.lars_albrecht.java.renamer.core.models.ReplacerOption;
+import com.lars_albrecht.java.renamer.core.models.ReplacerOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Replace the [s], [size] tag.
  */
-public class SizeReplacer extends com.lars_albrecht.java.jsrenamer.replacer.base.BaseReplacer {
+public class SizeReplacer extends BaseReplacer {
 
 
 	public SizeReplacer() {
@@ -36,7 +37,7 @@ public class SizeReplacer extends com.lars_albrecht.java.jsrenamer.replacer.base
 
 
 	@Override
-	public String replace(Pattern pattern, Matcher matcher, String fileNameMask, ListItem listItem, ListItem originalItem, int itemPos) {
+	public String replace(Pattern pattern, Matcher matcher, String fileNameMask, File originalFile, int itemPos) {
 		if (matcher.group(3) != null) { // replace [s, size]
 			if (matcher.group(2).equals("u")) {
 				fileNameMask = fileNameMask.replaceFirst(pattern.pattern(), matcher.group(3).toUpperCase());

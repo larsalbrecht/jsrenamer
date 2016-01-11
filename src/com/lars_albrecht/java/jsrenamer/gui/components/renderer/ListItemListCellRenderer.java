@@ -3,7 +3,7 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui.components.renderer;
 
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
+import com.lars_albrecht.java.jsrenamer.core.model.ListItem;
 
 import javax.swing.*;
 import java.awt.*;

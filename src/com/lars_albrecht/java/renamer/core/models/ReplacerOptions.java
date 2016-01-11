@@ -1,4 +1,4 @@
-package com.lars_albrecht.java.jsrenamer.replacer.base;
+package com.lars_albrecht.java.renamer.core.models;
 
 import java.util.ArrayList;
 

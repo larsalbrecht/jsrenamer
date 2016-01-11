@@ -1,13 +1,13 @@
-package com.lars_albrecht.java.jsrenamer.replacer.base;
+package com.lars_albrecht.java.renamer.core.base;
 
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
+import com.lars_albrecht.java.renamer.core.models.ReplacerOption;
+import com.lars_albrecht.java.renamer.core.models.ReplacerOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import static com.lars_albrecht.java.jsrenamer.replacer.base.ReplacerOptions.*;
 
 public abstract class BaseReplacer {
 
@@ -31,7 +31,7 @@ public abstract class BaseReplacer {
 	}
 
 	/**
-	 * Add ReplacerOptions to replacer.
+	 * Add ReplacerOptions to renamer.
 	 *
 	 * @param options
 	 * 		ReplacerOptions
@@ -52,19 +52,19 @@ public abstract class BaseReplacer {
 
 				result += "\\W*(?:,\\W*";
 				switch (option.getType()) {
-					case TYPE_STRING:
+					case ReplacerOptions.TYPE_STRING:
 						result += "(.*?)";
 						break;
-					case TYPE_INT:
+					case ReplacerOptions.TYPE_INT:
 						result += "([0-9]{1,9})";
 						break;
-					case TYPE_FLOAT:
+					case ReplacerOptions.TYPE_FLOAT:
 						result += "([0-9\\.\\,]+)";
 						break;
-					case TYPE_DATE:
+					case ReplacerOptions.TYPE_DATE:
 						result += "(.+)"; // better regex for this?
 						break;
-					case TYPE_STRINGLIST:
+					case ReplacerOptions.TYPE_STRINGLIST:
 						result += "(";
 						if ((Boolean) option.getModifier().get("case-sensitive")) {
 							result += "(?i:";
@@ -75,7 +75,7 @@ public abstract class BaseReplacer {
 						result += this.getQuotedJoinedArray("|", (ArrayList<String>) option.getModifier().get("list"));
 						result += "))";
 						break;
-					case TYPE_CHARLIST:
+					case ReplacerOptions.TYPE_CHARLIST:
 						result += "(";
 						if ((Boolean) option.getModifier().get("case-sensitive")) {
 							result += "(?i:";
@@ -181,22 +181,20 @@ public abstract class BaseReplacer {
 	 *
 	 * @param fileNameMask
 	 * 		The typed in string
-	 * @param listItem
-	 * 		The ListItem
-	 * @param originalItem
-	 * 		The original ListItem
+	 * @param originalFile
+	 * 		The original file
 	 * @param itemPos
-	 * 		The position in the list.
+	 * 		The position of the item in a list
 	 *
 	 * @return new String
 	 */
-	public String getReplacement(String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos) {
+	public String getReplacement(String fileNameMask, File originalFile, int itemPos) {
 		Pattern p = this.getPattern();
 		if (p != null) {
 			Matcher m = p.matcher(fileNameMask);
 
 			while (m.find()) {
-				fileNameMask = replace(p, m, fileNameMask, listItem, originalItem, itemPos);
+				fileNameMask = replace(p, m, fileNameMask, originalFile, itemPos);
 			}
 		}
 
@@ -213,15 +211,13 @@ public abstract class BaseReplacer {
 	 * 		Matcher
 	 * @param fileNameMask
 	 * 		The type in string
-	 * @param listItem
-	 * 		The ListItem
-	 * @param originalItem
-	 * 		The original ListItem
+	 * @param originalFile
+	 * 		The original file
 	 * @param itemPos
-	 * 		The position in the list.
+	 * 		The position of the item in a list
 	 *
 	 * @return single replacement string
 	 */
-	protected abstract String replace(final Pattern pattern, final Matcher matcher, String fileNameMask, final ListItem listItem, final ListItem originalItem, final int itemPos);
+	protected abstract String replace(final Pattern pattern, final Matcher matcher, String fileNameMask, File originalFile, int itemPos);
 
 }

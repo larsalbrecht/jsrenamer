@@ -1,9 +1,10 @@
-package com.lars_albrecht.java.jsrenamer.replacer;
+package com.lars_albrecht.java.renamer.objects;
 
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
-import com.lars_albrecht.java.jsrenamer.replacer.base.ReplacerOption;
-import com.lars_albrecht.java.jsrenamer.replacer.base.ReplacerOptions;
+import com.lars_albrecht.java.renamer.core.base.BaseReplacer;
+import com.lars_albrecht.java.renamer.core.models.ReplacerOption;
+import com.lars_albrecht.java.renamer.core.models.ReplacerOptions;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Replace the [c], [counter] tag.
  */
-public class CounterReplacer extends com.lars_albrecht.java.jsrenamer.replacer.base.BaseReplacer {
+public class CounterReplacer extends BaseReplacer {
 
 
 	public CounterReplacer() {
@@ -32,7 +33,7 @@ public class CounterReplacer extends com.lars_albrecht.java.jsrenamer.replacer.b
 	}
 
 	@Override
-	public String replace(Pattern pattern, Matcher matcher, String fileNameMask, ListItem listItem, ListItem originalItem, int itemPos) {
+	public String replace(Pattern pattern, Matcher matcher, String fileNameMask, File originalFile, int itemPos) {
 		int           start    = 0;
 		int           step     = 1;
 		int           intWidth = 0;

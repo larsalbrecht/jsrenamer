@@ -3,8 +3,8 @@
  */
 package com.lars_albrecht.java.jsrenamer.gui.handler;
 
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
-import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
+import com.lars_albrecht.java.jsrenamer.core.model.ListItem;
+import com.lars_albrecht.java.jsrenamer.core.objects.EventArrayList;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;

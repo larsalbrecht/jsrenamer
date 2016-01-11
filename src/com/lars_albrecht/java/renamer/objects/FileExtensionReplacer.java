@@ -1,14 +1,15 @@
-package com.lars_albrecht.java.jsrenamer.replacer;
+package com.lars_albrecht.java.renamer.objects;
 
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
+import com.lars_albrecht.java.renamer.core.base.BaseReplacer;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Replace the [e], [extension] tag.
  */
-public class FileExtensionReplacer extends com.lars_albrecht.java.jsrenamer.replacer.base.BaseReplacer {
+public class FileExtensionReplacer extends BaseReplacer {
 
 
 	public FileExtensionReplacer() {
@@ -17,7 +18,7 @@ public class FileExtensionReplacer extends com.lars_albrecht.java.jsrenamer.repl
 
 
 	@Override
-	public String replace(Pattern pattern, Matcher matcher, String fileNameMask, ListItem listItem, ListItem originalItem, int itemPos) {
+	public String replace(Pattern pattern, Matcher matcher, String fileNameMask, File originalFile, int itemPos) {
 		Pattern p;
 		Matcher m;
 
@@ -25,7 +26,7 @@ public class FileExtensionReplacer extends com.lars_albrecht.java.jsrenamer.repl
 
 		// (\.[^\.]+$)
 		p = Pattern.compile("(\\.[^\\.]+$)");
-		m = p.matcher(originalItem.getFile().getName());
+		m = p.matcher(originalFile.getName());
 		while (m.find()) {
 			if (m.group(1) != null) {
 				fileExtension = m.group(1);
@@ -39,6 +40,6 @@ public class FileExtensionReplacer extends com.lars_albrecht.java.jsrenamer.repl
 			return fileNameMask;
 		}
 
-		return originalItem.getTitle();
+		return originalFile.getName();
 	}
 }
