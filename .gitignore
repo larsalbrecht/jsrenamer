@@ -1,5 +1,6 @@
 /.idea
 /bin/
 /.settings/
+/.gradle
 /presets
 .settings
