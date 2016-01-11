@@ -7,7 +7,7 @@
 | [c]      | [counter]   | [c, X, Y, Z] | This tag contains a counter. For each file in list, you get a number. Default it starts with zero (0). As option you can set the start (X), the step (Y) and a pre-pad (Z). |
 | [d]      | [date]      | [d, X]       | This tag contains the current date. Default format is: yyyy-MM-d; As option you can set the pattern (X). You can see here (http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html) how a pattern looks like. |
 | [e]      | [extension] |              | This tag contains the original file-extension (like .zip, .jpg, ...). |
-| [s, X]   | [size, X]   |              | This tag formats all following text to uppercase (X = u) or lowercase (X = l). |
+| [s, X]   | [size, X]   |              | This tag formats all following text to uppercase (X = u) or lowercase (X = l). The tag ends automatically at the end of the text or with [s] |
 |-----------------------------------------------------|
 
 
@@ -120,7 +120,7 @@ If we now use the tags in the upper input, we can specify the new name of the fi
     -01.jpg
     -005.jpg
 
-#### Example: [s, l][n, 1, 1][s, u][n, 2]####
+#### Example: [s, l][n, 1, 1][s][s, u][n, 2]####
     tEXT.TXT
     tEXT2.TXT
     iMAGE-01.JPG
@@ -157,7 +157,7 @@ You can also combine tags and text.
 ```
 
 ```
-### Example: [s, u][f][s, l] - [c, 1, 1, 2] ###
+### Example: [s, u][f][s][s, l][s] - [c, 1, 1, 2] ###
     MYDOCUMENTS - 01
     MYDOCUMENTS - 02
     MYIMAGES - 03
