@@ -1,34 +1,29 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui.components.renderer;
 
-import java.awt.Component;
-
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import javax.swing.UIManager;
-
 import com.lars_albrecht.java.jsrenamer.model.ListItem;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author lalbrecht
- * 
  */
 public class ListItemListCellRenderer extends JLabel implements ListCellRenderer<ListItem> {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long	serialVersionUID	= 5828694820395896822L;
+	private static final long serialVersionUID = 5828694820395896822L;
 
 	@Override
 	public Component getListCellRendererComponent(final JList<? extends ListItem> list,
-			final ListItem value,
-			final int index,
-			final boolean isSelected,
-			final boolean cellHasFocus) {
+												  final ListItem value,
+												  final int index,
+												  final boolean isSelected,
+												  final boolean cellHasFocus) {
 
 		this.setOpaque(true);
 		if (isSelected) {

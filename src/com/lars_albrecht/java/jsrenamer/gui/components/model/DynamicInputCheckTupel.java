@@ -1,34 +1,31 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui.components.model;
 
+import javax.swing.*;
 import java.io.Serializable;
-
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
 
 /**
  * @author lalbrecht
- * 
  */
 public class DynamicInputCheckTupel implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long	serialVersionUID	= -8518227484048706672L;
+	private static final long serialVersionUID = -8518227484048706672L;
 
-	private JTextField			fieldA				= null;
-	private JTextField			fieldAStart			= null;
-	private JCheckBox			fieldAStartCheck	= null;
-	private JTextField			fieldAEnd			= null;
-	private JCheckBox			fieldAEndCheck		= null;
-	private JTextField			fieldB				= null;
-	private JCheckBox			checkField			= null;
+	private JTextField fieldA           = null;
+	private JTextField fieldAStart      = null;
+	private JCheckBox  fieldAStartCheck = null;
+	private JTextField fieldAEnd        = null;
+	private JCheckBox  fieldAEndCheck   = null;
+	private JTextField fieldB           = null;
+	private JCheckBox  checkField       = null;
 
 	public DynamicInputCheckTupel(final JTextField fieldA, final JTextField fieldAStart, final JCheckBox fieldAStartCheck,
-			final JTextField fieldAEnd, final JCheckBox fieldAEndCheck, final JTextField fieldB, final JCheckBox checkField) {
+								  final JTextField fieldAEnd, final JCheckBox fieldAEndCheck, final JTextField fieldB, final JCheckBox checkField) {
 		this.fieldA = fieldA;
 		this.fieldAStart = fieldAStart;
 		this.fieldAStartCheck = fieldAStartCheck;
@@ -46,10 +43,26 @@ public class DynamicInputCheckTupel implements Serializable {
 	}
 
 	/**
+	 * @param checkField
+	 * 		the checkField to set
+	 */
+	public final void setCheckField(final JCheckBox checkField) {
+		this.checkField = checkField;
+	}
+
+	/**
 	 * @return the fieldA
 	 */
 	public final JTextField getFieldA() {
 		return this.fieldA;
+	}
+
+	/**
+	 * @param fieldA
+	 * 		the fieldA to set
+	 */
+	public final void setFieldA(final JTextField fieldA) {
+		this.fieldA = fieldA;
 	}
 
 	/**
@@ -60,10 +73,26 @@ public class DynamicInputCheckTupel implements Serializable {
 	}
 
 	/**
+	 * @param fieldAEnd
+	 * 		the fieldAEnd to set
+	 */
+	public final void setFieldAEnd(final JTextField fieldAEnd) {
+		this.fieldAEnd = fieldAEnd;
+	}
+
+	/**
 	 * @return the fieldAEndCheck
 	 */
 	public final JCheckBox getFieldAEndCheck() {
 		return this.fieldAEndCheck;
+	}
+
+	/**
+	 * @param fieldAEndCheck
+	 * 		the fieldAEndCheck to set
+	 */
+	public final void setFieldAEndCheck(final JCheckBox fieldAEndCheck) {
+		this.fieldAEndCheck = fieldAEndCheck;
 	}
 
 	/**
@@ -74,10 +103,26 @@ public class DynamicInputCheckTupel implements Serializable {
 	}
 
 	/**
+	 * @param fieldAStart
+	 * 		the fieldAStart to set
+	 */
+	public final void setFieldAStart(final JTextField fieldAStart) {
+		this.fieldAStart = fieldAStart;
+	}
+
+	/**
 	 * @return the fieldAStartCheck
 	 */
 	public final JCheckBox getFieldAStartCheck() {
 		return this.fieldAStartCheck;
+	}
+
+	/**
+	 * @param fieldAStartCheck
+	 * 		the fieldAStartCheck to set
+	 */
+	public final void setFieldAStartCheck(final JCheckBox fieldAStartCheck) {
+		this.fieldAStartCheck = fieldAStartCheck;
 	}
 
 	/**
@@ -88,56 +133,8 @@ public class DynamicInputCheckTupel implements Serializable {
 	}
 
 	/**
-	 * @param checkField
-	 *            the checkField to set
-	 */
-	public final void setCheckField(final JCheckBox checkField) {
-		this.checkField = checkField;
-	}
-
-	/**
-	 * @param fieldA
-	 *            the fieldA to set
-	 */
-	public final void setFieldA(final JTextField fieldA) {
-		this.fieldA = fieldA;
-	}
-
-	/**
-	 * @param fieldAEnd
-	 *            the fieldAEnd to set
-	 */
-	public final void setFieldAEnd(final JTextField fieldAEnd) {
-		this.fieldAEnd = fieldAEnd;
-	}
-
-	/**
-	 * @param fieldAEndCheck
-	 *            the fieldAEndCheck to set
-	 */
-	public final void setFieldAEndCheck(final JCheckBox fieldAEndCheck) {
-		this.fieldAEndCheck = fieldAEndCheck;
-	}
-
-	/**
-	 * @param fieldAStart
-	 *            the fieldAStart to set
-	 */
-	public final void setFieldAStart(final JTextField fieldAStart) {
-		this.fieldAStart = fieldAStart;
-	}
-
-	/**
-	 * @param fieldAStartCheck
-	 *            the fieldAStartCheck to set
-	 */
-	public final void setFieldAStartCheck(final JCheckBox fieldAStartCheck) {
-		this.fieldAStartCheck = fieldAStartCheck;
-	}
-
-	/**
 	 * @param fieldB
-	 *            the fieldB to set
+	 * 		the fieldB to set
 	 */
 	public final void setFieldB(final JTextField fieldB) {
 		this.fieldB = fieldB;

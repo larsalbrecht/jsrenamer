@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.model;
 
@@ -7,12 +7,11 @@ import java.io.File;
 
 /**
  * @author lalbrecht
- * 
  */
 public class ListItem implements Cloneable {
 
-	private String	title	= null;
-	private File	file	= null;
+	private String title = null;
+	private File   file  = null;
 
 	public ListItem(final File file) throws Exception {
 		if (file != null) {
@@ -36,6 +35,14 @@ public class ListItem implements Cloneable {
 	}
 
 	/**
+	 * @param file
+	 * 		the file to set
+	 */
+	public void setFile(final File file) {
+		this.file = file;
+	}
+
+	/**
 	 * @return the title
 	 */
 	public String getTitle() {
@@ -43,16 +50,8 @@ public class ListItem implements Cloneable {
 	}
 
 	/**
-	 * @param file
-	 *            the file to set
-	 */
-	public void setFile(final File file) {
-		this.file = file;
-	}
-
-	/**
 	 * @param title
-	 *            the title to set
+	 * 		the title to set
 	 */
 	public void setTitle(final String title) {
 		this.title = title;

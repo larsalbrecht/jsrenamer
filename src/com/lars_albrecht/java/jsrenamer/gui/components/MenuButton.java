@@ -1,27 +1,23 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui.components;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
 /**
  * @author lalbrecht
- * 
  */
 public class MenuButton extends JButton {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long	serialVersionUID	= 8850047737315317298L;
+	private static final long serialVersionUID = 8850047737315317298L;
 
-	private JPopupMenu			menu				= null;
+	private JPopupMenu menu = null;
 
 	public MenuButton(final String title) {
 		super(title);
@@ -41,6 +37,7 @@ public class MenuButton extends JButton {
 		this.menu.add(menuItem);
 	}
 
+	@SuppressWarnings("unused")
 	public JPopupMenu getMenu() {
 		return this.menu;
 	}

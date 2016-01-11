@@ -1,18 +1,20 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer;
 
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import com.lars_albrecht.java.jsrenamer.gui.RenameWindow;
+
+import javax.swing.*;
 
 /**
  * @author lalbrecht
- * 
  */
 public class JSRenamerMain {
+
+	public JSRenamerMain() {
+		new RenameWindow();
+	}
 
 	public static void main(final String[] args) {
 		try {
@@ -28,9 +30,5 @@ public class JSRenamerMain {
 			// handle exception
 		}
 		new JSRenamerMain();
-	}
-
-	public JSRenamerMain() {
-		new RenameWindow();
 	}
 }

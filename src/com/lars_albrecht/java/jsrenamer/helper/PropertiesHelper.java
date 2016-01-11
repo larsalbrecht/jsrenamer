@@ -1,32 +1,35 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.helper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Properties;
 
 /**
  * @author lalbrecht
  * @see "http://www.drdobbs.com/jvm/readwrite-properties-files-in-java/231000005"
- * 
  */
 public class PropertiesHelper {
 
-	private static final Properties	properties	= new Properties();
-	private static final File		file		= new File("settings.properties");
+	private static final Properties properties = new Properties();
+	private static final File       file       = new File("settings.properties");
+
+	public PropertiesHelper() {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				PropertiesHelper.saveProperties();
+			}
+		});
+	}
 
 	public static Properties getProperties() {
 		return PropertiesHelper.properties;
 	}
 
 	public static void loadProperties() {
-		InputStream is = null;
+		InputStream is;
 
 		// First try loading from the current directory
 		try {
@@ -44,6 +47,7 @@ public class PropertiesHelper {
 			// Try loading properties from the file (if found)
 			PropertiesHelper.properties.load(is);
 		} catch (final Exception e) {
+			// do nothing
 		} finally {
 			try {
 				if (is != null) {
@@ -72,15 +76,6 @@ public class PropertiesHelper {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public PropertiesHelper() {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				PropertiesHelper.saveProperties();
-			}
-		});
 	}
 
 }

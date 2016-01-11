@@ -1,18 +1,18 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.objects;
 
 import java.util.Vector;
 
 /**
- * @author lalbrecht
  * @param <E>
- * 
+ *
+ * @author lalbrecht
  */
 public class ArrayListEventMulticaster<E> implements IArrayListEventListener<E> {
 
-	protected Vector<IArrayListEventListener<E>>	listener	= new Vector<IArrayListEventListener<E>>();
+	protected Vector<IArrayListEventListener<E>> listener = new Vector<IArrayListEventListener<E>>();
 
 	public void add(final IArrayListEventListener<E> a) {
 		if (!this.listener.contains(a)) {
@@ -55,6 +55,7 @@ public class ArrayListEventMulticaster<E> implements IArrayListEventListener<E> 
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void remove(final IArrayListEventListener<E> l) {
 		this.listener.remove(l);
 	}

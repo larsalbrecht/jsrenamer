@@ -1,47 +1,38 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.model;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
 
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
 import com.lars_albrecht.java.jsrenamer.helper.CSVHelper;
 
+import javax.swing.*;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+
 /**
  * @author lalbrecht
- * 
  */
 public class PresetList {
 
-	private ArrayList<Preset>	presetList	= null;
-	private File				presetsFile	= null;
+	private ArrayList<Preset> presetList  = null;
+	private File              presetsFile = null;
 
 	/**
 	 * Creates a PresetList. Create a new preset file at presetsFilePath if not
 	 * exists. If initOnStartup the file will be loaded directly.
-	 * 
+	 *
 	 * @param presetsFilePath
+	 * 		Path for presets
 	 * @param initOnStartup
+	 * 		Init presets at startup
 	 */
 	public PresetList(final String presetsFilePath, final boolean initOnStartup) {
 		this.presetsFile = new File(presetsFilePath);
 		if (!this.presetsFile.exists()) {
 			try {
+				//noinspection ResultOfMethodCallIgnored
 				this.presetsFile.createNewFile();
 			} catch (final IOException e) {
 				e.printStackTrace();
@@ -57,8 +48,10 @@ public class PresetList {
 
 	/**
 	 * Adds a preset to the list.
-	 * 
+	 *
 	 * @param preset
+	 * 		The preset to use
+	 *
 	 * @return this
 	 */
 	public PresetList add(final Preset preset) {
@@ -78,16 +71,20 @@ public class PresetList {
 			// report
 		} finally {
 			try {
+				assert writer != null;
 				writer.close();
 			} catch (final Exception ex) {
+				// do nothing
 			}
 		}
 	}
 
 	/**
 	 * Returns the preset with the title.
-	 * 
-	 * @param title
+	 *
+	 * @param presetTitle
+	 * 		The title of the preset
+	 *
 	 * @return Preset
 	 */
 	public Preset get(final String presetTitle) {
@@ -100,17 +97,17 @@ public class PresetList {
 	}
 
 	public Preset[] getPresets() {
-		return this.presetList.toArray(new Preset[0]);
+		return this.presetList.toArray(new Preset[this.presetList.size()]);
 	}
 
 	/**
 	 * Returns an Array of titles.
-	 * 
+	 *
 	 * @return list of titles
 	 */
 	public String[] getTitles() {
 		final String[] presetTitleList = new String[this.presetList.size()];
-		final int i = 0;
+		final int      i               = 0;
 		for (final Preset preset : this.presetList) {
 			presetTitleList[i] = preset.getTitle();
 		}
@@ -121,6 +118,7 @@ public class PresetList {
 		return this.presetList.indexOf(preset);
 	}
 
+	@SuppressWarnings("unused")
 	public int indexOf(final String presetTitle) {
 		int i = 0;
 		for (final Preset preset : this.presetList) {
@@ -134,24 +132,24 @@ public class PresetList {
 
 	/**
 	 * Loads a preset file and returns the presets.
-	 * 
+	 *
 	 * @return ArrayList<Preset> loadedPresets
 	 */
 	public ArrayList<Preset> load() {
 		final ArrayList<Preset> resultList = new ArrayList<Preset>();
 
-		BufferedReader reader = null;
-		final String separator = ",";
+		BufferedReader reader    = null;
+		final String   separator = ",";
 
 		try {
-			String line = null;
-			String[] lineArr = null;
-			ArrayList<DynamicInputCheckTupel> tupelList = null;
-			DynamicInputCheckTupel tempTupel = null;
-			JCheckBox temp = null;
-			Preset tempPreset;
+			String                            line;
+			String[]                          lineArr;
+			ArrayList<DynamicInputCheckTupel> tupelList;
+			DynamicInputCheckTupel            tempTupel = null;
+			JCheckBox                         temp;
+			Preset                            tempPreset;
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(this.presetsFile), Charset.forName("UTF-8")));
-			int tupelIndex = 0;
+			int tupelIndex;
 			int counter = 0;
 			while ((line = reader.readLine()) != null) {
 				tupelIndex = 0;
@@ -214,15 +212,18 @@ public class PresetList {
 				tempPreset.setDynamicInputList(tupelList);
 				resultList.add(tempPreset);
 			}
+			//noinspection StatementWithEmptyBody
 			if (counter == 0) {
-				System.out.println("No presets");
+				//System.out.println("No presets");
 			}
 		} catch (final IOException ex) {
 			// report
 		} finally {
 			try {
+				assert reader != null;
 				reader.close();
 			} catch (final Exception ex) {
+				// do nothing
 			}
 		}
 		return resultList;
@@ -247,8 +248,9 @@ public class PresetList {
 	/**
 	 * Saves a list of presets. Clears the preset file before saving
 	 * (appending).
-	 * 
+	 *
 	 * @param presetList
+	 * 		The list of presets
 	 */
 	private void save(final ArrayList<Preset> presetList) {
 		this.clearPresetFile();
@@ -260,8 +262,9 @@ public class PresetList {
 	/**
 	 * Resave single preset. Loads the current file and overwrite it with the
 	 * single preset.
-	 * 
+	 *
 	 * @param presetTitle
+	 * 		The name of the preset
 	 */
 	public void save(final String presetTitle) {
 		final ArrayList<Preset> tempList = this.load();
@@ -277,12 +280,14 @@ public class PresetList {
 
 	/**
 	 * Saves a preset. Opens the file and append the preset to the end.
-	 * 
+	 *
 	 * @param preset
+	 * 		The preset
 	 * @param presetFile
+	 * 		The preset file
 	 */
 	private void savePreset(final Preset preset, final File presetFile) {
-		Writer writer = null;
+		Writer       writer    = null;
 		final String separator = ",";
 
 		try {
@@ -307,8 +312,10 @@ public class PresetList {
 			// report
 		} finally {
 			try {
+				assert writer != null;
 				writer.close();
 			} catch (final Exception ex) {
+				// do nothing
 			}
 		}
 	}

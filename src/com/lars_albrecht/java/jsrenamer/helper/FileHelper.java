@@ -7,23 +7,22 @@ import java.io.File;
 
 /**
  * @author lalbrecht
- *
  */
 public class FileHelper {
 
-    public static String getFileExtension(final File file){
-        return FileHelper.getFileExtension(file.getName());
-    }
+	public static String getFileExtension(final File file) {
+		return FileHelper.getFileExtension(file.getName());
+	}
 
-    public static String getFileExtension(final String filename){
-        String result = null;
+	public static String getFileExtension(final String filename) {
+		String result = null;
 
-        int i = filename.lastIndexOf('.');
-        if (i > 0) {
-            result = filename.substring(i+1);
-        }
+		int i = filename.lastIndexOf('.');
+		if (i > 0) {
+			result = filename.substring(i + 1);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

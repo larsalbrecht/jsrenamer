@@ -1,20 +1,19 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.helper;
 
 /**
  * @author lalbrecht
- * 
  */
 public class CSVHelper {
 
+	@SuppressWarnings("UnusedParameters")
 	public static String[] parseToRead(final String separator, final String line) {
-		final String tempLine = line;
 		// lookbehind to check if separator is escaped
-		final String[] items = tempLine.split("(?<!\\\\),");
+		final String[] items = line.split("(?<!\\\\),");
 		for (int i = 0; i < items.length; i++) {
-			items[i] = items[i].replaceAll("\\,", ",");
+			items[i] = items[i].replaceAll(",", ",");
 		}
 		return items;
 	}
@@ -22,14 +21,17 @@ public class CSVHelper {
 	/**
 	 * Prepares a string to write to a csv file. Replace the separator (if found
 	 * in text) with \separator.
-	 * 
+	 *
 	 * @param separator
+	 * 		The separator
 	 * @param strings
-	 * @return
+	 * 		The list of strings
+	 *
+	 * @return New String
 	 */
 	public static String parseToWrite(final String separator, final String... strings) {
 		String line = "";
-		String string = null;
+		String string;
 		for (int i = 0; i < strings.length; i++) {
 			string = strings[i];
 			// escape separator in text

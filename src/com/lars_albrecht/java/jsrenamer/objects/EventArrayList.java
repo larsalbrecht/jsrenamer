@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.objects;
 
@@ -7,24 +7,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * @author lalbrecht
  * @param <E>
- * 
+ *
+ * @author lalbrecht
  */
 public class EventArrayList<E> extends ArrayList<E> {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long					serialVersionUID		= 7387572645483459257L;
+	private static final long                         serialVersionUID     = 7387572645483459257L;
 	/**
-	 * 
+	 *
 	 */
-	private final ArrayListEventMulticaster<E>	arrayListMulticaster	= new ArrayListEventMulticaster<E>();
+	private final        ArrayListEventMulticaster<E> arrayListMulticaster = new ArrayListEventMulticaster<E>();
 
 	@Override
 	public boolean add(final E e) {
-		final boolean result = super.add(e);
+		final boolean      result   = super.add(e);
 		final ArrayList<E> tempList = new ArrayList<E>();
 		tempList.add(e);
 		this.arrayListMulticaster.arrayListItemAdded(new ArrayListEvent<E>(this, ArrayListEvent.ARRAYLIST_ADD, tempList, this.indexOf(e)));
@@ -34,7 +34,7 @@ public class EventArrayList<E> extends ArrayList<E> {
 
 	@Override
 	public boolean addAll(final Collection<? extends E> c) {
-		final boolean result = super.addAll(c);
+		final boolean      result   = super.addAll(c);
 		final ArrayList<E> tempList = new ArrayList<E>();
 		for (final E o : c) {
 			tempList.add(o);
@@ -58,8 +58,8 @@ public class EventArrayList<E> extends ArrayList<E> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean remove(final Object o) {
-		final int index = this.indexOf(o);
-		final boolean result = super.remove(o);
+		final int          index    = this.indexOf(o);
+		final boolean      result   = super.remove(o);
 		final ArrayList<E> tempList = new ArrayList<E>();
 		tempList.add((E) o);
 		this.arrayListMulticaster.arrayListItemRemoved(new ArrayListEvent<E>(this, ArrayListEvent.ARRAYLIST_REMOVE, tempList, index));

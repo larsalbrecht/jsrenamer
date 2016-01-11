@@ -1,23 +1,22 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.model;
 
-import java.util.ArrayList;
-
 import com.lars_albrecht.java.jsrenamer.gui.components.model.DynamicInputCheckTupel;
+
+import java.util.ArrayList;
 
 /**
  * @author lalbrecht
- * 
  */
 public class Preset {
 
-	private String								title				= null;
-	private String								nameInput			= null;
-	private ArrayList<DynamicInputCheckTupel>	dynamicInputList	= null;
+	private String                            title            = null;
+	private String                            nameInput        = null;
+	private ArrayList<DynamicInputCheckTupel> dynamicInputList = null;
 
-	private boolean								modified			= false;
+	private boolean modified = false;
 
 	public Preset(final String title) {
 		this.title = title;
@@ -42,10 +41,26 @@ public class Preset {
 	}
 
 	/**
+	 * @param dynamicInputList
+	 * 		the dynamicInputList to set
+	 */
+	public final void setDynamicInputList(final ArrayList<DynamicInputCheckTupel> dynamicInputList) {
+		this.dynamicInputList = dynamicInputList;
+	}
+
+	/**
 	 * @return the nameInput
 	 */
 	public final String getNameInput() {
 		return this.nameInput;
+	}
+
+	/**
+	 * @param nameInput
+	 * 		the nameInput to set
+	 */
+	public final void setNameInput(final String nameInput) {
+		this.nameInput = nameInput;
 	}
 
 	/**
@@ -55,36 +70,22 @@ public class Preset {
 		return this.title;
 	}
 
+	/**
+	 * @param title
+	 * 		the title to set
+	 */
+	public final void setTitle(final String title) {
+		this.title = title;
+	}
+
+	@SuppressWarnings("unused")
 	boolean isModified() {
 		return this.modified;
 	}
 
-	/**
-	 * @param dynamicInputList
-	 *            the dynamicInputList to set
-	 */
-	public final void setDynamicInputList(final ArrayList<DynamicInputCheckTupel> dynamicInputList) {
-		this.dynamicInputList = dynamicInputList;
-	}
-
+	@SuppressWarnings("unused")
 	public void setIsModified() {
 		this.modified = true;
-	}
-
-	/**
-	 * @param nameInput
-	 *            the nameInput to set
-	 */
-	public final void setNameInput(final String nameInput) {
-		this.nameInput = nameInput;
-	}
-
-	/**
-	 * @param title
-	 *            the title to set
-	 */
-	public final void setTitle(final String title) {
-		this.title = title;
 	}
 
 	/*

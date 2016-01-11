@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.objects;
 
@@ -8,23 +8,22 @@ import java.util.EventObject;
 
 /**
  * @author lalbrecht
- * 
  */
 public class ArrayListEvent<E> extends EventObject {
 
-	/**
-	 * 
-	 */
-	private static final long	serialVersionUID	= -3379194113233811040L;
-	public final static int		ARRAYLIST_CHANGED	= 20001;
-	public final static int		ARRAYLIST_ADD		= 20002;
-	public final static int		ARRAYLIST_REMOVE	= 20003;
-	public final static int		ARRAYLIST_ADDALL	= 20004;
-	public final static int		ARRAYLIST_CLEARED	= 20005;
+	public final static int ARRAYLIST_CHANGED = 20001;
+	public final static int ARRAYLIST_ADD     = 20002;
+	public final static int ARRAYLIST_REMOVE  = 20003;
+	public final static int ARRAYLIST_ADDALL  = 20004;
+	public final static int ARRAYLIST_CLEARED = 20005;
 
-	protected int				id;
-	protected ArrayList<E>		items;
-	protected int				itemIndex;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -3379194113233811040L;
+	protected int          id;
+	protected ArrayList<E> items;
+	protected int          itemIndex;
 
 	public ArrayListEvent(final Object source, final int id, final ArrayList<E> items, final int itemIndex) {
 		super(source);
@@ -33,6 +32,7 @@ public class ArrayListEvent<E> extends EventObject {
 		this.itemIndex = itemIndex;
 	}
 
+	@SuppressWarnings("unused")
 	public int getId() {
 		return this.id;
 	}
@@ -40,6 +40,7 @@ public class ArrayListEvent<E> extends EventObject {
 	/**
 	 * @return the itemIndex
 	 */
+	@SuppressWarnings("unused")
 	public int getItemIndex() {
 		return this.itemIndex;
 	}
@@ -53,8 +54,9 @@ public class ArrayListEvent<E> extends EventObject {
 
 	/**
 	 * @param items
-	 *            the items to set
+	 * 		the items to set
 	 */
+	@SuppressWarnings("unused")
 	public void setCollectorItems(final ArrayList<E> items) {
 		this.items = items;
 	}

@@ -1,39 +1,37 @@
 /**
- * 
+ *
  */
 package com.lars_albrecht.java.jsrenamer.gui.handler;
 
+import com.lars_albrecht.java.jsrenamer.model.ListItem;
+import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
+
+import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
-import com.lars_albrecht.java.jsrenamer.model.ListItem;
-import com.lars_albrecht.java.jsrenamer.objects.EventArrayList;
-
 /**
  * @author lalbrecht
- * 
  */
 public class FileTransferHandler extends TransferHandler {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long			serialVersionUID	= -988966209784678879L;
-	private EventArrayList<ListItem>	list				= null;
+	private static final long                     serialVersionUID = -988966209784678879L;
+	private              EventArrayList<ListItem> list             = null;
 
 	public FileTransferHandler(final EventArrayList<ListItem> list) {
 		this.list = list;
 	}
 
 	/**
-	 * 
 	 * @param f
+	 * 		file
+	 *
 	 * @return count of added data
 	 */
 	private int addDataToList(final File f) {
@@ -53,6 +51,7 @@ public class FileTransferHandler extends TransferHandler {
 				}
 			} else if (f.isDirectory() && f.canExecute()) {
 				final File[] files = f.listFiles();
+				assert files != null;
 				for (final File file : files) {
 					count += this.addDataToList(file);
 				}
